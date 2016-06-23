@@ -14,23 +14,6 @@ config :gt, Gt.Endpoint,
     pubsub: [name: Gt.PubSub,
             adapter: Phoenix.PubSub.PG2]
 
-config :joken, config_module: Guardian.JWT
-
-config :guardian, Guardian,
-    allowed_algos: ["HS512"], # optional
-    verify_module: Guardian.JWT,  # optional
-    issuer: "Gt",
-    ttl: { 10, :days },
-    verify_issuer: true, # optional
-    secret_key: %{
-        "crv" => "P-521",
-        "d" => "axDuTtGavPjnhlfnYAwkHa4qyast352j25dseppXEzmKpQyY0xd3bGpYLEF4ognDpRJm5IRaM31Id2NfEtDFw4iTbDSE",
-        "kty" => "EC",
-        "x" => "AL0H8OvP5NuboUoj8Pb3zpBcDyEJN907wM32j52hc5h235xrCy7H2062i3IRPF5NQ546jIJU3uQX5KN2QB_Cq6R_SUqyVZSNpIfC",
-        "y" => "ALdxLuo6oKLoQ-xLSkShv_TA0di97I9V92sg1MKFava5hK235j2cc23GST1EKiVQnZMrN3HO8LtLT78SNVUaA-lV"
-    },
-    serializer: Gt.GuardianSerializer
-
 # Configures Elixir's Logger
 config :logger, :console,
     format: "$time $metadata[$level] $message\n",
@@ -44,3 +27,22 @@ import_config "#{Mix.env}.exs"
 config :phoenix, :generators,
     migration: true,
     binary_id: false
+
+config :guardian, Guardian,
+    issuer: "Gt.#{Mix.env}",
+    ttl: { 10, :days },
+    secret_key: to_string(Mix.env),
+    serializer: Gt.GuardianSerializer,
+    hooks: GuardianDb
+    # permissions: %{
+    #     default: [
+    #         :read_profile,
+    #         :write_profile,
+    #         :read_token,
+    #         :revoke_token,
+    #     ],
+    # }
+
+config :guardian_db, GuardianDb,
+    repo: Gt.Repo,
+    schema_name: "tokens"
