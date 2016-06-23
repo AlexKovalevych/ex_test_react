@@ -20,7 +20,7 @@ defmodule Gt.PageController do
         }
 
         result = Gt.ReactIO.json_call!(%{
-            component: "./priv/static/server/js/landing.js",
+            component: "./priv/static/server/js/app.js",
             props: props,
         })
 
