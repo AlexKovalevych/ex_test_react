@@ -11,17 +11,14 @@ let AppContainer = withRouter(class App extends React.Component {
     }
 
     render() {
-
         return (
-            <div className="container">
-                <header className="header">
-                    <nav role="navigation">
-                        <ul className="nav nav-pills pull-right">
-                            <li><Link className="btn" to="/auth/login">Login</Link></li>
-                        </ul>
-                    </nav>
-                    <IndexLink to="/"><span className="logo"></span></IndexLink>
-                </header>
+            <div id="container" className="container cls-container">
+                <div className="row center-xs">
+                    <IndexLink to="/" className="box-inline col-xs-6">
+                        <img className="brand-icon" src="/images/logo.png" alt="logo" />
+                        <span className="brand-title">GLOBO<span className="text-thin">tunes</span></span>
+                    </IndexLink>
+                </div>
                 {this.props.children}
             </div>
         );

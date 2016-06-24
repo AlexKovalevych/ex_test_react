@@ -29,8 +29,9 @@ if (env === 'development') {
 module.exports = {
     devtool: devtool,
     entry: [
-        './web/static/js/index.js'
-        // './web/static/styles/app/index.less'
+        './web/static/js/index.js',
+        'flexboxgrid/dist/flexboxgrid.css',
+        './web/static/css/app.css'
     ],
     output: {
         path: './priv/static',
@@ -46,10 +47,12 @@ module.exports = {
                 plugins: ['transform-decorators-legacy'],
                 presets: ['react', 'es2015', 'stage-2']
             }
-        }, {
-            test: /\.less$/,
-            loader: ExtractTextPlugin.extract('style', 'css?localIdentName=[hash:base64]!postcss!less')
-        }, {
+        },
+        {
+            test: /\.css$/,
+            loader: ExtractTextPlugin.extract('style', 'css?localIdentName=[hash:base64]!postcss')
+        },
+        {
             test: /\.png$/,
             loader: URLLoader('images', 'image/png', 10000)
         }, {
@@ -79,9 +82,9 @@ module.exports = {
     ],
     resolve: {
         extensions: ['', '.js', '.less', '.css'],
-        modulesDirectories: ['node_modules', __dirname + '/web/static/js/app'],
+        modulesDirectories: ['node_modules', __dirname + '/web/static/js'],
         alias: {
-            styles: __dirname + '/web/static/styles/app'
+            styles: __dirname + '/web/static/css'
         }
     },
     plugins: [

@@ -3,6 +3,7 @@ import { Provider } from 'react-redux';
 import { Router, RouterContext, browserHistory, createMemoryHistory, match } from 'react-router';
 import configureStore from '../store';
 import routes from '../routes';
+import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider';
 
 export default class Index extends React.Component {
     render() {
@@ -31,7 +32,9 @@ export default class Index extends React.Component {
 
         return (
             <Provider store={store}>
-                {router}
+                <MuiThemeProvider>
+                    {router}
+                </MuiThemeProvider>
             </Provider>
         );
     }

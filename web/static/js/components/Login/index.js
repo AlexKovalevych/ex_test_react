@@ -1,6 +1,10 @@
 import React from 'react';
 import { connect } from 'react-redux';
 import authActions from '../../actions/auth';
+import Divider from 'material-ui/Divider';
+import Paper from 'material-ui/Paper';
+import TextField from 'material-ui/TextField';
+
 
 class Login extends React.Component {
     componentDidMount() {
@@ -11,29 +15,41 @@ class Login extends React.Component {
         });
     }
     render() {
-        let error;
-        if (this.props.login_failed) {
-            error = (
-                <div className="form_errors">
-                    <ul>Invalid login or password</ul>
-                </div>
-            );
-        }
+        // if (this.props.login_failed) {
+        //     error = (
+        //         <div className="form_errors">
+        //             <ul>Invalid login or password</ul>
+        //         </div>
+        //     );
+        // }
+
+        const style = {
+            paddingLeft: 20
+        };
 
         return (
-            <main role="main">
-                <div className="jumbotron">
-                    <form className="form-auth" onSubmit={this.handleSubmit.bind(this)}>
-                        <h2 className="form-auth-heading">Sign in</h2>
-                        <label htmlFor="inputEmail" className="sr-only">Username</label>
-                        <input ref="email" type="text" placeholder="Email" className="form-control input-first" id="inputEmail" required={true} autoFocus />
-                        <label htmlFor="inputPassword" className="sr-only">Password</label>
-                        <input ref="password" type="password" placeholder="Password" className="form-control input-last" id="inputPassword" required={true} />
-                        <button className="btn btn-lg btn-success btn-block" type="submit">Sign in</button>
-                        {error}
-                    </form>
+            <div className="container">
+                <div className="row center-xs">
+                    <div className="col-xs-6">
+                        <Paper zDepth={2}>
+                            <TextField
+                                hintText="Login"
+                                style={style}
+                                underlineShow={false}
+                                fullWidth={true}
+                            />
+                            <Divider />
+                            <TextField
+                                type="password"
+                                hintText="Password"
+                                style={style}
+                                underlineShow={false}
+                                fullWidth={true}
+                            />
+                        </Paper>
+                    </div>
                 </div>
-            </main>
+            </div>
         );
     }
 
