@@ -1,6 +1,5 @@
 use Mix.Config
 
-
 webpack = fn(name) ->
     {"node", [
         "node_modules/webpack/bin/webpack.js",
@@ -28,7 +27,9 @@ config :gt, Gt.Endpoint,
 config :gt, Gt.Endpoint,
     live_reload: [
         patterns: [
-            ~r{priv/static/.*(js|css|png|jpeg|jpg|gif|svg)$},
+            ~r{priv/static/js/.*js$},
+            ~r{priv/static/css/.*css$},
+            ~r{priv/static/.*(png|jpeg|jpg|gif|svg)$},
             ~r{priv/gettext/.*(po)$},
             ~r{web/views/.*(ex)$},
             ~r{web/templates/.*(eex)$}

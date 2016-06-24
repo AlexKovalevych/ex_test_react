@@ -4,7 +4,7 @@ import authActions from '../../actions/auth';
 import Divider from 'material-ui/Divider';
 import Paper from 'material-ui/Paper';
 import TextField from 'material-ui/TextField';
-
+import RaisedButton from 'material-ui/RaisedButton';
 
 class Login extends React.Component {
     componentDidMount() {
@@ -33,10 +33,11 @@ class Login extends React.Component {
                     <div className="col-xs-6">
                         <Paper zDepth={2}>
                             <TextField
-                                hintText="Login"
+                                hintText="Email"
                                 style={style}
                                 underlineShow={false}
                                 fullWidth={true}
+                                ref="email"
                             />
                             <Divider />
                             <TextField
@@ -45,7 +46,19 @@ class Login extends React.Component {
                                 style={style}
                                 underlineShow={false}
                                 fullWidth={true}
+                                ref="password"
                             />
+                            <Divider />
+                            <div className="col-xs-offset-9 col-xs-3">
+                                <RaisedButton
+                                    label="Login"
+                                    primary={true}
+                                    style={{
+                                        margin: '20px'
+                                    }}
+                                    onMouseUp={this.handleSubmit.bind(this)}
+                                />
+                            </div>
                         </Paper>
                     </div>
                 </div>

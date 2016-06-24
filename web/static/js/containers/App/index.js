@@ -11,14 +11,18 @@ let AppContainer = withRouter(class App extends React.Component {
     }
 
     render() {
+        const { isAuthenticated } = this.props;
         return (
             <div id="container" className="container cls-container">
-                <div className="row center-xs">
-                    <IndexLink to="/" className="box-inline col-xs-6">
-                        <img className="brand-icon" src="/images/logo.png" alt="logo" />
-                        <span className="brand-title">GLOBO<span className="text-thin">tunes</span></span>
-                    </IndexLink>
-                </div>
+                {
+                    !isAuthenticated && (
+                        <div className="row center-xs">
+                            <IndexLink to="/" className="col-xs-6">
+                                <img src="/images/logo.png" alt="logo" />
+                            </IndexLink>
+                        </div>
+                    )
+                }
                 {this.props.children}
             </div>
         );
