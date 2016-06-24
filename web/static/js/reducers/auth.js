@@ -1,6 +1,6 @@
 const initialState = {
-    login_failed: false,
-    registration_errors: []
+    isAuthenticated: false,
+    login_failed: false
 };
 
 export default function reducer(state = initialState, action = {}) {

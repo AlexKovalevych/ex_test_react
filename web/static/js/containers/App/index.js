@@ -1,15 +1,23 @@
-import React from 'react';
-import { Link, IndexLink } from 'react-router';
+import React, { PropTypes } from 'react';
+import { Link, IndexLink, withRouter } from 'react-router';
+import { connect } from 'react-redux';
 
-export default class App extends React.Component {
+let AppContainer = withRouter(class App extends React.Component {
+    componentWillMount() {
+        const { isAuthenticated } = this.props;
+        if (!isAuthenticated) {
+            this.props.router.push('/auth/login');
+        }
+    }
+
     render() {
+
         return (
             <div className="container">
                 <header className="header">
                     <nav role="navigation">
                         <ul className="nav nav-pills pull-right">
                             <li><Link className="btn" to="/auth/login">Login</Link></li>
-                            <li><Link className="btn" to="/auth/register">Register</Link></li>
                         </ul>
                     </nav>
                     <IndexLink to="/"><span className="logo"></span></IndexLink>
@@ -18,4 +26,15 @@ export default class App extends React.Component {
             </div>
         );
     }
-}
+});
+AppContainer.propTypes = {
+    isAuthenticated: PropTypes.bool.isRequired
+};
+
+const mapStateToProps = (state) => {
+    return state.auth;
+};
+
+let App = connect(mapStateToProps)(AppContainer);
+
+export default App;

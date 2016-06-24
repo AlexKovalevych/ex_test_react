@@ -21,7 +21,13 @@ const URLLoader = (dir, mimetype, limit) => {
     ].join('&');
 };
 
+var devtool;
+if (env === 'development') {
+    devtool = 'inline-source-map';
+}
+
 module.exports = {
+    devtool: devtool,
     entry: [
         './web/static/js/index.js'
         // './web/static/styles/app/index.less'
