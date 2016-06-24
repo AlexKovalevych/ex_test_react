@@ -19,6 +19,8 @@ defmodule Gt.Web do
     def model do
         quote do
             use Ecto.Schema
+            use Gt.Model
+            alias Gt.Repo
 
             import Ecto
             import Ecto.Changeset

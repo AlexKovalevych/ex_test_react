@@ -10,6 +10,23 @@
 # We recommend using the bang functions (`insert!`, `update!`
 # and so on) as they will fail if something goes wrong.
 
-# alias Gt.Repo
-#
-# Repo.insert! %Gt.User{email: "admin@example.com", encrypted_password: }
+defmodule Gt.Fixtures do
+    alias Gt.Repo
+    alias Gt.User
+
+    @emails [
+        "alex@example.com",
+        "admin@example.com"
+    ]
+
+    def run do
+        Enum.map(@emails, &insert_user/1)
+    end
+
+    def insert_user(email) do
+        [pass, _] = String.split(email, "@")
+        Repo.insert(User.changeset(%User{}, %{email: email, password_plain: pass}))
+    end
+end
+
+Gt.Fixtures.run()

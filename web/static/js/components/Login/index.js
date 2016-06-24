@@ -71,7 +71,7 @@ class Login extends React.Component {
 
         const { email, password } = this.refs;
         const { dispatch } = this.props;
-        const params = {email: email.value, password: password.value};
+        const params = {email: email.getValue(), password: password.getValue()};
 
         dispatch(authActions.login(params));
     }

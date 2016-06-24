@@ -1,4 +1,4 @@
-defmodule Gt.Guardian.Serializer do
+defmodule Gt.GuardianSerializer do
     @behaviour Guardian.Serializer
 
     alias Gt.{Repo, User}

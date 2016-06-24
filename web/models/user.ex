@@ -1,8 +1,6 @@
 defmodule Gt.User do
     use Gt.Web, :model
 
-    alias Gt.Repo
-
     schema "users" do
         field :email, :string
         field :password, :string
@@ -18,7 +16,7 @@ defmodule Gt.User do
         model
         |> cast(params, @required_fields, @optional_fields)
         |> validate_format(:email, ~r/@/, message: "Email format is not valid")
-        |> validate_length(:password_plain, min: 5, message: "Password should be 5 or more characters long")
+        |> validate_length(:password_plain, min: 4, message: "Password should be 5 or more characters long")
         |> validate_confirmation(:password_plain, message: "Password confirmation doesn’t match")
         |> unique_constraint(:email, message: "This email is already taken")
         |> cs_encrypt_password()
