@@ -1,7 +1,7 @@
 import { createStore, applyMiddleware, compose } from 'redux';
 import thunkMiddleware from 'redux-thunk';
-import reducers from 'reducers';
-import WSActions from 'actions/ws';
+import reducers from '../reducers';
+import WSActions from '../actions/ws';
 
 const devToolsExt = typeof window === 'object' && typeof window.devToolsExtension !== 'undefined'
     ? window.devToolsExtension()
