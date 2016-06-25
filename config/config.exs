@@ -14,6 +14,46 @@ config :gt, Gt.Endpoint,
     pubsub: [name: Gt.PubSub,
             adapter: Phoenix.PubSub.PG2]
 
+config :gt,
+    permissions: [
+        {:block, "dashboard", [
+            {:node, "dashboard"}
+        ]},
+        {:block, "finance", [
+            {:node, "payments_check"},
+            {:node, "payment_systems"},
+            {:node, "incoming_reports"},
+            {:node, "funds_flow"},
+            {:node, "monthly_balance"}
+        ]},
+        {:block, "statistics", [
+            {:node, "consolidated_report"},
+            {:node, "ltv_report"},
+            {:node, "segments_report"},
+            {:node, "retention"},
+            {:node, "activity_waves"},
+            {:node, "timeline_report"},
+            {:node, "cohorts_report"}
+        ]},
+        {:block, "calendar_events", [
+            {:node, "events_list"},
+            {:node, "events_types_list"},
+            {:node, "events_groups_list"}
+        ]},
+        {:block, "players", [
+            {:node, "multiaccounts"},
+            {:node, "signup_channels"}
+        ]},
+        {:block, "settings", [
+            {:node, "users"},
+            {:node, "projects"},
+            {:node, "notifications"},
+            {:node, "permissions"},
+            {:node, "data_sources"},
+            {:node, "smtp_servers"}
+        ]}
+    ]
+
 # Configures Elixir's Logger
 config :logger, :console,
     format: "$time $metadata[$level] $message\n",

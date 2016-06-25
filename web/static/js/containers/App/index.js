@@ -7,9 +7,9 @@ let AppContainer = withRouter(class App extends React.Component {
     componentDidMount() {
         this.props.router.listen((route) => {
             const { isAuthenticated } = this.props;
-            if (!isAuthenticated) {
+            if (!isAuthenticated && route.pathname != '/login') {
                 this.props.router.push('/login');
-            } else if (route.pathname == '/login') {
+            } else if (isAuthenticated && route.pathname == '/login') {
                 this.props.router.replace('/');
             }
         });

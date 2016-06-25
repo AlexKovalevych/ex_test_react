@@ -14,9 +14,17 @@ defmodule Gt.Fixtures do
     alias Gt.Repo
     alias Gt.User
 
+    permissions = Application.get_env(:gt, :permissions)
+
     @emails [
-        "alex@example.com",
-        "admin@example.com"
+        [
+            "alex@example.com",
+            permissions
+        ],
+        [
+            "admin@example.com",
+            permissions
+        ]
     ]
 
     def run do

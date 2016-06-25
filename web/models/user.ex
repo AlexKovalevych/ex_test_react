@@ -5,11 +5,12 @@ defmodule Gt.User do
         field :email, :string
         field :password, :string
         field :password_plain, :string, virtual: true
+        field :permissions, {:array, {:array, :map}}
 
         timestamps
     end
 
-    @required_fields ~w(email password_plain)
+    @required_fields ~w(email password_plain permissions)
     @optional_fields ~w(password)
 
     def changeset(model, params \\ :empty) do

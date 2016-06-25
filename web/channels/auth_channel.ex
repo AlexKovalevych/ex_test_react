@@ -27,6 +27,6 @@ defmodule Gt.AuthChannel do
     defp get_sl_token(user) do
         ttl = {10, :seconds}
         {:ok, jwt, _full_claims} = Guardian.encode_and_sign(user, :disposable, %{"ttl" => ttl})
-        jwt
+        {jwt, user}
     end
 end
