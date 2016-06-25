@@ -5,8 +5,16 @@ import Divider from 'material-ui/Divider';
 import Paper from 'material-ui/Paper';
 import TextField from 'material-ui/TextField';
 import RaisedButton from 'material-ui/RaisedButton';
+import { withRouter } from 'react-router';
 
-class Login extends React.Component {
+let LoginComponent = withRouter(class Login extends React.Component {
+    componentWillMount() {
+        const { isAuthenticated } = this.props;
+        if (isAuthenticated) {
+            this.props.router.push('/');
+        }
+    }
+
     componentDidMount() {
         // Clean up all previously set errors before rendering the element
         this.props.dispatch({
@@ -14,6 +22,7 @@ class Login extends React.Component {
             value: false
         });
     }
+
     render() {
         // if (this.props.login_failed) {
         //     error = (
@@ -23,18 +32,13 @@ class Login extends React.Component {
         //     );
         // }
 
-        const style = {
-            paddingLeft: 20
-        };
-
         return (
             <div className="container">
                 <div className="row center-xs">
                     <div className="col-xs-6">
-                        <Paper zDepth={2}>
+                        <Paper zDepth={2} style={{padding: '20px'}}>
                             <TextField
                                 hintText="Email"
-                                style={style}
                                 underlineShow={false}
                                 fullWidth={true}
                                 ref="email"
@@ -43,22 +47,19 @@ class Login extends React.Component {
                             <TextField
                                 type="password"
                                 hintText="Password"
-                                style={style}
                                 underlineShow={false}
                                 fullWidth={true}
                                 ref="password"
                             />
                             <Divider />
-                            <div className="col-xs-offset-9 col-xs-3">
-                                <RaisedButton
-                                    label="Login"
-                                    primary={true}
-                                    style={{
-                                        margin: '20px'
-                                    }}
-                                    onMouseUp={this.handleSubmit.bind(this)}
-                                />
-                            </div>
+                                <div className="row center-xs">
+                                    <RaisedButton
+                                        label="Login"
+                                        primary={true}
+                                        onMouseUp={this.handleSubmit.bind(this)}
+                                        style={{marginTop: '20px'}}
+                                    />
+                                </div>
                         </Paper>
                     </div>
                 </div>
@@ -75,12 +76,13 @@ class Login extends React.Component {
 
         dispatch(authActions.login(params));
     }
-}
+});
 
 const mapStateToProps = (state) => {
     return {
-        login_failed: state.auth.login_failed
+        loginFailed: state.auth.loginFailed,
+        isAuthenticated: state.auth.isAuthenticated
     };
 };
 
-export default connect(mapStateToProps)(Login);
+export default connect(mapStateToProps)(LoginComponent);

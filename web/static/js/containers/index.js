@@ -21,6 +21,18 @@ export default class Index extends React.Component {
             });
         } else {
             initialState = window.__INITIAL_STATE__;
+            if (!initialState) {
+                initialState = {
+                    auth: {
+                        isAuthenticated: false,
+                        loginFailed: false,
+                        loginError: null
+                    }
+                };
+            }
+            if (localStorage.getItem('jwtToken')) {
+                initialState.auth.isAuthenticated = true;
+            }
             history = browserHistory;
             router = (
                 <Router history={history}>

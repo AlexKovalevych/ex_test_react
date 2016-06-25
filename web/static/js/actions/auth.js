@@ -1,7 +1,3 @@
-const processToken = (token) => {
-    window.location = '/?token=' + token;
-};
-
 const authActions = {
     login: (params) => {
         return (dispatch, getState) => {
@@ -13,12 +9,14 @@ const authActions = {
             ws.channels.auth
                 .push('login', params)
                 .receive('ok', (msg) => {
-                    processToken(msg.token);
+                    localStorage.setItem('jwtToken', msg.token);
+                    window.location = '/';
                 })
-                .receive('error', () => {
+                .receive('error', (msg) => {
                     dispatch({
                         type: 'AUTH_LOGIN_ERROR',
-                        value: true
+                        value: true,
+                        message: msg
                     });
                 });
         };
