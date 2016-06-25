@@ -1,10 +1,6 @@
 const authActions = {
     login: (params) => {
         return (dispatch, getState) => {
-            dispatch({
-                type: 'AUTH_LOGIN_ERROR',
-                value: false
-            });
             const {ws} = getState();
             ws.channels.auth
                 .push('login', params)

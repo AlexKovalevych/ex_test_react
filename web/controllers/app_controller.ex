@@ -19,14 +19,4 @@ defmodule Gt.AppController do
         |> put_layout("app.html")
         |> render("index.html", html: result["html"], props: initial_state)
     end
-
-    def logout(conn, _params) do
-        conn
-        |> Guardian.Plug.sign_out()
-        |> redirect(to: "/")
-    end
-
-    def unauthenticated(conn, _params) do
-        redirect(conn, to: "/")
-    end
 end

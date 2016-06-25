@@ -30,7 +30,7 @@ module.exports = {
     devtool: devtool,
     entry: [
         './web/static/js/index.js',
-        'flexboxgrid/dist/flexboxgrid.css',
+        'bootstrap/dist/css/bootstrap.css',
         './web/static/css/app.css'
     ],
     output: {

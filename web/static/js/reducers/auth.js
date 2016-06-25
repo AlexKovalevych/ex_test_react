@@ -10,7 +10,7 @@ export default function reducer(state = initialState, action = {}) {
         return {
             ...state,
             loginFailed: action.value,
-            loginError: action.message
+            loginError: action.message ? action.message.error : null 
         };
     default:
         return state;

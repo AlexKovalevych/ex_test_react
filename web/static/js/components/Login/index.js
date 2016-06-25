@@ -1,13 +1,16 @@
 import React from 'react';
 import { connect } from 'react-redux';
 import authActions from '../../actions/auth';
-import Divider from 'material-ui/Divider';
-import Paper from 'material-ui/Paper';
-import TextField from 'material-ui/TextField';
-import RaisedButton from 'material-ui/RaisedButton';
 import { withRouter } from 'react-router';
 
 let LoginComponent = withRouter(class Login extends React.Component {
+    resetError() {
+        this.props.dispatch({
+            type: 'AUTH_LOGIN_ERROR',
+            value: false
+        });
+    }
+
     componentWillMount() {
         const { isAuthenticated } = this.props;
         if (isAuthenticated) {
@@ -16,63 +19,54 @@ let LoginComponent = withRouter(class Login extends React.Component {
     }
 
     componentDidMount() {
-        // Clean up all previously set errors before rendering the element
-        this.props.dispatch({
-            type: 'AUTH_LOGIN_ERROR',
-            value: false
-        });
+        this.resetError();
     }
 
     render() {
-        // if (this.props.login_failed) {
-        //     error = (
-        //         <div className="form_errors">
-        //             <ul>Invalid login or password</ul>
-        //         </div>
-        //     );
-        // }
+        let error;
+        if (this.props.loginFailed) {
+            error = (
+                <div className="alert alert-danger" role="alert">
+                    {this.props.loginError}
+                </div>
+            );
+        }
 
         return (
-            <div className="container">
-                <div className="row center-xs">
-                    <div className="col-xs-6">
-                        <Paper zDepth={2} style={{padding: '20px'}}>
-                            <TextField
-                                hintText="Email"
-                                underlineShow={false}
-                                fullWidth={true}
-                                ref="email"
-                            />
-                            <Divider />
-                            <TextField
-                                type="password"
-                                hintText="Password"
-                                underlineShow={false}
-                                fullWidth={true}
-                                ref="password"
-                            />
-                            <Divider />
-                                <div className="row center-xs">
-                                    <RaisedButton
-                                        label="Login"
-                                        primary={true}
-                                        onMouseUp={this.handleSubmit.bind(this)}
-                                        style={{marginTop: '20px'}}
-                                    />
-                                </div>
-                        </Paper>
-                    </div>
+            <form onSubmit={this.onSubmit.bind(this)} className="col-sm-offset-3 col-sm-6">
+                {error}
+                <div className="form-group">
+                    <input
+                        type="email"
+                        className="form-control"
+                        id="email"
+                        placeholder="Email"
+                        ref="email"
+                        onFocus={this.resetError.bind(this)}
+                    />
                 </div>
-            </div>
+                <div className="form-group">
+                    <input
+                        type="password"
+                        className="form-control"
+                        id="password"
+                        placeholder="Password"
+                        ref="password"
+                        onFocus={this.resetError.bind(this)}
+                    />
+                </div>
+                <div className="form-group">
+                    <button type="submit" className="btn btn-primary center-block">LOGIN</button>
+                </div>
+            </form>
         );
     }
 
-    handleSubmit(e) {
+    onSubmit(e) {
         e.preventDefault();
-
         const { email, password } = this.refs;
         const { dispatch } = this.props;
-        const params = {email: email.getValue(), password: password.getValue()};
+        const params = {email: email.value, password: password.value};
 
         dispatch(authActions.login(params));
     }
@@ -81,6 +75,7 @@ let LoginComponent = withRouter(class Login extends React.Component {
 const mapStateToProps = (state) => {
     return {
         loginFailed: state.auth.loginFailed,
+        loginError: state.auth.loginError,
         isAuthenticated: state.auth.isAuthenticated
     };
 };
