@@ -34,19 +34,19 @@ let AppContainer = withRouter(class App extends React.Component {
                 {
                     isAuthenticated && (
                         <div>
-                        <nav className="navbar navbar-light bg-faded" style={{margin: '.5rem 1rem'}}>
-                            <IndexLink to="/" className="navbar-brand">
-                                Globotunes
-                            </IndexLink>
-                            <ul className="nav navbar-nav pull-xs-right">
-                                <li className="nav-item">
-                                    <Link to="/logout" className="nav-link">Logout</Link>
-                                </li>
-                            </ul>
-                        </nav>
-                        <div className="col-sm-3">
-                            <GtMenu />
-                        </div>
+                            <nav className="navbar navbar-light bg-faded" style={{margin: '.5rem 1rem'}}>
+                                <IndexLink to="/" className="navbar-brand">
+                                    Globotunes
+                                </IndexLink>
+                                <ul className="nav navbar-nav pull-xs-right">
+                                    <li className="nav-item">
+                                        <Link to="/logout" className="nav-link">Logout</Link>
+                                    </li>
+                                </ul>
+                            </nav>
+                            <div className="col-sm-3">
+                                <GtMenu permissions={this.props.user.permissions} />
+                            </div>
                         </div>
                     )
                 }
@@ -55,7 +55,8 @@ let AppContainer = withRouter(class App extends React.Component {
     }
 });
 AppContainer.propTypes = {
-    isAuthenticated: PropTypes.bool.isRequired
+    isAuthenticated: PropTypes.bool.isRequired,
+    user: PropTypes.object
 };
 
 const mapStateToProps = (state) => {

@@ -6,6 +6,7 @@ const authActions = {
                 .push('login', params)
                 .receive('ok', (msg) => {
                     localStorage.setItem('jwtToken', msg.token);
+                    localStorage.setItem('user', JSON.stringify(msg.user));
                     window.location = '/';
                 })
                 .receive('error', (msg) => {

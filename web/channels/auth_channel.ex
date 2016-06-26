@@ -1,7 +1,7 @@
 defmodule Gt.AuthChannel do
     use Gt.Web, :channel
 
-    alias Gt.User
+    alias Gt.Model.User
 
     # intercept ["shout"]
 
@@ -18,7 +18,7 @@ defmodule Gt.AuthChannel do
     # by sending replies to requests from the client
     def handle_in("login", params, socket) do
         response = case User.signin(params) do
-            {:ok, user} -> {:ok, %{"token" => get_sl_token(user)}}
+            {:ok, user} -> {:ok, %{:token => get_sl_token(user), :user => user}}
             {:error, error} -> {:error, %{"error" => error}}
         end
         {:reply, response, socket}
@@ -27,6 +27,6 @@ defmodule Gt.AuthChannel do
     defp get_sl_token(user) do
         ttl = {10, :seconds}
         {:ok, jwt, _full_claims} = Guardian.encode_and_sign(user, :disposable, %{"ttl" => ttl})
-        {jwt, user}
+        jwt
     end
 end

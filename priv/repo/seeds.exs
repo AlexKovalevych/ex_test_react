@@ -10,31 +10,8 @@
 # We recommend using the bang functions (`insert!`, `update!`
 # and so on) as they will fail if something goes wrong.
 
-defmodule Gt.Fixtures do
-    alias Gt.Repo
-    alias Gt.User
+alias Gt.Fixtures.{Project, User}
 
-    permissions = Application.get_env(:gt, :permissions)
-
-    @emails [
-        [
-            "alex@example.com",
-            permissions
-        ],
-        [
-            "admin@example.com",
-            permissions
-        ]
-    ]
-
-    def run do
-        Enum.map(@emails, &insert_user/1)
-    end
-
-    def insert_user(email) do
-        [pass, _] = String.split(email, "@")
-        Repo.insert(User.changeset(%User{}, %{email: email, password_plain: pass}))
-    end
-end
-
-Gt.Fixtures.run()
+Mongo.Ecto.truncate(Gt.Repo)
+Project.run()
+User.run()

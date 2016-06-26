@@ -1,6 +1,15 @@
-import React from 'react';
+import React, { PropTypes } from 'react';
+import Collapse, { Panel } from 'rc-collapse';
 
 export default class GtMenu extends React.Component {
+    renderBlock(block) {
+        if (block.projects && block.projects.length > 0) {
+            return (
+                <Panel header={block.block}></Panel>
+            );
+        }
+    }
+
     render() {
         // const style = {
         //     display: 'inline-block',
@@ -9,20 +18,13 @@ export default class GtMenu extends React.Component {
         // };
 
         return (
-            <ul className="nav nav-pills nav-stacked">
-                <li className="nav-item">
-                    <a className="nav-link active" href="#">Active</a>
-                </li>
-                <li className="nav-item">
-                    <a className="nav-link" href="#">Link</a>
-                </li>
-                <li className="nav-item">
-                    <a className="nav-link" href="#">Another link</a>
-                </li>
-                <li className="nav-item">
-                    <a className="nav-link disabled" href="#">Disabled</a>
-                </li>
-            </ul>
+            <Collapse accordion={true}>
+                {this.props.permissions.map(this.renderBlock.bind(this))}
+            </Collapse>
         );
     }
 }
+
+GtMenu.propTypes = {
+    permissions: PropTypes.array
+};

@@ -1,7 +1,7 @@
 defmodule Gt.GuardianSerializer do
     @behaviour Guardian.Serializer
 
-    alias Gt.{Repo, User}
+    alias Gt.Model.{Repo, User}
 
     def for_token(user = %User{}) do
         {:ok, "User:#{user.id}"}

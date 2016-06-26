@@ -1,5 +1,6 @@
 const initialState = {
     isAuthenticated: false,
+    user: null,
     loginFailed: false,
     loginError: null
 };
@@ -10,7 +11,7 @@ export default function reducer(state = initialState, action = {}) {
         return {
             ...state,
             loginFailed: action.value,
-            loginError: action.message ? action.message.error : null 
+            loginError: action.message ? action.message.error : null
         };
     default:
         return state;

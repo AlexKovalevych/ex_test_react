@@ -1,7 +1,7 @@
 defmodule Gt.Api.V1.UserController do
     use Gt.Web, :controller
 
-    alias Gt.User
+    alias Gt.Model.User
     alias Gt.SessionController
 
     plug Guardian.Plug.EnsureAuthenticated, on_failure: { SessionController, :unauthenticated_api }

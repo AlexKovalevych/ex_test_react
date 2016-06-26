@@ -1,11 +1,13 @@
-defmodule Gt.User do
+defmodule Gt.Model.User do
     use Gt.Web, :model
+
+    @derive {Poison.Encoder, only: [:email, :permissions]}
 
     schema "users" do
         field :email, :string
         field :password, :string
         field :password_plain, :string, virtual: true
-        field :permissions, {:array, {:array, :map}}
+        field :permissions, {:array, :map}
 
         timestamps
     end

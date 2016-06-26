@@ -31,6 +31,7 @@ export default class Index extends React.Component {
             }
             if (localStorage.getItem('jwtToken')) {
                 initialState.auth.isAuthenticated = true;
+                initialState.auth.user = JSON.parse(localStorage.getItem('user'));
             }
             history = browserHistory;
             router = (

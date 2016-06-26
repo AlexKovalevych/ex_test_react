@@ -1,8 +1,10 @@
 defmodule Gt.PageControllerTest do
-  use Gt.ConnCase
+    use Gt.ConnCase
 
-  test "GET /", %{conn: conn} do
-    conn = get conn, "/"
-    assert html_response(conn, 200) =~ "Welcome to Phoenix!"
-  end
+
+    @tag :functional
+    test "GET /", %{conn: conn} do
+        conn = get conn, "/"
+        assert html_response(conn, 200) =~ "Welcome to Phoenix!"
+    end
 end
