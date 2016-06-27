@@ -14,7 +14,7 @@ const plugins = {
 };
 
 const URLLoader = (dir, mimetype, limit) => {
-    return 'url?' + [
+    return 'url-loader?' + [
         `limit=${limit}`,
         `mimetype=${mimetype}`,
         `name=${dir}/app/[name].[ext]`
@@ -30,6 +30,7 @@ module.exports = {
     devtool: devtool,
     entry: [
         './web/static/js/index.js',
+        'font-awesome/css/font-awesome.css',
         'bootstrap/dist/css/bootstrap.css',
         './web/static/css/app.css'
     ],
@@ -44,7 +45,7 @@ module.exports = {
             exclude: /node_modules/,
             loader: 'babel',
             query: {
-                plugins: ['transform-decorators-legacy'],
+                plugins: ['transform-decorators-legacy', 'transform-class-properties'],
                 presets: ['react', 'es2015', 'stage-2']
             }
         },
@@ -62,16 +63,16 @@ module.exports = {
             test: /\.jpg$/,
             loader: URLLoader('images', 'image/jpeg', 10000)
         }, {
-            test: /\.(woff|woff2)$/,
+            test: /\.(woff|woff2)?(\?v=[0-9]\.[0-9]\.[0-9])?$/,
             loader: URLLoader('fonts', 'application/x-font-woff', 10000)
         }, {
-            test: /\.ttf$/,
+            test: /\.ttf(\?v=[0-9]\.[0-9]\.[0-9])?$/,
             loader: URLLoader('fonts', 'application/x-font-ttf', 10000)
         }, {
-            test: /\.eot$/,
-            loader: URLLoader('fonts', 'application/vnd.ms-fontobject', 10000)
+            test: /\.eot(\?v=[0-9]\.[0-9]\.[0-9])?$/,
+            loader: URLLoader('fonts', 'file', 10000)
         }, {
-            test: /\.svg$/,
+            test: /\.svg(\?v=[0-9]\.[0-9]\.[0-9])?$/,
             loader: URLLoader('fonts', 'image/svg+xml', 10000)
         }]
     },

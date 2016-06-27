@@ -1,13 +1,17 @@
 {
   "dependencies": {
+    "babel-plugin-transform-class-properties": "^6.10.2",
     "bootstrap": "^4.0.0-alpha.2",
     "classnames": "^2.2.5",
     "flexboxgrid": "^6.3.0",
+    "font-awesome": "^4.6.3",
     "phoenix": "file:deps/phoenix",
     "phoenix_html": "file:deps/phoenix_html",
-    "rc-collapse": "^1.6.3",
     "react": "^15.0.2",
+    "react-collapse": "^2.3.0",
     "react-dom": "^15.0.2",
+    "react-height": "^2.1.0",
+    "react-motion": "^0.4.4",
     "react-redux": "^4.4.5",
     "react-router": "^2.4.0",
     "react-router-redux": "^4.0.4",

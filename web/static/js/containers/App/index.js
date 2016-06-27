@@ -1,22 +1,34 @@
 import React, { PropTypes } from 'react';
-import { Link, IndexLink, withRouter } from 'react-router';
+import { Link, IndexLink } from 'react-router';
 import { connect } from 'react-redux';
-import GtMenu from '../GtMenu';
 
-let AppContainer = withRouter(class App extends React.Component {
+class App extends React.Component {
+    static propTypes = {
+        isAuthenticated: PropTypes.bool.isRequired,
+        user: PropTypes.object,
+        menu: PropTypes.object,
+        main: PropTypes.object,
+        children: PropTypes.object
+    };
+
+    static contextTypes = {
+        router: PropTypes.object.isRequired
+    }
+
     componentDidMount() {
-        this.props.router.listen((route) => {
+        this.context.router.listen((route) => {
             const { isAuthenticated } = this.props;
             if (!isAuthenticated && route.pathname != '/login') {
-                this.props.router.push('/login');
+                this.context.router.push('/login');
             } else if (isAuthenticated && route.pathname == '/login') {
-                this.props.router.replace('/');
+                this.context.router.replace('/');
             }
         });
     }
 
     render() {
         const { isAuthenticated } = this.props;
+
         return (
             <div className="container">
                 {
@@ -45,7 +57,10 @@ let AppContainer = withRouter(class App extends React.Component {
                                 </ul>
                             </nav>
                             <div className="col-sm-3">
-                                <GtMenu permissions={this.props.user.permissions} />
+                                {this.props.menu}
+                            </div>
+                            <div className="col-sm-9">
+                                {this.props.main}
                             </div>
                         </div>
                     )
@@ -53,16 +68,10 @@ let AppContainer = withRouter(class App extends React.Component {
             </div>
         );
     }
-});
-AppContainer.propTypes = {
-    isAuthenticated: PropTypes.bool.isRequired,
-    user: PropTypes.object
-};
+}
 
 const mapStateToProps = (state) => {
     return state.auth;
 };
 
-let App = connect(mapStateToProps)(AppContainer);
-
-export default App;
+export default connect(mapStateToProps)(App);

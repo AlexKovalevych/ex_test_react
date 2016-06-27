@@ -1,45 +1,109 @@
 import React, { PropTypes } from 'react';
-import Collapse from 'rc-collapse';
+import Collapse from 'react-collapse';
 import { Link } from 'react-router';
+import { connect } from 'react-redux';
 
-export default class GtMenu extends React.Component {
+class GtMenu extends React.Component {
+    static propTypes = {
+        user: PropTypes.object,
+        location: PropTypes.object
+    };
+
+    static contextTypes = {
+        router: React.PropTypes.object.isRequired
+    };
+
     constructor(props) {
         super(props);
         this.state = {
-            activeKey: '0'
+            activeKey: 0
         };
     }
 
+    componentWillMount() {
+        let blocks = Object.keys(this.props.user.permissions);
+        let activeKey = 0;
+        for (let i in blocks) {
+            if (this.isActiveBlock(blocks[i])) {
+                activeKey = i;
+                break;
+            }
+        }
+        this.setState({activeKey});
+    }
+
+    getUrl(block, node) {
+        if (node == 'dashboard_index') {
+            return '/';
+        }
+        return `/${block}/${node}`;
+    }
+
+    isActiveBlock(block) {
+        return this.context.router.isActive(block) || (block == 'dashboard' && this.props.location.pathname == '/');
+    }
+
     renderNode(block, node, i) {
+        let url = this.getUrl(block, node);
+        let linkProps = {
+            to: url,
+            className: 'nav-link'
+        };
+
+        if (this.props.location.pathname == url) {
+            linkProps.className += ' active';
+        }
+
         return (
             <li key={i} className="nav-item">
-                <Link to={`/${block}/${node}`}>{node}</Link>
+                <Link {...linkProps}>{node}</Link>
             </li>
         );
     }
 
+    toggleBlock(i) {
+        this.setState({activeKey: i});
+    }
+
     renderBlock(block, i) {
-        let parentBlock = this.props.permissions[block];
+        let parentBlock = this.props.user.permissions[block];
         let permissions = Object.keys(parentBlock).filter((node) => {
             return parentBlock[node].length > 0;
         });
+        let props = {
+            key: i,
+            className: 'nav-item'
+        };
+        if (this.isActiveBlock(block)) {
+            props.className = 'active';
+        }
+
+        let iconClass = 'fa-caret-down';
+        if (this.state.activeKey == i) {
+            iconClass = 'fa-caret-right';
+        }
 
         return (
-            <Collapse.Panel key={i} header={block}>
-                <ul className="nav nav-pills nav-stacked">
-                    {permissions.map(this.renderNode.bind(this, block))}
-                </ul>
-            </Collapse.Panel>
+            <li {...props}>
+                <div
+                    className="nav-link block"
+                    onClick={this.toggleBlock.bind(this, i)}
+                >
+                    <i className={`pull-left fa ${iconClass}`}></i>
+                    {block}
+                </div>
+                <Collapse isOpened={this.state.activeKey == i}>
+                    <ul className='nav nav-pills nav-stacked'>
+                        {permissions.map(this.renderNode.bind(this, block))}
+                    </ul>
+                </Collapse>
+            </li>
         );
     }
 
-    onChange(activeKey) {
-        this.setState({activeKey});
-    }
-
     render() {
-        let permissions = Object.keys(this.props.permissions).filter((block) => {
-            let parentBlock = this.props.permissions[block];
+        let permissions = Object.keys(this.props.user.permissions).filter((block) => {
+            let parentBlock = this.props.user.permissions[block];
             let children = Object.keys(parentBlock).filter((node) => {
                 return parentBlock[node].length > 0;
             });
@@ -47,13 +111,15 @@ export default class GtMenu extends React.Component {
         });
 
         return (
-            <Collapse accordion={true} onChange={this.onChange.bind(this)} activeKey={this.state.activeKey}>
+            <ul className="nav nav-pills nav-stacked">
                 {permissions.map(this.renderBlock.bind(this))}
-            </Collapse>
+            </ul>
         );
     }
 }
 
-GtMenu.propTypes = {
-    permissions: PropTypes.object
+const mapStateToProps = (state) => {
+    return state.auth;
 };
+
+export default connect(mapStateToProps)(GtMenu);

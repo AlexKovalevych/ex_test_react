@@ -1,4 +1,11 @@
-.rc-collapse-header {
+/*Menu*/
+
+.nav-link.block:hover {
+    cursor: pointer;
+    background: #eaecf1;
+}
+
+/*.rc-collapse-header {
     height: 38px;
     line-height: 38px;
     text-indent: 16px;
@@ -39,3 +46,11 @@
 .rc-collapse-content-inactive {
     display: none;
 }
+
+/*.rc-collapse-header[aria-expanded=true] {
+}
+
+.rc-collapse-header + .rc-collapse-content:has(.active) {
+    background: red;
+}
+*/
