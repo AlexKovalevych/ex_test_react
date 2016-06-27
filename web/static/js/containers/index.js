@@ -1,10 +1,15 @@
-import React from 'react';
+import React, { PropTypes } from 'react';
 import { Provider } from 'react-redux';
 import { Router, RouterContext, browserHistory, createMemoryHistory, match } from 'react-router';
 import configureStore from '../store';
 import routes from '../routes';
 
 export default class Index extends React.Component {
+    static propTypes = {
+        initial_state: PropTypes.object,
+        location: PropTypes.object
+    };
+
     render() {
         let initialState, history, router;
         if (typeof window === 'undefined') {

@@ -17,6 +17,14 @@ const authActions = {
                     });
                 });
         };
+    },
+
+    logout: () => {
+        return () => {
+            localStorage.removeItem('jwtToken');
+            localStorage.removeItem('user');
+            window.location = '/';
+        };
     }
 };
 

@@ -1,14 +1,15 @@
 import React, { PropTypes } from 'react';
-import { Link, IndexLink } from 'react-router';
+import { IndexLink } from 'react-router';
 import { connect } from 'react-redux';
+import authActions from '../../actions/auth';
 
 class App extends React.Component {
     static propTypes = {
         isAuthenticated: PropTypes.bool.isRequired,
-        user: PropTypes.object,
         menu: PropTypes.object,
         main: PropTypes.object,
-        children: PropTypes.object
+        children: PropTypes.object,
+        dispatch: PropTypes.func
     };
 
     static contextTypes = {
@@ -24,6 +25,12 @@ class App extends React.Component {
                 this.context.router.replace('/');
             }
         });
+    }
+
+    onLogout(e) {
+        e.preventDefault();
+        const { dispatch } = this.props;
+        dispatch(authActions.logout());
     }
 
     render() {
@@ -52,7 +59,7 @@ class App extends React.Component {
                                 </IndexLink>
                                 <ul className="nav navbar-nav pull-xs-right">
                                     <li className="nav-item">
-                                        <Link to="/logout" className="nav-link">Logout</Link>
+                                        <a onClick={this.onLogout.bind(this)} className="nav-link" href="#">Logout</a>
                                     </li>
                                 </ul>
                             </nav>

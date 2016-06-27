@@ -1,9 +1,19 @@
-import React from 'react';
+import React, { PropTypes } from 'react';
 import { connect } from 'react-redux';
 import authActions from '../../actions/auth';
-import { withRouter } from 'react-router';
 
-let LoginComponent = withRouter(class Login extends React.Component {
+class Login extends React.Component {
+    static propTypes = {
+        dispatch: PropTypes.func,
+        isAuthenticated: PropTypes.bool,
+        loginFailed: PropTypes.bool,
+        loginError: PropTypes.string
+    };
+
+    static contextTypes = {
+        router: PropTypes.object.isRequired
+    }
+
     resetError() {
         this.props.dispatch({
             type: 'AUTH_LOGIN_ERROR',
@@ -14,7 +24,7 @@ let LoginComponent = withRouter(class Login extends React.Component {
     componentWillMount() {
         const { isAuthenticated } = this.props;
         if (isAuthenticated) {
-            this.props.router.push('/');
+            this.context.router.push('/');
         }
     }
 
@@ -70,7 +80,7 @@ let LoginComponent = withRouter(class Login extends React.Component {
 
         dispatch(authActions.login(params));
     }
-});
+}
 
 const mapStateToProps = (state) => {
     return {
@@ -80,4 +90,4 @@ const mapStateToProps = (state) => {
     };
 };
 
-export default connect(mapStateToProps)(LoginComponent);
+export default connect(mapStateToProps)(Login);

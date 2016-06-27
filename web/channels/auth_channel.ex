@@ -1,6 +1,7 @@
 defmodule Gt.AuthChannel do
     use Gt.Web, :channel
 
+    alias Gt.GuardianSerializer
     alias Gt.Model.User
 
     # intercept ["shout"]
