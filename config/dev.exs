@@ -32,7 +32,9 @@ config :gt, Gt.Endpoint,
             ~r{priv/static/.*(png|jpeg|jpg|gif|svg)$},
             ~r{priv/gettext/.*(po)$},
             ~r{web/views/.*(ex)$},
-            ~r{web/templates/.*(eex)$}
+            ~r{web/templates/.*(eex)$},
+            ~r{web/webpack.config.js},
+            ~r{web/webpack.server.config.js}
         ]
     ]
 

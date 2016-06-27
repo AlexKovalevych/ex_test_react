@@ -44,7 +44,7 @@ config :gt,
             "multiaccounts" => [],
             "signup_channels" => []
         }
-    }
+    },
     admin_permissions: [
         "users",
         "projects",

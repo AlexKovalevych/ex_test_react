@@ -1,0 +1,41 @@
+.rc-collapse-header {
+    height: 38px;
+    line-height: 38px;
+    text-indent: 16px;
+    color: #666;
+    cursor: pointer;
+}
+
+.rc-collapse-header .arrow {
+    display: inline-block;
+    content: '\20';
+    vertical-align: middle;
+    margin-right: 8px;
+    width: 0;
+    height: 0;
+    font-size: 0;
+    line-height: 0;
+    border-left: 3px solid transparent;
+    border-right: 3px solid transparent;
+    border-top: 4px solid #666;
+}
+
+.rc-collapse-anim-active {
+    transition: height .2s ease-out;
+}
+
+.rc-collapse-content {
+    overflow: hidden;
+    color: #666;
+    padding: 0 16px;
+    background-color: #fff;
+}
+
+.rc-collapse-content-box {
+    margin-top: 16px;
+    margin-bottom: 16px;
+}
+
+.rc-collapse-content-inactive {
+    display: none;
+}
