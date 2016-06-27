@@ -2,6 +2,9 @@ import React, { PropTypes } from 'react';
 import { IndexLink } from 'react-router';
 import { connect } from 'react-redux';
 import authActions from '../../actions/auth';
+import { Dropdown } from 'react-bootstrap';
+import counterpart from 'counterpart';
+// import Translate from 'react-translate-component';
 
 class App extends React.Component {
     static propTypes = {
@@ -25,6 +28,10 @@ class App extends React.Component {
                 this.context.router.replace('/');
             }
         });
+    }
+
+    setLocale(locale) {
+        counterpart.setLocale(locale);
     }
 
     onLogout(e) {
@@ -58,6 +65,20 @@ class App extends React.Component {
                                     Globotunes
                                 </IndexLink>
                                 <ul className="nav navbar-nav pull-xs-right">
+
+                                    <Dropdown className="nav-item" componentClass="li">
+                                        <Dropdown.Toggle className="nav-link" useAnchor>
+                                            Language
+                                        </Dropdown.Toggle>
+                                        <Dropdown.Menu>
+                                            <a className="dropdown-item" href="#" onClick={this.setLocale.bind(this, 'ru')}>
+                                                Russian
+                                            </a>
+                                            <a className="dropdown-item" href="#" onClick={this.setLocale.bind(this, 'en')}>
+                                                English
+                                            </a>
+                                        </Dropdown.Menu>
+                                    </Dropdown>
                                     <li className="nav-item">
                                         <a onClick={this.onLogout.bind(this)} className="nav-link" href="#">Logout</a>
                                     </li>
