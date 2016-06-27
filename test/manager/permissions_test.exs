@@ -55,24 +55,29 @@ defmodule Gt.ManagerCase.Permissions do
         assert Permissions.has(multiple_permissions, "payment_systems", "1")
         assert Permissions.has(multiple_permissions, "payment_systems", "2")
     end
-    #
-    # @tag :unit
-    # test "remove" do
-    #     permissions = %{
-    #         :dashboard => %{
-    #             :projects => ["1"]
-    #             :children => %{
-    #                 :dashboard_index => %{:projects => ["2"]}
-    #             }
-    #         }
-    #     }
-    #
-    #     assert Permissions.has("dashboard", "1", permissions)
-    #     updated_permissions = Permissions.remove("dashboard", "1", permissions)
-    #     assert Permissions.has("dashboard", "1", updated_permissions) == false
-    #
-    #     assert Permissions.has("dashboard_index", "2", permissions)
-    #     updated_permissions = Permissions.remove("dashboard_index", "2", permissions)
-    #     assert Permissions.has("dashboard_index", "2", updated_permissions) == false
-    # end
+
+    @tag :unit
+    test "remove" do
+        permissions = %{
+            "dashboard" => %{
+                "dashboard_index" => ["2"],
+            },
+            "finance" => %{
+                "payments_check" => ["1", "3"],
+                "payment_systems" => ["5", "10"]
+            }
+        }
+
+        assert Permissions.has(permissions, "dashboard_index", "2")
+        updated_permissions = Permissions.remove(permissions, "dashboard_index", "2")
+        assert Permissions.has(updated_permissions, "dashboard_index", "2") == false
+
+        assert Permissions.has(permissions, "payments_check", "1")
+        updated_permissions = Permissions.remove(permissions, "payments_check", "1")
+        assert Permissions.has(updated_permissions, "payments_check", "1") == false
+
+        assert Permissions.has(permissions, "payment_systems", "5")
+        updated_permissions = Permissions.remove(permissions, "payment_systems", "6")
+        assert Permissions.has(updated_permissions, "payment_systems", "5")
+    end
 end

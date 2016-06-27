@@ -48,21 +48,21 @@ defmodule Gt.Manager.Permissions do
         end
     end
 
-    # def remove(name, project_id, permissions) do
-    #     Enum.map(permissions, fn permission ->
-    #         if permission.name == name do
-    #             Map.update!(permission, :projects, fn v -> List.delete(v, project_id) end)
-    #         else
-    #             Map.update!(permission, :children, fn children ->
-    #                 Enum.map(children, fn child ->
-    #                     if child.name == name do
-    #                         Map.update!(child, :projects, fn v -> List.delete(v, project_id) end)
-    #                     else
-    #                         child
-    #                     end
-    #                 end)
-    #             end)
-    #         end
-    #     end)
-    # end
+    def remove(permissions, name, project_id) do
+        Enum.reduce(permissions, %{}, fn({block_key, node}, acc) ->
+            if block_key == name do
+                child = Enum.reduce(node, %{}, fn({k, v}, a) ->
+                    Map.put(a, k, List.delete(v, project_id))
+                end)
+                Map.put(acc, block_key, child)
+            else
+                if Map.has_key?(node, name) do
+                    child = put_in(node, [name], List.delete(node[name], project_id))
+                    Map.put(acc, block_key, child)
+                else
+                    Map.put(acc, block_key, node)
+                end
+            end
+        end)
+    end
 end
