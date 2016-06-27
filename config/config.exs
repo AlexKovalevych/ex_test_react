@@ -15,66 +15,43 @@ config :gt, Gt.Endpoint,
             adapter: Phoenix.PubSub.PG2]
 
 config :gt,
-    permissions: [
-        %{
-            :name => "dashboard",
-            :projects => [],
-            :children => [
-                %{:name => "dashboard_index", :projects => []}
-            ]
+    permissions: %{
+        "dashboard" => %{
+            "dashboard_index" => []
         },
-        %{
-            :name => "finance",
-            :projects => [],
-            :children => [
-                %{:name => "payments_check", :projects => []},
-                %{:name => "payment_systems", :projects => []},
-                %{:name => "incoming_reports", :projects => []},
-                %{:name => "funds_flow", :projects => []},
-                %{:name => "monthly_balance", :projects => []}
-            ]
+        "finance" => %{
+            "payments_check" => [],
+            "payment_systems" => [],
+            "incoming_reports" => [],
+            "funds_flow" => [],
+            "monthly_balance" => []
         },
-        %{
-            :name => "statistics",
-            :projects => [],
-            :children => [
-                %{:name => "consolidated_report", :projects => []},
-                %{:name => "ltv_report", :projects => []},
-                %{:name => "segments_report", :projects => []},
-                %{:name => "retention", :projects => []},
-                %{:name => "activity_waves", :projects => []},
-                %{:name => "timeline_report", :projects => []},
-                %{:name => "cohorts_report", :projects => []}
-            ]
+        "statistics" => %{
+            "consolidated_report" => [],
+            "ltv_report" => [],
+            "segments_report" => [],
+            "retention" => [],
+            "activity_waves" => [],
+            "timeline_report" => [],
+            "cohorts_report" => []
         },
-        %{
-            :name => "calendar_events",
-            :projects => [],
-            :children => [
-                %{:name => "events_list", :projects => []},
-                %{:name => "events_types_list", :projects => []},
-                %{:name => "events_groups_list", :projects => []}
-            ]
+        "calendar_events" => %{
+            "events_list" => [],
+            "events_types_list" => [],
+            "events_groups_list" => []
         },
-        %{
-            :name => "players",
-            :projects => [],
-            :children => [
-                %{:name => "multiaccounts", :projects => []},
-                %{:name => "signup_channels", :projects => []}
-            ]
-        },
-        %{
-            :name => "settings",
-            :children => [
-                %{:name => "users"},
-                %{:name => "projects"},
-                %{:name => "notifications"},
-                %{:name => "permissions"},
-                %{:name => "data_sources"},
-                %{:name => "smtp_servers"}
-            ]
+        "players" => %{
+            "multiaccounts" => [],
+            "signup_channels" => []
         }
+    }
+    admin_permissions: [
+        "users",
+        "projects",
+        "notifications",
+        "permissions",
+        "data_sources",
+        "smtp_servers"
     ]
 
 # Configures Elixir's Logger

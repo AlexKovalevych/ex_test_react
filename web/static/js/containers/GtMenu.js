@@ -1,25 +1,39 @@
 import React, { PropTypes } from 'react';
-import Collapse, { Panel } from 'rc-collapse';
+import Collapse from 'rc-collapse';
+import { Link } from 'react-router';
 
 export default class GtMenu extends React.Component {
-    renderBlock(block) {
-        if (block.projects && block.projects.length > 0) {
-            return (
-                <Panel header={block.block}></Panel>
-            );
-        }
+    renderNode(node, block, i) {
+        console.log(node, block, i);
+        return (
+            <li key={i} className="nav-item">
+                <Link to="">{node.name}</Link>
+            </li>
+        );
+    }
+
+    renderBlock(block, i) {
+        let permissions = block.children.filter((node) => {
+            return node.projects && node.projects.length > 0;
+        });
+
+        return (
+            <Collapse.Panel key={i} header={block.name}>
+                <ul className="nav nav-pills nav-stacked">
+                    {permissions.map(this.renderNode.bind(this, block))}
+                </ul>
+            </Collapse.Panel>
+        );
     }
 
     render() {
-        // const style = {
-        //     display: 'inline-block',
-        //     float: 'left',
-        //     margin: '16px 32px 16px 0'
-        // };
+        let permissions = this.props.permissions.filter((block) => {
+            // return block.projects && block.projects.length > 0;
+        });
 
         return (
             <Collapse accordion={true}>
-                {this.props.permissions.map(this.renderBlock.bind(this))}
+                {permissions.map(this.renderBlock.bind(this))}
             </Collapse>
         );
     }

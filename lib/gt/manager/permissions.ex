@@ -1,94 +1,68 @@
 defmodule Gt.Manager.Permissions do
-    def get(name, []) do
-        nil
-    end
-    def get(name, [head | tail]) do
-        block_permission = get_block_permission(name, head)
-        case block_permission do
-            nil -> get(name, tail)
-            _ -> block_permission
-        end
+    def has(permissions, name, project_id) do
+        Enum.any?(permissions, fn {block_k, block_v} ->
+            Enum.any?(block_v, fn {node_k, node_v} ->
+                (block_k == name or node_k == name) and Enum.member?(node_v, project_id)
+            end)
+        end)
     end
 
-    defp get_node_permission(name, [head | tail]) do
-        cond do
-            head.name == name -> head
-            Enum.count(tail) > 0 -> get_node_permission(name, tail)
-            true -> nil
-        end
-    end
-
-    defp get_block_permission(name, block) do
-        cond do
-            block.name == name -> block
-            true -> get_node_permission(name, block.children)
-        end
-    end
-
-    def has(name, project_id, permissions) do
-        permission = get(name, permissions)
-        if !is_nil(permission) do
-            Enum.member?(permission.projects, project_id)
-        else
-            false
-        end
-    end
-
-    def insert(name, project_id, permissions) when is_bitstring(project_id) and is_bitstring(name) do
-        Enum.map(permissions, fn permission ->
-            if permission.name == name do
-                if Map.has_key?(permission, :projects) do
-                    Map.update!(permission, :projects, fn v -> v ++ [project_id] end)
+    def add(permissions, name, project_id) when is_bitstring(name) and is_bitstring(project_id) do
+        Enum.reduce(permissions, %{}, fn({block_key, node}, acc) ->
+            if block_key == name do
+                child = Enum.reduce(node, %{}, fn({k, v}, a) ->
+                    Map.put(a, k, insert_project_id(v, project_id))
+                end)
+                Map.put(acc, block_key, child)
+            else
+                if Map.has_key?(node, name) do
+                    child = put_in(node, [name], insert_project_id(node[name], project_id))
+                    Map.put(acc, block_key, child)
                 else
-                    permission
+                    Map.put(acc, block_key, node)
                 end
-            else
-                Map.update!(permission, :children, fn children ->
-                    Enum.map(children, fn child ->
-                        if child.name == name do
-                            Map.update!(child, :projects, fn v -> v ++ [project_id] end)
-                        else
-                            child
-                        end
-                    end)
-                end)
             end
         end)
     end
-    def insert(name, [head | tail], permissions) when is_bitstring(name) do
-        updated_permissions = insert(name, head, permissions)
-        insert(name, tail, updated_permissions)
+    def add(permissions, name, [head | tail]) when is_bitstring(name) do
+        add(permissions, name, head) |> add(name, tail)
     end
-    def insert(_, [], permissions) do
+    def add(permissions, [head | tail], project_id) when is_bitstring(project_id) do
+        add(permissions, head, project_id) |> add(tail, project_id)
+    end
+    def add(permissions, _, []) do
         permissions
     end
-    def insert([], _, permissions) do
+    def add(permissions, [], _) do
         permissions
     end
-    def insert([head | tail], project_id, permissions) when is_bitstring(project_id) do
-        updated_permissions = insert(head, project_id, permissions)
-        insert(tail, project_id, permissions)
-    end
-    def insert([name | name_tail], [project_id | project_id_tail], permissions) do
-        updated_permissions = insert(name, [project_id] ++ project_id_tail, permissions)
-        insert(name_tail, [project_id] ++ project_id_tail, updated_permissions)
+    def add(permissions, [name | name_tail], project_ids) when is_list(project_ids) do
+        add(permissions, name, project_ids)
+        |> add(name_tail, project_ids)
     end
 
-    def remove(name, project_id, permissions) do
-        Enum.map(permissions, fn permission ->
-            if permission.name == name do
-                Map.update!(permission, :projects, fn v -> List.delete(v, project_id) end)
-            else
-                Map.update!(permission, :children, fn children ->
-                    Enum.map(children, fn child ->
-                        if child.name == name do
-                            Map.update!(child, :projects, fn v -> List.delete(v, project_id) end)
-                        else
-                            child
-                        end
-                    end)
-                end)
-            end
-        end)
+    defp insert_project_id(projects, project_id) do
+        case Enum.member?(projects, project_id) do
+            true -> projects
+            false -> projects ++ [project_id]
+        end
     end
+
+    # def remove(name, project_id, permissions) do
+    #     Enum.map(permissions, fn permission ->
+    #         if permission.name == name do
+    #             Map.update!(permission, :projects, fn v -> List.delete(v, project_id) end)
+    #         else
+    #             Map.update!(permission, :children, fn children ->
+    #                 Enum.map(children, fn child ->
+    #                     if child.name == name do
+    #                         Map.update!(child, :projects, fn v -> List.delete(v, project_id) end)
+    #                     else
+    #                         child
+    #                     end
+    #                 end)
+    #             end)
+    #         end
+    #     end)
+    # end
 end

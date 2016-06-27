@@ -7,7 +7,7 @@ defmodule Gt.Model.User do
         field :email, :string
         field :password, :string
         field :password_plain, :string, virtual: true
-        field :permissions, {:array, :map}
+        field :permissions, :map
 
         timestamps
     end
