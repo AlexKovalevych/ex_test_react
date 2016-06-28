@@ -1,25 +1,18 @@
 import { createStore, applyMiddleware, compose } from 'redux';
 import thunkMiddleware from 'redux-thunk';
 import reducers from '../reducers';
-import WSActions from '../actions/ws';
+import { routerMiddleware } from 'react-router-redux';
 
 const devToolsExt = typeof window === 'object' && typeof window.devToolsExtension !== 'undefined'
     ? window.devToolsExtension()
     : f => f;
 
-export default function configureStore(initialState) {
-    const store = createStore(
-        reducers,
-        initialState,
-        compose(
-            applyMiddleware(thunkMiddleware),
-            devToolsExt
-        )
-    );
-    if (typeof window !== 'undefined') {
-        console.log(initialState);
-    //     store.dispatch(WSActions.socket_connect());
-    //     store.dispatch(WSActions.channel_join('auth'));
-    }
-    return store;
+export default function configureStore(browserHistory) {
+    const reduxRouterMiddleware = routerMiddleware(browserHistory);
+    const createStoreWithMiddleware = compose(
+        applyMiddleware(reduxRouterMiddleware, thunkMiddleware),
+        devToolsExt
+    )(createStore);
+
+    return createStoreWithMiddleware(reducers);
 }

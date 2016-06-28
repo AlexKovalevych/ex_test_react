@@ -33,7 +33,9 @@ defmodule Gt.Model.User do
 
     def signin(params) do
         email = Map.get(params, "email", "")
+        email = if is_nil(email), do: "", else: email
         password = Map.get(params, "password", "")
+        password = if is_nil(password), do: "", else: password
         __MODULE__
         |> Repo.get_by(email: String.downcase(email))
         |> check_password(password)

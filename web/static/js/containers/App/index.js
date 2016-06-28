@@ -43,11 +43,11 @@ class App extends React.Component {
         counterpart.setLocale(locale);
     }
 
-    // onLogout(e) {
+    onLogout(e) {
     //     e.preventDefault();
     //     const { dispatch } = this.props;
     //     dispatch(authActions.logout());
-    // }
+    }
 
     render() {
         return (
@@ -94,16 +94,3 @@ const mapStateToProps = (state) => ({
 });
 
 export default connect(mapStateToProps)(App);
-
-                // {
-                //     !isAuthenticated && (
-                //         <div className="row">
-                //             <div className="col-sm-offset-4 col-sm-4">
-                //                 <IndexLink to="/">
-                //                     <img src="/images/logo.png" alt="logo" className="center-block" />
-                //                 </IndexLink>
-                //             </div>
-                //             {this.props.children}
-                //         </div>
-                //     )
-                // }

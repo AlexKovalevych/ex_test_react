@@ -1,8 +1,9 @@
 import React, { PropTypes } from 'react';
 import { Provider } from 'react-redux';
 import { Router, RouterContext, browserHistory, createMemoryHistory, match } from 'react-router';
+import { syncHistoryWithStore } from 'react-router-redux';
 import configureStore from '../store';
-import routes from '../routes';
+import configRoutes from '../routes';
 
 export default class Index extends React.Component {
     static propTypes = {
@@ -11,11 +12,13 @@ export default class Index extends React.Component {
     };
 
     render() {
-        let initialState, history, router;
+        let initialState, history, router, store;
         if (typeof window === 'undefined') {
             initialState = this.props.initial_state;
+            store = configureStore(initialState);
             history = createMemoryHistory();
-            match({ routes, location: this.props.location, history }, (err, redirect, props) => {
+            let routes = configRoutes(store);
+            match({routes , location: this.props.location, history }, (err, redirect, props) => {
                 if (props) {
                     router = (<RouterContext { ...props } />);
                 }
@@ -25,27 +28,14 @@ export default class Index extends React.Component {
             });
         } else {
             initialState = window.__INITIAL_STATE__;
-            if (!initialState) {
-                initialState = {
-                    auth: {
-                        isAuthenticated: false,
-                        loginFailed: false,
-                        loginError: null
-                    }
-                };
-            }
-            if (localStorage.getItem('jwtToken')) {
-                initialState.auth.isAuthenticated = true;
-                initialState.auth.user = JSON.parse(localStorage.getItem('user'));
-            }
-            history = browserHistory;
+            store = configureStore(browserHistory);
+            const history = syncHistoryWithStore(browserHistory, store);
             router = (
                 <Router history={history}>
-                    {routes}
+                    {configRoutes(store)}
                 </Router>
             );
         }
-        const store = configureStore(initialState);
 
         return (
             <Provider store={store}>

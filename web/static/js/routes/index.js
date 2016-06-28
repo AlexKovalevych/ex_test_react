@@ -15,10 +15,12 @@ export default function configRoutes(store) {
         const { auth } = store.getState();
         const { currentUser } = auth;
 
-        if (!currentUser && localStorage.getItem('jwtToken')) {
-            dispatch(authActions.currentUser());
-        } else if (!localStorage.getItem('jwtToken')) {
-            replace('/login');
+        if (typeof window !== 'undefined') {
+            if (!currentUser && localStorage.getItem('jwtToken')) {
+                dispatch(authActions.currentUser());
+            } else if (!localStorage.getItem('jwtToken')) {
+                replace('/login');
+            }
         }
 
         callback();
@@ -31,7 +33,6 @@ export default function configRoutes(store) {
             <Route path="/" component={AppContainer} onEnter={_ensureAuthenticated}>
                 <IndexRoute components={{menu: GtMenu, main: Dashboard}} />
 
-                <Route path="/dashboard/dashboard_index" components={{menu: GtMenu, main: Dashboard}} />
                 <Route path="/statistics">
                     <Route path="/statistics/timeline_report" components={{menu: GtMenu, main: Timeline}} />
                 </Route>

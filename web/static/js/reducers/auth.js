@@ -1,18 +1,27 @@
 const initialState = {
-    isAuthenticated: false,
     user: null,
-    loginFailed: false,
-    loginError: null
+    socket: null,
+    channel: null,
+    error: null
 };
 
 export default function reducer(state = initialState, action = {}) {
     switch (action.type) {
+    case 'CURRENT_USER':
+        return {
+            ...state,
+            user: action.currentUser,
+            socket: action.socket,
+            channel: action.channel,
+            error: null
+        };
     case 'AUTH_LOGIN_ERROR':
         return {
             ...state,
-            loginFailed: action.value,
-            loginError: action.message ? action.message.error : null
+            error: action.error
         };
+    case 'AUTH_LOGOUT':
+        return initialState;
     default:
         return state;
     }

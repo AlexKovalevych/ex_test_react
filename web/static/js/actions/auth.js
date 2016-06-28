@@ -1,4 +1,5 @@
 import { push } from 'react-router-redux';
+import { Socket } from 'phoenix';
 
 const defaultHeaders = {
     Accept: 'application/json',
@@ -22,6 +23,30 @@ function checkStatus(response) {
 
 function parseJSON(response) {
     return response.json();
+}
+
+export function setCurrentUser(dispatch, user) {
+    const socket = new Socket('/socket', {
+        params: { token: localStorage.getItem('jwtToken') },
+        logger: (kind, msg, data) => {
+            console.log(`${kind}: ${msg}`, data);
+        }
+    });
+
+    socket.connect();
+
+    const channel = socket.channel(`users:${user.id}`);
+
+    if (channel.state != 'joined') {
+        channel.join().receive('ok', () => {
+            dispatch({
+                type: 'CURRENT_USER',
+                currentUser: user,
+                socket: socket,
+                channel: channel
+            });
+        });
+    }
 }
 
 const authActions = {

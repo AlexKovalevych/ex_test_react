@@ -15,12 +15,11 @@ defmodule Gt.Router do
         plug Guardian.Plug.LoadResource
     end
 
-
     scope "/api", Gt do
         pipe_through :api
 
         scope "/v1" do
-            post "/auth", AuthController, :create
+            post "/auth", AuthController, :auth
             delete "/auth", AuthController, :delete
             get "/current_user", CurrentUserController, :show
         end
@@ -28,6 +27,8 @@ defmodule Gt.Router do
 
     scope "/", Gt do
         pipe_through :browser # Use the default browser stack
-        get "/*path", PageController, :index
+
+        get "/login", AuthController, :login
+        get "/*path", AuthController, :index
     end
 end
