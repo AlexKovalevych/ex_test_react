@@ -24,7 +24,7 @@ defmodule Gt.UserSocket do
 
      def connect(%{"token" => token}, socket) do
         case Guardian.decode_and_verify(token) do
-            {:ok, claims} -> case GuardianSerializer.from_token(claims["sub"]) do
+            {:ok, claims} -> case Gt.GuardianSerializer.from_token(claims["sub"]) do
                 {:ok, user} -> {:ok, assign(socket, :current_user, user)}
                 {:error, _reason} -> :error
             end

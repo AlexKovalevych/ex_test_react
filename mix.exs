@@ -43,7 +43,6 @@ defmodule Gt.Mixfile do
             {:std_json_io, "~> 0.1"},
             {:comeonin, "~> 2.4"},
             {:guardian, "~> 0.12.0"},
-            {:guardian_db, "~> 0.5"},
             {:excoveralls, "~> 0.5.5"}
         ]
     end

@@ -1,7 +1,7 @@
 defmodule Gt.Model.User do
     use Gt.Web, :model
 
-    @derive {Poison.Encoder, only: [:email, :permissions]}
+    @derive {Poison.Encoder, only: [:id, :email, :permissions]}
 
     schema "users" do
         field :email, :string

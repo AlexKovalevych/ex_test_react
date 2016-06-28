@@ -73,7 +73,7 @@ config :guardian, Guardian,
     ttl: { 10, :days },
     secret_key: to_string(Mix.env),
     serializer: Gt.GuardianSerializer,
-    hooks: GuardianDb
+    hooks: Gt.GuardianDb
     # permissions: %{
     #     default: [
     #         :read_profile,
@@ -82,7 +82,3 @@ config :guardian, Guardian,
     #         :revoke_token,
     #     ],
     # }
-
-config :guardian_db, GuardianDb,
-    repo: Gt.Repo,
-    schema_name: "tokens"
