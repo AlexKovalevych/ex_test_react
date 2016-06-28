@@ -3,7 +3,6 @@ defmodule Gt.UserSocket do
 
     ## Channels
     # channel "visitors", Gt.VisitorsChannel
-    channel "dashboard", Gt.DashboardChannel
     channel "auth", Gt.AuthChannel
 
     ## Transports

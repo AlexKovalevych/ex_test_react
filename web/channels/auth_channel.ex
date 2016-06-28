@@ -18,10 +18,22 @@ defmodule Gt.AuthChannel do
     # by sending replies to requests from the client
     def handle_in("login", params, socket) do
         response = case User.signin(params) do
-            {:ok, user} -> {:ok, %{:token => get_sl_token(user), :user => user}}
+            {:ok, user} ->
+                assign(socket, :user, user)
+                {:ok, %{:token => get_sl_token(user), :user => user}}
             {:error, error} -> {:error, %{"error" => error}}
         end
         {:reply, response, socket}
+    end
+
+    def handle_in("dashboard", params, socket) do
+        Mix.shell.info socket.assigns
+        # case Guardian.decode_and_verify(params.jwt) do
+        #     { :ok, claims } -> Mix.shell.info(claims)
+        #     { :error, reason } -> Mix.shell.info(reason)
+        # end
+        # send(self, :after_join)
+        {:ok, socket}
     end
 
     defp get_sl_token(user) do

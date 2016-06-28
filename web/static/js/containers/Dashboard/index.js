@@ -1,6 +1,6 @@
 import React, { PropTypes } from 'react';
 import { connect } from 'react-redux';
-import wsActions from '../../actions/ws';
+import dashboardActions from '../../actions/dashboard';
 // import { Dropdown } from 'react-bootstrap';
 // import counterpart from 'counterpart';
 // import Translate from 'react-translate-component';
@@ -10,13 +10,13 @@ class Dashboard extends React.Component {
         dispatch: PropTypes.func
     };
 
-    componentDidLoad() {
+    componentDidMount() {
         const { dispatch } = this.props;
-        dispatch(wsActions.channel_join('dashboard'));
+        dispatch(dashboardActions.load());
     }
 
     render() {
-        return (<div></div>);
+        return (<div>Dashboard here</div>);
     }
 }
 
