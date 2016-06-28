@@ -1,4 +1,4 @@
-const DashboardActions = {
+const dashboardActions = {
     load: (params) => {
         return (dispatch, getState) => {
             const {ws} = getState();
@@ -14,4 +14,4 @@ const DashboardActions = {
     }
 };
 
-export default DashboardActions;
+export default dashboardActions;

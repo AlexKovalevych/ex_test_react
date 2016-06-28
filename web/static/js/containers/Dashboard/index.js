@@ -10,9 +10,18 @@ class Dashboard extends React.Component {
         dispatch: PropTypes.func
     };
 
+    static contextTypes = {
+        store: React.PropTypes.object.isRequired
+    };
+
     componentDidMount() {
         const { dispatch } = this.props;
-        dispatch(dashboardActions.load());
+        this.context.store.subscribe(() => {
+            let state = this.context.store.getState();
+            if (state.ws.channels.auth !== undefined) {
+                dispatch(dashboardActions.load());
+            }
+        });
     }
 
     render() {

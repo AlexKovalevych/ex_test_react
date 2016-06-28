@@ -19,7 +19,9 @@ defmodule Gt.AuthChannel do
     def handle_in("login", params, socket) do
         response = case User.signin(params) do
             {:ok, user} ->
-                assign(socket, :user, user)
+                assign(socket, :user, user.id)
+                # Mix.shell.info socket.assigns[:user]
+
                 {:ok, %{:token => get_sl_token(user), :user => user}}
             {:error, error} -> {:error, %{"error" => error}}
         end
