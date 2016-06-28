@@ -3,7 +3,8 @@ defmodule Gt.UserSocket do
 
     ## Channels
     # channel "visitors", Gt.VisitorsChannel
-    channel "auth", Gt.AuthChannel
+    # channel "auth", Gt.AuthChannel
+    channel "users:*", Gt.UserChannel
 
     ## Transports
     transport :websocket, Phoenix.Transports.WebSocket

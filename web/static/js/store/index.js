@@ -17,8 +17,9 @@ export default function configureStore(initialState) {
         )
     );
     if (typeof window !== 'undefined') {
-        store.dispatch(WSActions.socket_connect());
-        store.dispatch(WSActions.channel_join('auth'));
+        console.log(initialState);
+    //     store.dispatch(WSActions.socket_connect());
+    //     store.dispatch(WSActions.channel_join('auth'));
     }
     return store;
 }

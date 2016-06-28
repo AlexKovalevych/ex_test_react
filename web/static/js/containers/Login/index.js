@@ -83,11 +83,7 @@ class Login extends React.Component {
 }
 
 const mapStateToProps = (state) => {
-    return {
-        loginFailed: state.auth.loginFailed,
-        loginError: state.auth.loginError,
-        isAuthenticated: state.auth.isAuthenticated
-    };
+    return state.auth;
 };
 
 export default connect(mapStateToProps)(Login);
