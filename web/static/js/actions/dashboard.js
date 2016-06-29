@@ -5,7 +5,11 @@ const dashboardActions = {
             auth.channel
                 .push('dashboard', params)
                 .receive('ok', (msg) => {
-                    console.log(msg);
+                    dispatch({
+                        type: 'DASHBOARD_LOAD_DATA',
+                        stats: msg,
+                        lastUpdated: Date.now()
+                    });
                 })
                 .receive('error', (msg) => {
                     console.log(msg);

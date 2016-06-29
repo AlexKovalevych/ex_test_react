@@ -21,7 +21,7 @@ export default function configRoutes(store) {
             } else if (!localStorage.getItem('jwtToken')) {
                 replace('/login');
             } else if (currentUser) {
-                setCurrentUser(dispatch, currentUser, '/');
+                setCurrentUser(dispatch, currentUser);
             }
         }
 

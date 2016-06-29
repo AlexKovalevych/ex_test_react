@@ -45,7 +45,9 @@ export function setCurrentUser(dispatch, user, redirectPath) {
                 socket: socket,
                 channel: channel
             });
-            dispatch(push(redirectPath));
+            if (redirectPath) {
+                dispatch(push(redirectPath));
+            }
         });
     }
 }
@@ -95,7 +97,7 @@ const authActions = {
             .then(checkStatus)
             .then(parseJSON)
             .then(function (data) {
-                setCurrentUser(dispatch, data, '/');
+                setCurrentUser(dispatch, data);
             })
             .catch(function (error) {
                 console.log(error);

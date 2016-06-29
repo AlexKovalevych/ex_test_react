@@ -15,13 +15,14 @@ class Dashboard extends React.Component {
     };
 
     componentDidMount() {
-        const { dispatch } = this.props;
-        this.context.store.subscribe(() => {
-            let state = this.context.store.getState();
-            if (state.auth.socket !== undefined) {
-                dispatch(dashboardActions.load());
-            }
-        });
+        console.log(this.props.stats.lastUpdated);
+    }
+
+    componentWillReceiveProps(newProps) {
+        const { dispatch } = newProps;
+        if (newProps.ws.channel && !newProps.stats.lastUpdated) {
+            dispatch(dashboardActions.load());
+        }
     }
 
     render() {
@@ -30,7 +31,10 @@ class Dashboard extends React.Component {
 }
 
 const mapStateToProps = (state) => {
-    return state.dashboard;
+    return {
+        stats: state.dashboard,
+        ws: state.ws
+    };
 };
 
 export default connect(mapStateToProps)(Dashboard);

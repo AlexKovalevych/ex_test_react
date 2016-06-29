@@ -30,6 +30,7 @@ export default class Index extends React.Component {
             initialState = window.__INITIAL_STATE__;
             store = configureStore(initialState.initial_state, browserHistory);
             const history = syncHistoryWithStore(browserHistory, store);
+
             router = (
                 <Router history={history}>
                     {configRoutes(store)}
