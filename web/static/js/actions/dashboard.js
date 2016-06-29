@@ -1,8 +1,8 @@
 const dashboardActions = {
     load: (params) => {
         return (dispatch, getState) => {
-            const {ws} = getState();
-            ws.channels.auth
+            const { auth } = getState();
+            auth.channel
                 .push('dashboard', params)
                 .receive('ok', (msg) => {
                     console.log(msg);

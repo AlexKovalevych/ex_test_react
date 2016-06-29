@@ -6,7 +6,7 @@ import Dashboard from '../containers/Dashboard';
 import Login from '../containers/Login';
 import ErrorPage from '../components/ErrorPage';
 import GtMenu from '../containers/GtMenu';
-import authActions from '../actions/auth';
+import authActions, { setCurrentUser } from '../actions/auth';
 import Main from '../containers/main';
 
 export default function configRoutes(store) {
@@ -20,6 +20,8 @@ export default function configRoutes(store) {
                 dispatch(authActions.currentUser());
             } else if (!localStorage.getItem('jwtToken')) {
                 replace('/login');
+            } else if (currentUser) {
+                setCurrentUser(dispatch, currentUser, '/');
             }
         }
 

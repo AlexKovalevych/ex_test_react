@@ -4,7 +4,6 @@ import { connect } from 'react-redux';
 import authActions from '../../actions/auth';
 import { Dropdown } from 'react-bootstrap';
 import counterpart from 'counterpart';
-import dashboardActions from '../../actions/dashboard';
 // import Translate from 'react-translate-component';
 
 class App extends React.Component {
@@ -23,10 +22,10 @@ class App extends React.Component {
         router: PropTypes.object.isRequired
     }
 
-    componentDidMount() {
-        const { dispatch } = this.props;
-        dispatch(dashboardActions.load());
-    }
+    // componentDidMount() {
+    //     const { dispatch } = this.props;
+    //     dispatch(dashboardActions.load());
+    // }
 
     // componentDidMount() {
     //     this.context.router.listen((route) => {
@@ -58,7 +57,7 @@ class App extends React.Component {
                     </IndexLink>
                     <ul className="nav navbar-nav pull-xs-right">
 
-                        <Dropdown className="nav-item" componentClass="li">
+                        <Dropdown className="nav-item" componentClass="li" id="locale">
                             <Dropdown.Toggle className="nav-link" useAnchor>
                                 Language
                             </Dropdown.Toggle>

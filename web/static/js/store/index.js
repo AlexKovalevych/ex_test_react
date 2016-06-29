@@ -9,11 +9,6 @@ const devToolsExtension = typeof window === 'object' && typeof window.devToolsEx
 
 export default function configureStore(initialState, history = {}) {
     const reduxRouterMiddleware = routerMiddleware(history);
-    // const createStoreWithMiddleware = compose(
-    //     applyMiddleware(routerMiddleware, thunkMiddleware),
-    //     devToolsExtension
-    // )(createStore);
-
     return createStore(
         reducers,
         initialState,
