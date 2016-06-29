@@ -1,7 +1,9 @@
 import React, { PropTypes } from 'react';
-import Collapse from 'react-collapse';
+// import Collapse from 'react-collapse';
 import { Link } from 'react-router';
 import { connect } from 'react-redux';
+// import { Dropdown } from 'react-bootstrap';
+import { SideNav, Nav, NavGroup } from 'react-sidenav/dist/react-sidenav.min.js';
 
 class GtMenu extends React.Component {
     static propTypes = {
@@ -47,7 +49,7 @@ class GtMenu extends React.Component {
         let url = this.getUrl(block, node);
         let linkProps = {
             to: url,
-            className: 'nav-link'
+            className: 'dropdown-item'
         };
 
         if (this.props.location.pathname == url) {
@@ -55,9 +57,7 @@ class GtMenu extends React.Component {
         }
 
         return (
-            <li key={i} className="nav-item">
-                <Link {...linkProps}>{node}</Link>
-            </li>
+            <Link key={i} {...linkProps}>{node}</Link>
         );
     }
 
@@ -83,23 +83,17 @@ class GtMenu extends React.Component {
             iconClass = 'fa-caret-right';
         }
 
-        return (
-            <li {...props}>
-                <div
-                    className="nav-link block"
-                    onClick={this.toggleBlock.bind(this, i)}
-                >
-                    <i className={`pull-left fa ${iconClass}`}></i>
-                    {block}
-                </div>
-                <Collapse isOpened={this.state.activeKey == i}>
-                    <ul className='nav nav-pills nav-stacked'>
-                        {permissions.map(this.renderNode.bind(this, block))}
-                    </ul>
-                </Collapse>
-            </li>
-        );
+        // return (
+        // );
     }
+            // <Dropdown key={i} className="nav-item" componentClass="li" id="locale">
+            //     <Dropdown.Toggle className="nav-link" useAnchor>
+            //         {block}
+            //     </Dropdown.Toggle>
+            //     <Dropdown.Menu>
+            //         {permissions.map(this.renderNode.bind(this, block))}
+            //     </Dropdown.Menu>
+            // </Dropdown>
 
     render() {
         let permissions = Object.keys(this.props.user.permissions).filter((block) => {
@@ -110,10 +104,23 @@ class GtMenu extends React.Component {
             return children.length > 0;
         });
 
+var navi = [
+    { id: 'dashboard', icon: 'fa fa-dashboard' , text: 'Dashboard'},
+    { id: 'products', icon: 'fa fa-cube', text: 'Products' ,
+        navlist: [
+          { icon: 'fa fa-desktop', id: 'manage' ,text: 'Manage Product' },
+          { icon: 'fa fa-cog', id: 'suppliers' ,text: 'Suppliers' }
+        ]
+    },
+    { id: 'inventory', icon: 'fa fa-database' ,text: 'Inventory'},
+    { id: 'deliveries', icon: 'fa fa-truck' ,text: 'Deliveries'},
+    { id: 'reports', icon: 'fa fa-bar-chart' ,text: 'Reports' }
+];
+
         return (
-            <ul className="nav nav-pills nav-stacked">
-                {permissions.map(this.renderBlock.bind(this))}
-            </ul>
+            <div className="menu">
+                <SideNav navs={navi} style={{color: 'inherit'}} />
+            </div>
         );
     }
 }

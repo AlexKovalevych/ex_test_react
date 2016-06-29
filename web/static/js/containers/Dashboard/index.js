@@ -14,15 +14,19 @@ class Dashboard extends React.Component {
         store: React.PropTypes.object.isRequired
     };
 
+    loadData(props) {
+        const { dispatch } = props;
+        if (props.ws.channel && !props.stats.lastUpdated) {
+            dispatch(dashboardActions.load());
+        }
+    }
+
     componentDidMount() {
-        console.log(this.props.stats.lastUpdated);
+        this.loadData(this.props);
     }
 
     componentWillReceiveProps(newProps) {
-        const { dispatch } = newProps;
-        if (newProps.ws.channel && !newProps.stats.lastUpdated) {
-            dispatch(dashboardActions.load());
-        }
+        this.loadData(newProps);
     }
 
     render() {

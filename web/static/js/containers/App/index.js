@@ -8,7 +8,6 @@ import counterpart from 'counterpart';
 
 class App extends React.Component {
     static propTypes = {
-        // isAuthenticated: PropTypes.bool.isRequired,
         menu: PropTypes.object,
         main: PropTypes.object,
         children: PropTypes.object,
@@ -22,22 +21,6 @@ class App extends React.Component {
         router: PropTypes.object.isRequired
     }
 
-    // componentDidMount() {
-    //     const { dispatch } = this.props;
-    //     dispatch(dashboardActions.load());
-    // }
-
-    // componentDidMount() {
-    //     this.context.router.listen((route) => {
-    //         const { isAuthenticated } = this.props;
-    //         if (!isAuthenticated && route.pathname != '/login') {
-    //             this.context.router.push('/login');
-    //         } else if (isAuthenticated && route.pathname == '/login') {
-    //             this.context.router.replace('/');
-    //         }
-    //     });
-    // }
-
     setLocale(locale) {
         counterpart.setLocale(locale);
     }
@@ -50,36 +33,37 @@ class App extends React.Component {
 
     render() {
         return (
-            <div className="container">
-                <nav className="navbar navbar-light bg-faded" style={{margin: '.5rem 1rem'}}>
-                    <IndexLink to="/" className="navbar-brand">
-                        Globotunes
-                    </IndexLink>
-                    <ul className="nav navbar-nav pull-xs-right">
-
-                        <Dropdown className="nav-item" componentClass="li" id="locale">
-                            <Dropdown.Toggle className="nav-link" useAnchor>
-                                Language
-                            </Dropdown.Toggle>
-                            <Dropdown.Menu>
-                                <a className="dropdown-item" href="#" onClick={this.setLocale.bind(this, 'ru')}>
-                                    Russian
-                                </a>
-                                <a className="dropdown-item" href="#" onClick={this.setLocale.bind(this, 'en')}>
-                                    English
-                                </a>
-                            </Dropdown.Menu>
-                        </Dropdown>
-                        <li className="nav-item">
-                            <a onClick={this.onLogout.bind(this)} className="nav-link" href="#">Logout</a>
-                        </li>
-                    </ul>
-                </nav>
-                <div className="col-sm-3">
-                    {this.props.menu}
-                </div>
-                <div className="col-sm-9">
-                    {this.props.main}
+            <div className="container-fluid">
+                <div className="row">
+                    <nav className="navbar navbar-full navbar-light bg-faded">
+                        <IndexLink to="/" className="navbar-brand">
+                            Globotunes
+                        </IndexLink>
+                        <ul className="nav navbar-nav pull-xs-right">
+                            <Dropdown className="nav-item" componentClass="li" id="locale">
+                                <Dropdown.Toggle className="nav-link" useAnchor>
+                                    Language
+                                </Dropdown.Toggle>
+                                <Dropdown.Menu>
+                                    <a className="dropdown-item" href="#" onClick={this.setLocale.bind(this, 'ru')}>
+                                        Russian
+                                    </a>
+                                    <a className="dropdown-item" href="#" onClick={this.setLocale.bind(this, 'en')}>
+                                        English
+                                    </a>
+                                </Dropdown.Menu>
+                            </Dropdown>
+                            <li className="nav-item">
+                                <a onClick={this.onLogout.bind(this)} className="nav-link" href="#">Logout</a>
+                            </li>
+                        </ul>
+                    </nav>
+                    <div className="col-sm-3">
+                        <div className="row">{this.props.menu}</div>
+                    </div>
+                    <div className="col-sm-9">
+                        {this.props.main}
+                    </div>
                 </div>
             </div>
         );

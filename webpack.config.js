@@ -31,6 +31,7 @@ module.exports = {
     entry: [
         './web/static/js/index.js',
         'font-awesome/css/font-awesome.css',
+        'react-sidenav/dist/react-sidenav-styles.css',
         'bootstrap/dist/css/bootstrap.css',
         './web/static/css/app.css'
     ],
