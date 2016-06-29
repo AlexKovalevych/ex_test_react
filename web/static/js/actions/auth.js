@@ -25,7 +25,7 @@ function parseJSON(response) {
     return response.json();
 }
 
-export function setCurrentUser(dispatch, user) {
+export function setCurrentUser(dispatch, user, redirectPath) {
     const socket = new Socket('/socket', {
         params: { token: localStorage.getItem('jwtToken') },
         logger: (kind, msg, data) => {
@@ -45,6 +45,7 @@ export function setCurrentUser(dispatch, user) {
                 socket: socket,
                 channel: channel
             });
+            dispatch(push(redirectPath));
         });
     }
 }
@@ -57,14 +58,14 @@ const authActions = {
             return fetch('/api/v1/auth', {
                 method: 'post',
                 headers: buildHeaders(),
-                body: body
+                body: body,
+                credentials: 'same-origin'
             })
             .then(checkStatus)
             .then(parseJSON)
             .then((data) => {
                 localStorage.setItem('jwtToken', data.jwt);
-                setCurrentUser(dispatch, data.user);
-                dispatch(push('/'));
+                setCurrentUser(dispatch, data.user, '/');
             })
             .catch((error) => {
                 error.response.json()
@@ -94,7 +95,7 @@ const authActions = {
             .then(checkStatus)
             .then(parseJSON)
             .then(function (data) {
-                setCurrentUser(dispatch, data);
+                setCurrentUser(dispatch, data, '/');
             })
             .catch(function (error) {
                 console.log(error);

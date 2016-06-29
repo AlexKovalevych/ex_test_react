@@ -14,15 +14,15 @@ class Dashboard extends React.Component {
         store: React.PropTypes.object.isRequired
     };
 
-    componentDidMount() {
-        const { dispatch } = this.props;
-        this.context.store.subscribe(() => {
-            let state = this.context.store.getState();
-            if (state.ws.channels.auth !== undefined) {
-                dispatch(dashboardActions.load());
-            }
-        });
-    }
+    // componentDidMount() {
+    //     const { dispatch } = this.props;
+    //     this.context.store.subscribe(() => {
+    //         let state = this.context.store.getState();
+    //         if (state.ws.channels.auth !== undefined) {
+    //             dispatch(dashboardActions.load());
+    //         }
+    //     });
+    // }
 
     render() {
         return (<div>Dashboard here</div>);
