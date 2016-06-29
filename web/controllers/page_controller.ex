@@ -37,11 +37,5 @@ defmodule Gt.PageController do
             render(conn, "index.html", html: result["html"], props: Poison.encode!(props))
         end
     end
-
-    def logout(conn, _) do
-        conn
-        |> clear_session
-        |> redirect(to: "/login")
-    end
 end
 

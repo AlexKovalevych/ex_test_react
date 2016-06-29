@@ -26,6 +26,7 @@ defmodule Gt.AuthController do
         {:ok, claims} = Guardian.Plug.claims(conn)
 
         conn
+        |> clear_session
         |> Guardian.Plug.current_token
         |> Guardian.revoke!(claims)
 

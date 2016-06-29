@@ -82,10 +82,17 @@ const authActions = {
     },
 
     logout: () => {
-        return () => {
-            localStorage.removeItem('jwtToken');
-            localStorage.removeItem('user');
-            window.location = '/';
+        return dispatch => {
+            return fetch('/api/v1/auth', {
+                headers: buildHeaders(),
+                method: 'delete',
+                credentials: 'same-origin'
+            })
+            .then(checkStatus)
+            .then(() => {
+                localStorage.removeItem('jwtToken');
+                dispatch(push('/login'));
+            });
         };
     },
 

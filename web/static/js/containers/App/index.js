@@ -43,9 +43,9 @@ class App extends React.Component {
     }
 
     onLogout(e) {
-    //     e.preventDefault();
-    //     const { dispatch } = this.props;
-    //     dispatch(authActions.logout());
+        e.preventDefault();
+        const { dispatch } = this.props;
+        dispatch(authActions.logout());
     }
 
     render() {
