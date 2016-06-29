@@ -13,7 +13,7 @@ defmodule Gt.PageController do
             props: props,
         })
 
-        render(conn, "index.html", html: result["html"], props: initial_state)
+        render(conn, "index.html", html: result["html"], props: Poison.encode!(props))
     end
 
     def index(conn, _params) do
@@ -23,7 +23,7 @@ defmodule Gt.PageController do
         if is_nil(user) do
             redirect conn, to: "/login"
         else
-            initial_state = %{"user" => user}
+            initial_state = %{"auth" => %{"user" => user}}
             props = %{
                 "location" => conn.request_path,
                 "initial_state" => initial_state
@@ -34,14 +34,14 @@ defmodule Gt.PageController do
                 props: props,
             })
 
-            render(conn, "index.html", html: result["html"], props: initial_state)
+            render(conn, "index.html", html: result["html"], props: Poison.encode!(props))
         end
     end
 
     def logout(conn, _) do
         conn
         |> clear_session
-        |> redirect to: "/login"
+        |> redirect(to: "/login")
     end
 end
 

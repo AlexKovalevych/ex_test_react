@@ -1,1 +1,5 @@
-<div id="index"></div>
+<div id="index"><%= raw(@html) %></div>
+
+<script type="text/javascript">
+    window.__INITIAL_STATE__ = <%= raw(@props) %>;
+</script>

@@ -3,16 +3,20 @@ import thunkMiddleware from 'redux-thunk';
 import reducers from '../reducers';
 import { routerMiddleware } from 'react-router-redux';
 
-const devToolsExt = typeof window === 'object' && typeof window.devToolsExtension !== 'undefined'
+const devToolsExtension = typeof window === 'object' && typeof window.devToolsExtension !== 'undefined'
     ? window.devToolsExtension()
     : f => f;
 
-export default function configureStore(browserHistory) {
-    const reduxRouterMiddleware = routerMiddleware(browserHistory);
-    const createStoreWithMiddleware = compose(
-        applyMiddleware(reduxRouterMiddleware, thunkMiddleware),
-        devToolsExt
-    )(createStore);
+export default function configureStore(initialState, history = {}) {
+    const reduxRouterMiddleware = routerMiddleware(history);
+    // const createStoreWithMiddleware = compose(
+    //     applyMiddleware(routerMiddleware, thunkMiddleware),
+    //     devToolsExtension
+    // )(createStore);
 
-    return createStoreWithMiddleware(reducers);
+    return createStore(
+        reducers,
+        initialState,
+        compose(applyMiddleware(reduxRouterMiddleware, thunkMiddleware), devToolsExtension)
+    );
 }
