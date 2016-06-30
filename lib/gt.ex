@@ -22,6 +22,12 @@ defmodule Gt do
         Supervisor.start_link(children, opts)
     end
 
+    def start_repo_supervisor do
+        import Supervisor.Spec, warn: false
+        opts = [strategy: :one_for_one, name: Gt.Supervisor]
+        Supervisor.start_link([supervisor(Gt.Repo, [])], opts)
+    end
+
     # Tell Phoenix to update the endpoint configuration
     # whenever the application is updated.
     def config_change(changed, _new, removed) do

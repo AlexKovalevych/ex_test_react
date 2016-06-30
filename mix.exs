@@ -21,7 +21,8 @@ defmodule Gt.Mixfile do
     def application do
         [mod: {Gt, []},
          applications: [:phoenix, :phoenix_html, :cowboy, :logger, :gettext,
-                        :phoenix_ecto, :mongodb_ecto, :std_json_io, :guardian, :comeonin]]
+                        :phoenix_ecto, :mongodb_ecto, :std_json_io, :guardian, :comeonin,
+                        :timex]]
     end
 
     # Specifies which paths to compile per environment.
@@ -43,7 +44,9 @@ defmodule Gt.Mixfile do
             {:std_json_io, "~> 0.1"},
             {:comeonin, "~> 2.4"},
             {:guardian, "~> 0.12.0"},
-            {:excoveralls, "~> 0.5.5"}
+            {:excoveralls, "~> 0.5.5"},
+            {:timex, "~> 2.2"},
+            {:tzdata, "~> 0.1.8", override: true}
         ]
     end
 
