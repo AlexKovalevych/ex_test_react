@@ -3,7 +3,6 @@ defmodule Gt.Model.ProjectUser do
 
     schema "project_users" do
         field :item_id, :string
-        field :project, :binary_id
         field :email, :string
         field :email_hash, :string
         field :email_encrypted, :string
@@ -52,6 +51,8 @@ defmodule Gt.Model.ProjectUser do
         field :vipLevel, :map
         field :socialNetwork, :string
         field :socialNetworkUrl, :string
+
+        field :project, :binary_id
 
         # embeds_one :projectUserAction, Gt.Model.ProjectUserAction
     end
@@ -114,5 +115,10 @@ defmodule Gt.Model.ProjectUser do
     def changeset(model, params \\ :empty) do
         model
         |> cast(params, @required_fields, @optional_fields)
+    end
+
+    def by_item_id(query, item_id) do
+        from pu in query,
+        where: pu.id == ^item_id
     end
 end

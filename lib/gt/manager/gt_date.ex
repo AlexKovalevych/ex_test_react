@@ -5,6 +5,10 @@ defmodule Gt.Manager.Date do
         Timex.Date.today
     end
 
+    def now do
+        Timex.DateTime.today
+    end
+
     def yesterday do
         today |> Timex.subtract(Time.to_timestamp(1, :days))
     end
