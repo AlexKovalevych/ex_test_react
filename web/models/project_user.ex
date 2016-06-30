@@ -8,7 +8,7 @@ defmodule Gt.Model.ProjectUser do
         field :email_encrypted, :string
         field :email_valid, :integer
         field :email_not_found, :boolean
-        field :login, :login
+        field :login, :string
         field :nick, :string
         field :phone, :string
         field :phone_valid, :integer

@@ -11,7 +11,7 @@ defmodule Gt.Model.Project do
         field :enabled, :boolean
         field :currency_rate, :float
         field :isPoker, :boolean, default: false
-        field :games, :array
+        field :games, {:array, :string}
         field :base_amount, :string
         field :isPartner, :boolean, default: false
     end

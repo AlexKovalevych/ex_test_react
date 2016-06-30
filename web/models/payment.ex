@@ -21,7 +21,7 @@ defmodule Gt.Model.Payment do
         field :promo_ref, :string
         field :currency, :string
         field :amountUser, :integer
-        field :commitDate, :date
+        field :commitDate, Ecto.Date
         field :trafficSource, :string
         field :amount, :float
 
