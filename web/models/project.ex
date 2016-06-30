@@ -29,4 +29,13 @@ defmodule Gt.Model.Project do
         from u in query,
         select: u.id
     end
+
+    def titles(query, titles) when is_list(titles) do
+        from u in query,
+        where: u.title in ^titles
+    end
+    def titles(query, title) when is_bitstring(title) do
+        from u in query,
+        where: u.title == ^title
+    end
 end

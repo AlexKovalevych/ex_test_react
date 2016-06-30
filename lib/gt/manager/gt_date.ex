@@ -12,4 +12,9 @@ defmodule Gt.Manager.Date do
     def format(date, :date) do
         Timex.format!(date, "%Y-%m-%d", :strftime)
     end
+
+    def timestamp(date) do
+        {mega, seconds, _} = Date.to_timestamp(date)
+        (mega * 1000000 + seconds) * 1000
+    end
 end
