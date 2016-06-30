@@ -5,9 +5,7 @@ defmodule Gt.ManagerCase.Permissions do
     @tag :unit
     test "has" do
         permissions = %{
-            "dashboard" => %{
-                "dashboard_index" => ["1", "3"]
-            },
+            "dashboard_index" => ["1", "3"],
             "finance" => %{
                 "payment_systems" => ["1", "2"],
                 "payments_check" => ["1", "2"]
@@ -28,9 +26,7 @@ defmodule Gt.ManagerCase.Permissions do
     @tag :unit
     test "add" do
         permissions = %{
-            "dashboard" => %{
-                "dashboard_index" => [],
-            },
+            "dashboard_index" => [],
             "finance" => %{
                 "payments_check" => [],
                 "payment_systems" => []

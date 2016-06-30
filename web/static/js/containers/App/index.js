@@ -58,10 +58,10 @@ class App extends React.Component {
                             </li>
                         </ul>
                     </nav>
-                    <div className="col-sm-3">
+                    <div className="col-sm-2">
                         <div className="row">{this.props.menu}</div>
                     </div>
-                    <div className="col-sm-9">
+                    <div className="col-sm-10">
                         {this.props.main}
                     </div>
                 </div>

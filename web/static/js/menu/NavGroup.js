@@ -1,57 +1,65 @@
-
 import React, { PropTypes } from 'react';
 import Nav from './Nav';
-import cx from 'classnames';
-
-import style from './style.css';
-
 import { ITEM_MAP } from './Nav';
 
-
-const NavGroup = React.createClass({
-
-    propTypes: {
+export default class NavGroup extends React.Component {
+    static propTypes = {
         onClick: PropTypes.func,
         selected: PropTypes.any,
-        nav: PropTypes.object,
+        nav: PropTypes.object.isRequired,
         children: PropTypes.node,
         id: PropTypes.string,
-        type: PropTypes.string
-    },
+        type: PropTypes.string,
+        icon: PropTypes.string
+    };
 
-    getInitialState() {
-        return { collapsed: false  };
-    },
+    constructor(props) {
+        super(props);
+        this.state = {collapsed: !this.isActive()};
+    }
 
     buildChildren() {
-
-        if ( this.props.nav ) {
-            return this.props.nav.navlist.map( nav => {
-                return (<Nav type={this.props.type} key={nav.id} selected={this.props.selected} onClick={this.onSubNavClick} {...nav}/>);
-            });
-        } else {
-            return this.props.children;
-        }
-    },
+        return this.props.nav.navlist.map(nav => {
+            return (
+                <Nav
+                    type={this.props.type}
+                    key={nav.id}
+                    selected={this.props.selected}
+                    onClick={this.onSubNavClick.bind(this)}
+                    {...nav}/>
+                );
+        });
+    }
 
     componentWillReceiveProps(nextProps) {
-        this.setState({selected: nextProps.selected});
-    },
+        let currentBlockItem;
+        for (let i of Object.keys(nextProps.nav.navlist)) {
+            if (nextProps.nav.navlist[i].id == nextProps.selected) {
+                currentBlockItem = true;
+                break;
+            }
+        }
+
+        this.setState({
+            selected: nextProps.selected,
+            collapsed: !currentBlockItem
+        });
+    }
 
     onSubNavClick(id) {
-        if ( this.props.onClick ) {
+        if (this.props.onClick) {
             this.props.onClick(this.props.id, id);
         }
-    },
+    }
 
     onClick() {
         this.setState({collapsed: !this.state.collapsed});
-    },
+    }
 
     componentDidMount() {
         //we cant transition 0 height to auto height.. so below is the result
         if ( !this.__computedHeight ) {
-            var cloned = this.refs.cont.cloneNode(true);
+            let cloned = this.refs.cont.cloneNode(true);
             cloned.style.position = 'absolute';
             cloned.style.left = '-9999px';
             cloned.style.height = 'auto';
@@ -59,37 +67,38 @@ const NavGroup = React.createClass({
             this.__computedHeight = cloned.clientHeight;
             document.body.removeChild(cloned);
         }
+    }
 
-    },
+    isActive() {
+        return !!this.props.nav.navlist.find(nav => {
+            return this.props.selected == nav.id;
+        });
+    }
 
     render() {
-
-        const itemsClassnames = cx(
-            style['rui-snav-items'],
-        );
-        const groupClassnames = cx(
-            style['rui-snav-grp'],
-            { [style['rui-snav-collapsed']]: this.state.collapsed }
-        );
-
         const styles = {
-            height: this.state.collapsed ? this.__computedHeight : 0
+            maxHeight: this.state.collapsed ? 0 : (this.__computedHeight ? this.__computedHeight * 2 : 500)
         };
 
-        const Item = ITEM_MAP[this.props.type || 'icon-left'];
+        let itemType = this.props.type || 'icon-both';
+        const Item = ITEM_MAP[itemType];
+        let props = {};
+        if (itemType == 'icon-both') {
+            props.iconLeft = this.props.icon;
+            props.iconRight = 'fa fa-chevron-down';
+        } else {
+            props.icon = 'fa fa-chevron-down';
+        }
 
         return (
-            <div className={style['rui-snav-grp-c']} >
-                <div onClick={this.onClick} className={groupClassnames}>
-                    <Item icon={'fa fa-chevron-down'} text={this.props.nav.text} />
+            <div className="nav-group" >
+                <div onClick={this.onClick.bind(this)} className="nav-group-title">
+                    <Item {...props} text={this.props.nav.text} />
                 </div>
-                <div  ref='cont' style={styles} className={itemsClassnames}>
-                    {this.buildChildren() }
+                <div  ref='cont' style={styles} className="nav-group-items">
+                    {this.buildChildren()}
                 </div>
             </div>
         );
-
     }
-});
-export {NavGroup};
-export default NavGroup;
+}

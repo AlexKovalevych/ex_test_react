@@ -18,7 +18,6 @@
     "react-redux": "^4.4.5",
     "react-router": "^2.4.0",
     "react-router-redux": "^4.0.5",
-    "react-sidenav": "git+https://github.com/AlexKovalevych/react-sidenav/#sidenav-style-prop",
     "react-tap-event-plugin": "^1.0.0",
     "react-translate-component": "^0.11.0",
     "redux": "^3.5.2"

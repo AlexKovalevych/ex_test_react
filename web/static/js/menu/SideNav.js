@@ -11,24 +11,41 @@ export default class SideNav extends React.Component {
         children: PropTypes.node,
         navtype: PropTypes.string,
         navrenderer: PropTypes.node,
-        style: PropTypes.object
+        style: PropTypes.object,
+        className: PropTypes.string
     };
 
     buildFromSettings() {
-        return this.props.navs.map( navkind => {
+        return this.props.navs.map((navkind, i) => {
             //nav kind could have a navlist, which we assume it contains a group of navs link
-            if ( navkind.navlist ) {
-                return <NavGroup type={this.props.navtype}
-                    key={navkind.id}  selected={this.props.selected} onClick={this.onSubNavClick} nav={navkind}/>;
+            if (navkind.navlist && navkind.navlist.length > 0) {
+                return (
+                    <NavGroup
+                        key={i}
+                        type={this.props.navtype}
+                        id={navkind.id}
+                        selected={this.props.selected}
+                        onClick={this.onSubNavClick.bind(this)}
+                        nav={navkind}
+                        icon={navkind.icon}
+                    />
+                );
             } else {
-                return (<Nav type={this.props.navtype}
-                    key={navkind.id} selected={this.props.selected} {...navkind} onClick={this.onClick}/>);
+                return (
+                    <Nav
+                        type={this.props.navtype}
+                        key={navkind.id}
+                        selected={this.props.selected}
+                        {...navkind}
+                        onClick={this.onClick.bind(this)}
+                    />
+                );
             }
         });
     }
 
-    onSubNavClick(group,child) {
-        var selection = {group: group, id: child};
+    onSubNavClick(group, child) {
+        let selection = {group: group, id: child};
         this.setState({selected: selection});
         this.dispatchSelection(selection);
     }
@@ -56,7 +73,7 @@ export default class SideNav extends React.Component {
 
     render() {
         return (
-            <div style={assign({position: 'relative', width: '100%', color: '#FFF'}, this.props.style)}>
+            <div style={assign({position: 'relative', width: '100%'}, this.props.style)} className={this.props.className}>
                 {this.buildChildren()}
             </div>
         );

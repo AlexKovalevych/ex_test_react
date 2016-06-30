@@ -1,9 +1,15 @@
 import React, { PropTypes } from 'react';
-// import Collapse from 'react-collapse';
-import { Link } from 'react-router';
 import { connect } from 'react-redux';
-// import { Dropdown } from 'react-bootstrap';
-import { SideNav, Nav, NavGroup } from 'react-sidenav/dist/react-sidenav.min.js';
+import SideNav from 'menu/SideNav';
+
+const ICONS = {
+    dashboard: 'fa-dashboard',
+    finance: 'fa-money',
+    statistics: 'fa-area-chart',
+    calendar_events: 'fa-th',
+    players: 'fa-users',
+    settings: 'fa-cogs'
+};
 
 class GtMenu extends React.Component {
     static propTypes = {
@@ -18,20 +24,22 @@ class GtMenu extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
-            activeKey: 0
+            selectedItem: null
         };
     }
 
-    componentWillMount() {
-        let blocks = Object.keys(this.props.user.permissions);
-        let activeKey = 0;
-        for (let i in blocks) {
-            if (this.isActiveBlock(blocks[i])) {
-                activeKey = i;
-                break;
+    getSelectedItem() {
+        for (let group of Object.keys(this.props.user.permissions)) {
+            for (let item of Object.keys(this.props.user.permissions[group])) {
+                if (this.isSelectedItem(this.getUrl(group, item))) {
+                    return group == 'dashboard' ? 'dashboard' : item;
+                }
             }
         }
-        this.setState({activeKey});
+    }
+
+    componentWillMount() {
+        this.setState({selectedItem: this.getSelectedItem()});
     }
 
     getUrl(block, node) {
@@ -41,59 +49,33 @@ class GtMenu extends React.Component {
         return `/${block}/${node}`;
     }
 
-    isActiveBlock(block) {
+    isSelectedItem(block) {
         return this.context.router.isActive(block) || (block == 'dashboard' && this.props.location.pathname == '/');
     }
 
-    renderNode(block, node, i) {
-        let url = this.getUrl(block, node);
-        let linkProps = {
-            to: url,
-            className: 'dropdown-item'
-        };
-
-        if (this.props.location.pathname == url) {
-            linkProps.className += ' active';
-        }
-
-        return (
-            <Link key={i} {...linkProps}>{node}</Link>
-        );
+    setSelectedItem(item) {
+        this.setState({selectedItem: item.id});
     }
 
-    toggleBlock(i) {
-        this.setState({activeKey: i});
-    }
-
-    renderBlock(block, i) {
+    getGroupChildren(block) {
         let parentBlock = this.props.user.permissions[block];
         let permissions = Object.keys(parentBlock).filter((node) => {
             return parentBlock[node].length > 0;
         });
-        let props = {
-            key: i,
-            className: 'nav-item'
-        };
-        if (this.isActiveBlock(block)) {
-            props.className = 'active';
+        if (permissions.length < 2) {
+            return [];
         }
 
-        let iconClass = 'fa-caret-down';
-        if (this.state.activeKey == i) {
-            iconClass = 'fa-caret-right';
+        let navi = [];
+        for (let node of permissions) {
+            navi.push({
+                id: node,
+                text: node,
+                url: this.getUrl(block, node)
+            });
         }
-
-        // return (
-        // );
+        return navi;
     }
-            // <Dropdown key={i} className="nav-item" componentClass="li" id="locale">
-            //     <Dropdown.Toggle className="nav-link" useAnchor>
-            //         {block}
-            //     </Dropdown.Toggle>
-            //     <Dropdown.Menu>
-            //         {permissions.map(this.renderNode.bind(this, block))}
-            //     </Dropdown.Menu>
-            // </Dropdown>
 
     render() {
         let permissions = Object.keys(this.props.user.permissions).filter((block) => {
@@ -104,23 +86,33 @@ class GtMenu extends React.Component {
             return children.length > 0;
         });
 
-var navi = [
-    { id: 'dashboard', icon: 'fa fa-dashboard' , text: 'Dashboard'},
-    { id: 'products', icon: 'fa fa-cube', text: 'Products' ,
-        navlist: [
-          { icon: 'fa fa-desktop', id: 'manage' ,text: 'Manage Product' },
-          { icon: 'fa fa-cog', id: 'suppliers' ,text: 'Suppliers' }
-        ]
-    },
-    { id: 'inventory', icon: 'fa fa-database' ,text: 'Inventory'},
-    { id: 'deliveries', icon: 'fa fa-truck' ,text: 'Deliveries'},
-    { id: 'reports', icon: 'fa fa-bar-chart' ,text: 'Reports' }
-];
+        let navi = [];
+        for (let group of permissions) {
+            if (group == 'dashboard') {
+                navi.push({
+                    id: group,
+                    text: group,
+                    icon: `fa ${ICONS[group]}`,
+                    url: this.getUrl(group, 'dashboard_index'),
+                    navlist: this.getGroupChildren(group)
+                });
+            } else {
+                navi.push({
+                    id: group,
+                    text: group,
+                    icon: `fa ${ICONS[group]}`,
+                    navlist: this.getGroupChildren(group)
+                });
+            }
+        }
 
         return (
-            <div className="menu">
-                <SideNav navs={navi} style={{color: 'inherit'}} />
-            </div>
+            <SideNav
+                navs={navi}
+                selected={this.state.selectedItem}
+                style={{overflow: 'hidden'}}
+                onSelection={this.setSelectedItem.bind(this)}
+            />
         );
     }
 }
