@@ -82,3 +82,5 @@ config :guardian, Guardian,
     #         :revoke_token,
     #     ],
     # }
+
+config :porcelain, :driver, Porcelain.Driver.Basic
