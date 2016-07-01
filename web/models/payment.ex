@@ -1,6 +1,18 @@
 defmodule Gt.Model.Payment do
     use Gt.Web, :model
 
+    @state_new 0
+    @state_approved 1
+    @state_failure 2
+    @state_canceled 3
+
+    @type_deposit 1
+    @type_cashout 2
+    @type_bonus 3
+    @type_refund 4
+
+    @traffic_sources = [:buying, :webmasters, :internal, :noref]
+
     schema "payments" do
         field :item_id, :string
         field :user_id, :string
@@ -61,5 +73,71 @@ defmodule Gt.Model.Payment do
     def changeset(model, params \\ :empty) do
         model
         |> cast(params, @required_fields, @optional_fields)
+    end
+
+    def dashboard_stats(from, to, project_ids) do
+        match = %{
+            "$match" => %{
+                "state" => @state_approved,
+                "type" => %{"$in" => [@type_deposit, @type_cashout]},
+                "add_d" => %{
+                    "$gte" => from,
+                    "$lte" => to
+                },
+                "project" => %{"$in" => project_ids}
+            },
+        }
+
+        group = %{
+            "$group" => %{
+                "_id" => %{
+                    "project" => "$project",
+                    "date" => "$add_d"
+                },
+                "depositsAmount" => %{
+                    "$sum" => %{
+                        "$cond" => [%{"$eq" => ["$type", @type_deposit]}, "$goods.cash_real", 0]
+                    }
+                },
+                "depositsNumber" => %{
+                    "$sum" => %{
+                        "$cond" => [%{"$eq" => ["$type", @type_deposit]}, 1, 0]
+                    }
+                },
+                "cashoutsAmount" => %{
+                    "$sum" => %{
+                        "$cond" => [%{"$eq" => ["$type", @type_cashout]}, "$goods.cash_real", 0]
+                    }
+                },
+                "cashoutsNumber" => %{
+                    "$sum" => %{
+                        "$cond" => [%{"$eq" => ["$type", @type_cashout]}, 1, 0]
+                    }
+                },
+                "paymentsAmount" => %{
+                    "$sum" => "$goods.cash_real"
+                },
+                "paymentsNumber" => %{
+                    "$sum" => 1
+                },
+                "transactors" => %{
+                    "$addToSet" => "$user"
+                },
+                "depositorsNumber" => %{
+                    "$addToSet" => %{
+                        "$cond" => [%{"$eq" => ["$type", @type_deposit]}, "$user", nil]
+                    }
+                }
+            }
+        }
+
+        for traffic_source <- @traffic_sources do
+            group = Map.put(group, traffic_source, val)
+        end
+
+
+        cursor = Mongo.aggregate(Gt.Repo.__mongo_pool__, "payments", [
+        ])
+        IO.inspect(cursor)
     end
 end

@@ -25,7 +25,7 @@ defmodule Gt.Model.ConsolidatedStats do
         field :authorizationsNumber, :integer
         field :trafficSources, :map
 
-        has_one :project, Gt.Model.Project
+        field :project, :binary_id
     end
 
     @required_fields ~w(date project)

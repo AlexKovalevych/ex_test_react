@@ -46,7 +46,8 @@ defmodule Gt.Mixfile do
             {:guardian, "~> 0.12.0"},
             {:excoveralls, "~> 0.5.5"},
             {:timex, "~> 2.2"},
-            {:tzdata, "~> 0.1.8", override: true}
+            {:tzdata, "~> 0.1.8", override: true},
+            {:exprintf, "~> 0.1.6"}
         ]
     end
 

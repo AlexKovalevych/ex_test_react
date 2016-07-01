@@ -3,6 +3,7 @@ defmodule Mix.Tasks.Gt.AppCache do
     use Timex
     alias Gt.Manager.Date, as: GtDate
     alias Gt.Model.Project
+    import Mongo.Ecto.ObjectID
 
     @shortdoc "Sends a greeting to us from Hello Phoenix"
 
@@ -30,6 +31,10 @@ defmodule Mix.Tasks.Gt.AppCache do
                 |> Gt.Repo.all
             _ -> projects
         end
+        project_ids = Enum.map(project_ids, fn id ->
+            {:ok, object_id} = dump(id)
+            object_id
+        end)
         Gt.Manager.ConsolidatedStats.update_stats(from, to, project_ids)
     end
 
