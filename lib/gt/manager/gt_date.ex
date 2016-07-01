@@ -18,7 +18,10 @@ defmodule Gt.Manager.Date do
     end
 
     def timestamp(date) do
-        {mega, seconds, _} = Date.to_timestamp(date)
+        {mega, seconds, _} = case Date.to_timestamp(date) do
+            {mega, seconds, _} -> Date.to_timestamp(date)
+            {:error, _} -> DateTime.to_timestamp(date)
+        end
         (mega * 1000000 + seconds) * 1000
     end
 end

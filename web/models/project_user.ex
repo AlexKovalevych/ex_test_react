@@ -117,8 +117,13 @@ defmodule Gt.Model.ProjectUser do
         |> cast(params, @required_fields, @optional_fields)
     end
 
+    def by_project_id(query, project_id) do
+        from pu in query,
+        where: pu.project == ^project_id
+    end
+
     def by_item_id(query, item_id) do
         from pu in query,
-        where: pu.id == ^item_id
+        where: pu.item_id == ^item_id
     end
 end

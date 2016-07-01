@@ -34,13 +34,11 @@ defmodule Gt.Model.Payment do
         project
         user
         user_id
-        amount
         add_d
         add_t
         type
         state
         goods
-        system
         trafficSource
     )
     @optional_fields ~w(
@@ -54,6 +52,8 @@ defmodule Gt.Model.Payment do
         current_balance
         promo_ref
         currency
+        system
+        amount
         amountUser
         commitDate
     )
