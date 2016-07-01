@@ -2,6 +2,7 @@ defmodule Gt.Fixtures.User do
     alias Gt.Repo
     alias Gt.Model.{User, Project}
     import Gt.Manager.Permissions, only: [add: 3]
+    require Logger
 
     permissions = Application.get_env(:gt, :permissions)
 
@@ -17,10 +18,11 @@ defmodule Gt.Fixtures.User do
     ]
 
     def run do
+        Logger.info("Loading #{__MODULE__} fixtures")
         projects = Repo.all(Project)
         project_ids = Enum.map(projects, fn project -> project.id end)
-
         Enum.map(@users, &insert_user(&1, project_ids))
+        Logger.info("Loaded #{__MODULE__} fixtures")
     end
 
     def insert_user(user, project_ids) do

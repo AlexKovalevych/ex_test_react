@@ -25,8 +25,8 @@ defmodule Gt.Model.Payment do
         field :trafficSource, :string
         field :amount, :float
 
-        has_one :project, Gt.Model.Project
-        has_one :user, Gt.Model.ProjectUser
+        field :project, :binary_id
+        field :user, :binary_id
     end
 
     @required_fields ~w(

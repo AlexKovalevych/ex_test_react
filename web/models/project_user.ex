@@ -46,44 +46,44 @@ defmodule Gt.Model.ProjectUser do
         field :last_dep_d, :string
         field :remind_code, :string
         field :glow_id, :string
-        # field :phones, :raw @todo implement custom type raw
+        field :phones, Ecto.Type.Raw
         field :donor, :string
         field :vipLevel, :map
         field :socialNetwork, :string
         field :socialNetworkUrl, :string
 
-        # embeds_one :projectUserAction, Gt.Model.ProjectUserAction
+        field :project, :binary_id
 
-        has_one :project, Gt.Model.Project
+        # embeds_one :projectUserAction, Gt.Model.ProjectUserAction
     end
 
     @required_fields ~w(
         item_id
         project
         email_valid
-        lang
-        currency
         is_active
         is_test
         has_bonus
         query1
-        reg_ref1
         reg_d
         reg_t
         last_d
         last_t
         status
         segment
-        segment_upd_t
         first_dep_d
         first_dep_amount
         email_unsub_types
         sms_unsub_types
         cash_real
         cash_user_real
+        phones
     )
-        # phones
     @optional_fields ~w(
+        currency
+        segment_upd_t
+        reg_ref1
+        lang
         email
         email_hash
         email_encrypted
@@ -115,5 +115,10 @@ defmodule Gt.Model.ProjectUser do
     def changeset(model, params \\ :empty) do
         model
         |> cast(params, @required_fields, @optional_fields)
+    end
+
+    def by_item_id(query, item_id) do
+        from pu in query,
+        where: pu.id == ^item_id
     end
 end

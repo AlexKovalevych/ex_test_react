@@ -1,6 +1,7 @@
 defmodule Gt.Fixtures.Project do
     alias Gt.Repo
     alias Gt.Model.Project
+    require Logger
 
     @projects [
         {
@@ -207,7 +208,9 @@ defmodule Gt.Fixtures.Project do
     ]
 
     def run do
+        Logger.info("Loading #{__MODULE__} fixtures")
         Enum.map(@projects, &insert_project/1)
+        Logger.info("Loaded #{__MODULE__} fixtures")
     end
 
     def insert_project({title, prefix, item_id, url, enabled, external_id}) do
