@@ -1,5 +1,6 @@
 defmodule Gt.Model.Payment do
     use Gt.Web, :model
+    import ExPrintf
 
     @state_new 0
     @state_approved 1
@@ -11,7 +12,7 @@ defmodule Gt.Model.Payment do
     @type_bonus 3
     @type_refund 4
 
-    @traffic_sources = [:buying, :webmasters, :internal, :noref]
+    @traffic_sources [:buying, :webmasters, :internal, :noref]
 
     schema "payments" do
         field :item_id, :string
@@ -132,12 +133,71 @@ defmodule Gt.Model.Payment do
         }
 
         for traffic_source <- @traffic_sources do
-            group = Map.put(group, traffic_source, val)
+            group
+            |> Map.put(sprintf("%s_paymentsAmount", [traffic_source]), %{
+                "$sum" => %{
+                    "$cond" => [%{"$eq" => ["$trafficSource", traffic_source]}, "$goods.cash_real", 0]
+                }
+            })
+            |> Map.put(sprintf("%s_depositsAmount", [traffic_source]), %{
+                "$sum" => %{
+                    "$cond" => [
+                        %{"$and" => [
+                            %{"$eq" => ["$trafficSource", traffic_source]},
+                            %{"$eq" => ["$type", @type_deposit]}
+                        ]},
+                        "$goods.cash_real",
+                        0
+                    ]
+                }
+            })
+        #     $group[sprintf('%s_cashoutsAmount', $trafficSource)] = [
+        #         '$sum' => [
+        #             '$cond' => [
+        #                 ['$and' => [
+        #                     ['$eq' => ['$trafficSource', $trafficSource]],
+        #                     ['$eq' => ['$type', Payment::TYPE_CASHOUT]]
+        #                 ]],
+        #                 '$goods.cash_real',
+        #                 0
+        #             ]
+        #         ]
+        #     ];
+        #     $group[sprintf('%s_depositorsNumber', $trafficSource)] = [
+        #         '$addToSet' => [
+        #             '$cond' => [
+        #                 [
+        #                     '$and' => [
+        #                         ['$eq' => ['$type', Payment::TYPE_DEPOSIT]],
+        #                         ['$eq' => ['$trafficSource', $trafficSource]],
+        #                     ]
+        #                 ],
+        #                 '$user',
+        #                 null
+        #             ]
+        #         ]
+        #     ];
+        #     $group[sprintf('%s_depositsNumber', $trafficSource)] = [
+        #         '$sum' => [
+        #             '$cond' => [
+        #                 ['$and' => [
+        #                     ['$eq' => ['$trafficSource', $trafficSource]],
+        #                     ['$eq' => ['$type', Payment::TYPE_DEPOSIT]]
+        #                 ]],
+        #                 1,
+        #                 0
+        #             ]
+        #         ]
+        #     ];
+
         end
 
+        IO.inspect(group)
 
-        cursor = Mongo.aggregate(Gt.Repo.__mongo_pool__, "payments", [
-        ])
-        IO.inspect(cursor)
+
+
+        # cursor = Mongo.aggregate(Gt.Repo.__mongo_pool__, "payments", [
+        # ])
+        # IO.inspect(cursor)
     end
 end
