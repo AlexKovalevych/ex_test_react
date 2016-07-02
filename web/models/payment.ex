@@ -78,61 +78,57 @@ defmodule Gt.Model.Payment do
 
     def dashboard_stats(from, to, project_ids) do
         match = %{
-            "$match" => %{
-                "state" => @state_approved,
-                "type" => %{"$in" => [@type_deposit, @type_cashout]},
-                "add_d" => %{
-                    "$gte" => from,
-                    "$lte" => to
-                },
-                "project" => %{"$in" => project_ids}
+            "state" => @state_approved,
+            "type" => %{"$in" => [@type_deposit, @type_cashout]},
+            "add_d" => %{
+                "$gte" => from,
+                "$lte" => to
             },
+            "project" => %{"$in" => project_ids}
         }
 
         group = %{
-            "$group" => %{
-                "_id" => %{
-                    "project" => "$project",
-                    "date" => "$add_d"
-                },
-                "depositsAmount" => %{
-                    "$sum" => %{
-                        "$cond" => [%{"$eq" => ["$type", @type_deposit]}, "$goods.cash_real", 0]
-                    }
-                },
-                "depositsNumber" => %{
-                    "$sum" => %{
-                        "$cond" => [%{"$eq" => ["$type", @type_deposit]}, 1, 0]
-                    }
-                },
-                "cashoutsAmount" => %{
-                    "$sum" => %{
-                        "$cond" => [%{"$eq" => ["$type", @type_cashout]}, "$goods.cash_real", 0]
-                    }
-                },
-                "cashoutsNumber" => %{
-                    "$sum" => %{
-                        "$cond" => [%{"$eq" => ["$type", @type_cashout]}, 1, 0]
-                    }
-                },
-                "paymentsAmount" => %{
-                    "$sum" => "$goods.cash_real"
-                },
-                "paymentsNumber" => %{
-                    "$sum" => 1
-                },
-                "transactors" => %{
-                    "$addToSet" => "$user"
-                },
-                "depositorsNumber" => %{
-                    "$addToSet" => %{
-                        "$cond" => [%{"$eq" => ["$type", @type_deposit]}, "$user", nil]
-                    }
+            "_id" => %{
+                "project" => "$project",
+                "date" => "$add_d"
+            },
+            "depositsAmount" => %{
+                "$sum" => %{
+                    "$cond" => [%{"$eq" => ["$type", @type_deposit]}, "$goods.cash_real", 0]
+                }
+            },
+            "depositsNumber" => %{
+                "$sum" => %{
+                    "$cond" => [%{"$eq" => ["$type", @type_deposit]}, 1, 0]
+                }
+            },
+            "cashoutsAmount" => %{
+                "$sum" => %{
+                    "$cond" => [%{"$eq" => ["$type", @type_cashout]}, "$goods.cash_real", 0]
+                }
+            },
+            "cashoutsNumber" => %{
+                "$sum" => %{
+                    "$cond" => [%{"$eq" => ["$type", @type_cashout]}, 1, 0]
+                }
+            },
+            "paymentsAmount" => %{
+                "$sum" => "$goods.cash_real"
+            },
+            "paymentsNumber" => %{
+                "$sum" => 1
+            },
+            "transactors" => %{
+                "$addToSet" => "$user"
+            },
+            "depositorsNumber" => %{
+                "$addToSet" => %{
+                    "$cond" => [%{"$eq" => ["$type", @type_deposit]}, "$user", nil]
                 }
             }
         }
 
-        for traffic_source <- @traffic_sources do
+        group = Enum.reduce(@traffic_sources, group, fn (traffic_source, group) ->
             group
             |> Map.put(sprintf("%s_paymentsAmount", [traffic_source]), %{
                 "$sum" => %{
@@ -151,53 +147,126 @@ defmodule Gt.Model.Payment do
                     ]
                 }
             })
-        #     $group[sprintf('%s_cashoutsAmount', $trafficSource)] = [
-        #         '$sum' => [
-        #             '$cond' => [
-        #                 ['$and' => [
-        #                     ['$eq' => ['$trafficSource', $trafficSource]],
-        #                     ['$eq' => ['$type', Payment::TYPE_CASHOUT]]
-        #                 ]],
-        #                 '$goods.cash_real',
-        #                 0
-        #             ]
-        #         ]
-        #     ];
-        #     $group[sprintf('%s_depositorsNumber', $trafficSource)] = [
-        #         '$addToSet' => [
-        #             '$cond' => [
-        #                 [
-        #                     '$and' => [
-        #                         ['$eq' => ['$type', Payment::TYPE_DEPOSIT]],
-        #                         ['$eq' => ['$trafficSource', $trafficSource]],
-        #                     ]
-        #                 ],
-        #                 '$user',
-        #                 null
-        #             ]
-        #         ]
-        #     ];
-        #     $group[sprintf('%s_depositsNumber', $trafficSource)] = [
-        #         '$sum' => [
-        #             '$cond' => [
-        #                 ['$and' => [
-        #                     ['$eq' => ['$trafficSource', $trafficSource]],
-        #                     ['$eq' => ['$type', Payment::TYPE_DEPOSIT]]
-        #                 ]],
-        #                 1,
-        #                 0
-        #             ]
-        #         ]
-        #     ];
+            |> Map.put(sprintf("%s_cashoutsAmount", [traffic_source]), %{
+                "$sum" => %{
+                    "$cond" => [
+                        %{"$and" => [
+                            %{"$eq" => ["$trafficSource", traffic_source]},
+                            %{"$eq" => ["$type", @type_cashout]}
+                        ]},
+                        "$goods.cash_real",
+                        0
+                    ]
+                }
+            })
+            |> Map.put(sprintf("%s_depositorsNumber", [traffic_source]), %{
+                "$addToSet" => %{
+                    "$cond" => [
+                        %{"$and" => [
+                            %{"$eq" => ["$type", @type_deposit]},
+                            %{"$eq" => ["$trafficSource", traffic_source]},
+                        ]},
+                        "$user",
+                        nil
+                    ]
+                }
+            })
+            |> Map.put(sprintf("%s_depositsNumber", [traffic_source]), %{
+                "$sum" => %{
+                    "$cond" => [
+                        %{"$and" => [
+                            %{"$eq" => ["$trafficSource", traffic_source]},
+                            %{"$eq" => ["$type", @type_deposit]}
+                        ]},
+                        1,
+                        0
+                    ]
+                }
+            })
+        end)
 
-        end
+        project_traffic_sources = Enum.reduce(
+            @traffic_sources,
+            %{},
+            fn (traffic_source, acc) ->
+                acc
+                |> Map.put(sprintf("%s_depositsNumber", [traffic_source]), 1)
+                |> Map.put(sprintf("%s_paymentsAmount", [traffic_source]), 1)
+                |> Map.put(sprintf("%s_depositsAmount", [traffic_source]), 1)
+                |> Map.put(sprintf("%s_cashoutsAmount", [traffic_source]), 1)
+                |> Map.put(sprintf("%s_depositorsNumber", [traffic_source]), %{
+                    "$size" => sprintf("$%s_depositorsNumber", [traffic_source])
+                })
+            end
+        )
 
-        IO.inspect(group)
+        grouped_traffic_sources = Enum.reduce(
+            @traffic_sources,
+            %{},
+            fn (traffic_source, acc) ->
+                group = %{}
+                |> Map.put("paymentsAmount", sprintf("$%s_paymentsAmount", [traffic_source]))
+                |> Map.put("depositsAmount", sprintf("$%s_depositsAmount", [traffic_source]))
+                |> Map.put("cashoutsAmount", sprintf("$%s_cashoutsAmount", [traffic_source]))
+                |> Map.put("depositorsNumber", sprintf("$%s_depositorsNumber", [traffic_source]))
+                |> Map.put("depositsNumber", sprintf("$%s_depositsNumber", [traffic_source]))
+                Map.put(acc, traffic_source, group)
+            end
+        )
 
+        project_b = Map.merge(%{
+            "_id" => 1,
+            "depositsAmount" => 1,
+            "depositorsNumber" => 1,
+            "cashoutsAmount" => 1,
+            "cashoutsNumber" => 1,
+            "depositorsNumber" => %{"$setDifference" => ["$depositorsNumber", [nil]]},
+            "depositsNumber" => 1,
+            "transactors" => %{"$size" => "$transactors"},
+            "paymentsAmount" => 1,
+            "paymentsNumber" => 1,
+        }, project_traffic_sources)
 
+        project_a = project_b |> Map.put("transactors", 1)
+        project_a = Enum.reduce(@traffic_sources, project_a, fn (traffic_source, acc) ->
+            Map.put(acc, sprintf("%s_depositorsNumber", [traffic_source]), %{
+                "$setDifference" => [sprintf("$%s_depositorsNumber", [traffic_source]), [nil]]
+            })
+        end)
 
-        # cursor = Mongo.aggregate(Gt.Repo.__mongo_pool__, "payments", [
-        # ])
-        # IO.inspect(cursor)
+        cursor = Mongo.aggregate(Gt.Repo.__mongo_pool__, "payments", [
+            %{"$match" => match},
+            %{"$group" => group},
+            %{"$project" => project_a},
+            %{"$project" => project_b},
+            %{
+                "$project" => %{
+                    "_id" => 1,
+                    "depositsAmount" => 1,
+                    "depositsNumber" => 1,
+                    "cashoutsAmount" => 1,
+                    "cashoutsNumber" => 1,
+                    "depositorsNumber" => %{"$size" => "$depositorsNumber"},
+                    "paymentsAmount" => 1,
+                    "paymentsNumber" => 1,
+                    "transactorsNumber" => "$transactors",
+                    "averageDeposit" => %{
+                        "$cond" => [
+                            %{"$eq" => ["$depositsNumber", 0]},
+                            0,
+                            %{"$divide" => ["$depositsAmount", "$depositsNumber"]}
+                        ]
+                    },
+                    "averageArpu" => %{
+                        "$cond" => [
+                            %{"$eq" => ["$transactors", 0]},
+                            0,
+                            %{"$divide" => ["$paymentsAmount", "$transactors"]}
+                        ]
+                    },
+                    "trafficSources" => grouped_traffic_sources
+                }
+            }
+        ], [{:allow_disk_use, true}])
     end
 end
