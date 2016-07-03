@@ -2,6 +2,8 @@ defmodule Gt.Model.Payment do
     use Gt.Web, :model
     import ExPrintf
 
+    @collection "payments"
+
     @state_new 0
     @state_approved 1
     @state_failure 2
@@ -14,7 +16,7 @@ defmodule Gt.Model.Payment do
 
     @traffic_sources [:buying, :webmasters, :internal, :noref]
 
-    schema "payments" do
+    schema @collection do
         field :item_id, :string
         field :user_id, :string
         field :add_d, :string
@@ -234,7 +236,7 @@ defmodule Gt.Model.Payment do
             })
         end)
 
-        cursor = Mongo.aggregate(Gt.Repo.__mongo_pool__, "payments", [
+        Mongo.aggregate(Gt.Repo.__mongo_pool__, @collection, [
             %{"$match" => match},
             %{"$group" => group},
             %{"$project" => project_a},

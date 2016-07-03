@@ -3,7 +3,9 @@ defmodule Gt.Model.User do
 
     @derive {Poison.Encoder, only: [:id, :email, :permissions]}
 
-    schema "users" do
+    @collection "users"
+
+    schema @collection do
         field :email, :string
         field :password, :string
         field :password_plain, :string, virtual: true

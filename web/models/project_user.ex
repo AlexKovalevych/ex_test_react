@@ -1,7 +1,9 @@
 defmodule Gt.Model.ProjectUser do
     use Gt.Web, :model
 
-    schema "project_users" do
+    @collection "project_users"
+
+    schema @collection do
         field :item_id, :string
         field :email, :string
         field :email_hash, :string
@@ -125,5 +127,47 @@ defmodule Gt.Model.ProjectUser do
     def by_item_id(query, item_id) do
         from pu in query,
         where: pu.item_id == ^item_id
+    end
+
+    def first_deposit_stats(from, to, project_ids) do
+        Mongo.aggregate(Gt.Repo.__mongo_pool__, @collection, [
+            %{"$match" => dashboard_match(from, to, project_ids)},
+            %{"$group" => %{
+                "_id" => dashboard_group_id,
+                "averageFirstDeposit" => %{"$avg" => "$first_dep_amount"},
+                "firstDepositsAmount" => %{"$sum" => "$first_dep_amount"},
+                "firstDepositorsNumber" => %{"$sum" => 1}
+            }}
+        ])
+    end
+
+    def signup_stats(from, to, project_ids) do
+        Mongo.aggregate(Gt.Repo.__mongo_pool__, @collection, [
+            %{"$match" => dashboard_match(from, to, project_ids)},
+            %{"$group" => %{
+                "_id" => dashboard_group_id,
+                "signupsNumber" => %{"$sum" => 1}
+            }}
+        ])
+    end
+
+    defp dashboard_match(from, to, project_ids) do
+        %{
+            "first_dep_amount" => %{"$exists" => true},
+            "first_dep_d" => %{
+                "$gte" => from,
+                "$lte" => to
+            },
+            "project" => %{
+                "$in" => project_ids
+            }
+        }
+    end
+
+    defp dashboard_group_id do
+        %{
+            "project" => "$project",
+            "date" => "$reg_d"
+        }
     end
 end

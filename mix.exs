@@ -47,7 +47,8 @@ defmodule Gt.Mixfile do
             {:excoveralls, "~> 0.5.5"},
             {:timex, "~> 2.2"},
             {:tzdata, "~> 0.1.8", override: true},
-            {:exprintf, "~> 0.1.6"}
+            {:exprintf, "~> 0.1.6"},
+            {:progress_bar, "~> 1.5"}
         ]
     end
 

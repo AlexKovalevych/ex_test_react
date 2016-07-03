@@ -1,7 +1,9 @@
 defmodule Gt.Model.ConsolidatedStats do
     use Gt.Web, :model
 
-    schema "consolidated_stats" do
+    @collection "consolidated_stats"
+
+    schema @collection do
         field :date, :string
         field :paymentsAmount, :float
         field :paymentsNumber, :integer
@@ -55,5 +57,20 @@ defmodule Gt.Model.ConsolidatedStats do
     def changeset(model, params \\ :empty) do
         model
         |> cast(params, @required_fields, @optional_fields)
+    end
+
+    def upsert_project_date(%{"date" => date, "project" => project_id}, stats) do
+        Mongo.update_one(
+            Gt.Repo.__mongo_pool__,
+            @collection,
+            %{
+                "project" => project_id,
+                "date" => date
+            },
+            %{
+                "$set" => stats
+            },
+            [{:upsert, true}]
+        )
     end
 end
