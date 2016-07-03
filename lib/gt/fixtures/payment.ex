@@ -37654,12 +37654,12 @@ defmodule Gt.Fixtures.Payment do
         Logger.info("Loaded #{__MODULE__} fixtures")
     end
 
-    def insert_project_user(project, [user_item_id, payments]) do
+    def insert_project_user(project, [user_item_id, data]) do
         user = ProjectUser
         |> ProjectUser.by_project_id(project.id)
         |> ProjectUser.by_item_id(user_item_id)
         |> Repo.one
-        Enum.map(payments, fn payment -> 
+        payments = Enum.map(data, fn payment ->
             [
                 date_past_days,
                 hours,
@@ -37674,9 +37674,9 @@ defmodule Gt.Fixtures.Payment do
             ] = payment
             date = @now |> Timex.subtract(Time.to_timestamp(date_past_days, :days))
             time = DateTime.set(date, [{:time, {hours, minutes, seconds}}])
-            Repo.insert!(Payment.changeset(%Payment{}, %{
+            %{
                 item_id: item_id,
-                project: project.id,
+                project: object_id(project.id),
                 user_id: user_item_id,
                 add_d: GtDate.format(date, :date),
                 add_t: GtDate.timestamp(time),
@@ -37684,9 +37684,15 @@ defmodule Gt.Fixtures.Payment do
                 state: state,
                 goods: %{"cash_real" => cash_real},
                 system: @systems[system],
-                user: user.id,
+                user: object_id(user.id),
                 trafficSource: @traffic_sources[traffic_source]
-            }))
+            }
         end)
+        Mongo.insert_many(Gt.Repo.__mongo_pool__, Payment.collection, payments)
+    end
+
+    defp object_id(id) do
+        {:ok, mongo_id} = Mongo.Ecto.ObjectID.dump(id)
+        mongo_id
     end
 end

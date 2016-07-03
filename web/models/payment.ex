@@ -4,6 +4,8 @@ defmodule Gt.Model.Payment do
 
     @collection "payments"
 
+    def collection, do: @collection
+
     @state_new 0
     @state_approved 1
     @state_failure 2
