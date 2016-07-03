@@ -38,4 +38,9 @@ defmodule Gt.Model.Project do
         from u in query,
         where: u.title == ^title
     end
+
+    def prefix(query, prefix) do
+        from u in query,
+        where: u.prefix == ^prefix
+    end
 end

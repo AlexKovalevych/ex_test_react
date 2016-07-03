@@ -3,6 +3,8 @@ defmodule Gt.Model.ProjectUserGame do
 
     @collection "project_user_game"
 
+    def collection, do: @collection
+
     @primary_key {:id, :binary_id, autogenerate: false}
 
     schema @collection do
@@ -40,6 +42,7 @@ defmodule Gt.Model.ProjectUserGame do
         convertedWins
         winsCount
         project
+        itemId
     )
     @optional_fields ~w(
         balanceAfter
@@ -49,5 +52,26 @@ defmodule Gt.Model.ProjectUserGame do
     def changeset(model, params \\ :empty) do
         model
         |> cast(params, @required_fields, @optional_fields)
+    end
+
+    def item_id(data) do
+        # project_user_game = %{
+        #     balanceAfter: balance_after,
+        #     balanceBefore: balance_before,
+        #     bets: bets,
+        #     betsCount: bets_count,
+        #     currency: currency,
+        #     date: date,
+        #     gameRef: game_ref,
+        #     userId: user_id,
+        #     wins: wins,
+        #     winsCount: wins_count
+        # } = data
+        Map.values(data)
+        |> Enum.reduce("", fn (value, acc) ->
+            acc <> to_string(value)
+        end)
+        |> :erlang.md5
+        |> Base.encode16(case: :lower)
     end
 end

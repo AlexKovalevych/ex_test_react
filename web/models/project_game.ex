@@ -37,4 +37,19 @@ defmodule Gt.Model.ProjectGame do
     def is_mobile(name) do
         Regex.match?(~r/^.+_mob$/, name)
     end
+
+    def by_project_id(query, project_id) do
+        from pg in query,
+        where: pg.project == ^project_id
+    end
+
+    def by_name(query, name) do
+        from pg in query,
+        where: pg.name == ^name
+    end
+
+    def limit(query, limit) do
+        from pg in query,
+        limit: ^limit
+    end
 end
