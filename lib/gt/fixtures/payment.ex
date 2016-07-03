@@ -5,6 +5,7 @@ defmodule Gt.Fixtures.Payment do
     alias Gt.Model.ProjectUser
     alias Gt.Model.Payment
     alias Gt.Manager.Date, as: GtDate
+    import Gt.Model, only: [object_id: 1]
     require Logger
 
     @traffic_sources %{"n" => "noref", "i" => "internal", "b" => "buying", "w" => "webmasters"}
@@ -37689,10 +37690,5 @@ defmodule Gt.Fixtures.Payment do
             }
         end)
         Mongo.insert_many(Gt.Repo.__mongo_pool__, Payment.collection, payments)
-    end
-
-    defp object_id(id) do
-        {:ok, mongo_id} = Mongo.Ecto.ObjectID.dump(id)
-        mongo_id
     end
 end

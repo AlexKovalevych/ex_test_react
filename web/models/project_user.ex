@@ -3,6 +3,8 @@ defmodule Gt.Model.ProjectUser do
 
     @collection "project_users"
 
+    def collection, do: @collection
+
     schema @collection do
         field :item_id, :string
         field :email, :string

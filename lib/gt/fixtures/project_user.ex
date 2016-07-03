@@ -1,6 +1,5 @@
 defmodule Gt.Fixtures.ProjectUser do
     use Timex
-    alias Gt.Repo
     alias Gt.Model.ProjectUser
     alias Gt.Model.Project
     alias Gt.Manager.Date, as: GtDate
@@ -1017,9 +1016,10 @@ defmodule Gt.Fixtures.ProjectUser do
         |> Project.titles(["Loto 1", "Loto 6"])
         |> Gt.Repo.all
 
-        Enum.map(projects, fn project ->
-            Enum.map(@project_users, &insert_project_user(project, &1))
+        project_users = Enum.reduce(projects, [], fn (project, acc) ->
+            acc ++ Enum.map(@project_users, &insert_project_user(project, &1))
         end)
+        Mongo.insert_many(Gt.Repo.__mongo_pool__, ProjectUser.collection, project_users)
         Logger.info("Loaded #{__MODULE__} fixtures")
     end
 
@@ -1053,9 +1053,9 @@ defmodule Gt.Fixtures.ProjectUser do
         last_date = @now |> Timex.subtract(Time.to_timestamp(last_past_days, :days))
         first_dep_date = @now |> Timex.subtract(Time.to_timestamp(first_dep_past_days, :days))
 
-        Repo.insert!(ProjectUser.changeset(%ProjectUser{}, %{
+        %{
             item_id: item_id,
-            project: project.id,
+            project: Gt.Model.object_id(project.id),
             email_valid: email_valid,
             lang: lang,
             currency: currency,
@@ -1078,6 +1078,6 @@ defmodule Gt.Fixtures.ProjectUser do
             phones: phones,
             cash_real: cash_real,
             cash_user_real: cash_user_real
-        }))
+        }
     end
 end
