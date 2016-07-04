@@ -1,6 +1,7 @@
 defmodule Gt.Model.PokerGame do
     use Timex
     use Ecto.Model
+    alias Gt.Manager.Date, as: GtDate
 
     @primary_key {:id, :binary_id, autogenerate: false}
 
@@ -77,5 +78,37 @@ defmodule Gt.Model.PokerGame do
             acc <> string_value
         end)
         :crypto.hash(:sha, hash) |> Base.encode16(case: :lower)
+    end
+
+    def rake(from, to, project_ids) do
+        Mongo.aggregate(Gt.Repo.__mongo_pool__, @collection, [
+            %{"$match" => %{
+                "startDate" => %{
+                    "$exists" => true,
+                    "$gte" => GtDate.to_bson(from, :date),
+                    "$lte" => GtDate.to_bson(to, :date)
+                },
+                "project" => %{"$in" => project_ids}
+            }},
+            %{"$project" => %{
+                "project" => 1,
+                "date" => %{
+                    "$dateToString" => %{
+                        "format" => "%Y-%m-%d",
+                        "date" => "$stopDate"
+                    }
+                },
+                "convertedRake" => 1
+            }},
+            %{
+                "$group" => %{
+                    "_id" => %{
+                        "project" => "$project",
+                        "date" => "$date"
+                    },
+                    "rakeAmount" => %{"$sum" => "$convertedRake"}
+                }
+            }
+        ])
     end
 end

@@ -1,6 +1,6 @@
 defmodule Gt.Manager.ConsolidatedStats do
     require Logger
-    alias Gt.Model.{Payment, ProjectUser, ProjectUserGame, PokerGame}
+    alias Gt.Model.{Payment, ProjectUser, ProjectUserGame, PokerGame, ProcessedEvent}
 
     def update_stats(from, to, project_ids) do
         Logger.configure([level: :info])
@@ -28,6 +28,11 @@ defmodule Gt.Manager.ConsolidatedStats do
         rake = PokerGame.rake(from, to, project_ids) |> Enum.to_list
         Logger.info "Updating dashboard rake"
         process_data(rake)
+
+        Logger.info "Updating authorizations"
+        authorizations = ProcessedEvent.authorizations_by_period(from, to, project_ids)
+        Logger.info "Updating dashboard authorizations"
+        process_data(authorizations)
     end
 
     defp process_data(data) do
