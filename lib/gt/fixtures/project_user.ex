@@ -1052,7 +1052,9 @@ defmodule Gt.Fixtures.ProjectUser do
         reg_date = @now |> Timex.subtract(Time.to_timestamp(reg_past_days, :days))
         last_date = @now |> Timex.subtract(Time.to_timestamp(last_past_days, :days))
         first_dep_date = @now |> Timex.subtract(Time.to_timestamp(first_dep_past_days, :days))
-
+        if project.title == "Loto 6" do
+            item_id = item_id <> "32"
+        end
         %{
             item_id: item_id,
             project: Gt.Model.object_id(project.id),

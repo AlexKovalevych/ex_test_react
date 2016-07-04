@@ -37656,6 +37656,9 @@ defmodule Gt.Fixtures.Payment do
     end
 
     def insert_project_user(project, [user_item_id, data]) do
+        if project.title == "Loto 6" do
+            user_item_id = user_item_id <> "32"
+        end
         user = ProjectUser
         |> ProjectUser.by_project_id(project.id)
         |> ProjectUser.by_item_id(user_item_id)

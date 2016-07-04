@@ -1,5 +1,6 @@
 defmodule Gt.Model.ProjectUserGame do
     use Ecto.Model
+    alias Gt.Manager.Date, as: GtDate
 
     @collection "project_user_game"
 
@@ -55,21 +56,26 @@ defmodule Gt.Model.ProjectUserGame do
     end
 
     def item_id(data) do
-        # project_user_game = %{
-        #     balanceAfter: balance_after,
-        #     balanceBefore: balance_before,
-        #     bets: bets,
-        #     betsCount: bets_count,
-        #     currency: currency,
-        #     date: date,
-        #     gameRef: game_ref,
-        #     userId: user_id,
-        #     wins: wins,
-        #     winsCount: wins_count
-        # } = data
-        Map.values(data)
-        |> Enum.reduce("", fn (value, acc) ->
-            acc <> to_string(value)
+        Enum.reduce([
+            :balanceAfter,
+            :balanceBefore,
+            :bets,
+            :betsCount,
+            :currency,
+            :date,
+            :gameRef,
+            :userId,
+            :wins,
+            :winsCount
+        ], "", fn (field, acc) ->
+            value = data[field]
+            string_value = cond do
+                is_bitstring(value) -> value
+                is_integer(value) -> to_string(value)
+                field == :date -> to_string(GtDate.timestamp(value))
+                true -> to_string(value)
+            end
+            acc <> string_value
         end)
         |> :erlang.md5
         |> Base.encode16(case: :lower)

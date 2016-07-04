@@ -5,7 +5,7 @@ defmodule Gt.Fixtures.ProjectUserGame do
     alias Gt.Model.Project
     alias Gt.Model.ProjectGame
     alias Gt.Model.ProjectUser
-    # alias Gt.Manager.Date, as: GtDate
+    alias Gt.Manager.Date, as: GtDate
     import Gt.Model, only: [object_id: 1]
     require Logger
 
@@ -2879,7 +2879,7 @@ defmodule Gt.Fixtures.ProjectUserGame do
             |> ProjectGame.by_name(game_ref)
             |> ProjectGame.limit(1)
             |> Repo.one
-            %{
+            project_user_game = %{
                 bets: bets,
                 convertedBets: converted_bets,
                 betsCount: bets_count,
@@ -2894,6 +2894,8 @@ defmodule Gt.Fixtures.ProjectUserGame do
                 game: object_id(game.id),
                 user: object_id(user.id)
             }
+            Map.put(project_user_game, :itemId, ProjectUserGame.item_id(project_user_game))
+            |> Map.put(:date, BSON.DateTime.from_datetime({GtDate.format(date, :date, :tuple), GtDate.format(date, :microtime, :tuple)}))
         end)
         Mongo.insert_many(Gt.Repo.__mongo_pool__, ProjectUserGame.collection, games)
         Logger.info("Loaded #{__MODULE__} fixtures")
