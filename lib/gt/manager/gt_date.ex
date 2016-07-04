@@ -36,4 +36,9 @@ defmodule Gt.Manager.Date do
         end
         (mega * 1000000 + seconds) * 1000
     end
+
+    def to_bson(date, :date) when is_bitstring(date) do
+        {:ok, date} = Timex.Parse.DateTime.Parser.parse(date, "%Y-%m-%d", :strftime)
+        BSON.DateTime.from_datetime({format(date, :date, :tuple), format(date, :microtime, :tuple)})
+    end
 end

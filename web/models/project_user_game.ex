@@ -80,4 +80,56 @@ defmodule Gt.Model.ProjectUserGame do
         |> :erlang.md5
         |> Base.encode16(case: :lower)
     end
+
+    def netgaming(from, to, project_ids) do
+        Mongo.aggregate(Gt.Repo.__mongo_pool__, @collection, [
+            %{
+                "$match" => %{
+                    "date" => %{
+                        "$exists" => true,
+                        "$gte" => GtDate.to_bson(from, :date),
+                        "$lte" => GtDate.to_bson(to, :date)
+                    },
+                    "project" => %{"$in" => project_ids}
+                }
+            },
+            %{
+                "$project" => %{
+                    "project" => 1,
+                    "date" => %{
+                        "$dateToString" => %{
+                            "format" => "%Y-%m-%d",
+                            "date" => "$date"
+                        }
+                    },
+                    "convertedBets" => 1,
+                    "betsCount" => 1,
+                    "convertedWins" => 1,
+                    "winsCount" => 1,
+                }
+            },
+            %{
+                "$group" => %{
+                    "_id" => %{
+                        "project" => "$project",
+                        "date" => "$date"
+                    },
+                    "betsNumber" => %{"$sum" => "$betsCount"},
+                    "betsAmount" => %{"$sum" => "$convertedBets"},
+                    "winsNumber" => %{"$sum" => "$winsCount"},
+                    "winsAmount" => %{"$sum" => "$convertedWins"},
+                }
+            },
+            %{
+                "$project" => %{
+                    "_id" => 1,
+                    "betsNumber" => 1,
+                    "betsAmount" => 1,
+                    "winsNumber" => 1,
+                    "winsAmount" => 1,
+                    "netgamingAmount" => %{"$subtract" => ["$betsAmount", "$winsAmount"]}
+                }
+            }
+        ])
+    end
 end

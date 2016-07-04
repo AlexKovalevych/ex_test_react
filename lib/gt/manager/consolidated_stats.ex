@@ -1,7 +1,6 @@
 defmodule Gt.Manager.ConsolidatedStats do
     require Logger
-    alias Gt.Model.Payment
-    alias Gt.Model.ProjectUser
+    alias Gt.Model.{Payment, ProjectUser, ProjectUserGame}
 
     def update_stats(from, to, project_ids) do
         Logger.configure([level: :info])
@@ -19,6 +18,11 @@ defmodule Gt.Manager.ConsolidatedStats do
         signups = ProjectUser.signup_stats(from, to, project_ids) |> Enum.to_list
         Logger.info "Updating dashboard signups"
         process_data(signups)
+
+        Logger.info "Aggregating netgaming"
+        netgaming = ProjectUserGame.netgaming(from, to, project_ids) |> Enum.to_list
+        Logger.info "Updating dashboard netgaming"
+        process_data(netgaming)
     end
 
     defp process_data(data) do
