@@ -37676,7 +37676,7 @@ defmodule Gt.Fixtures.Payment do
                 system,
                 type
             ] = payment
-            date = @now |> Timex.subtract(Time.to_timestamp(date_past_days, :days))
+            date = @now |> Timex.shift(days: -date_past_days)
             time = DateTime.set(date, [{:time, {hours, minutes, seconds}}])
             %{
                 item_id: item_id,

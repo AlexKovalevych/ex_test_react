@@ -1,6 +1,8 @@
 defmodule Gt.Manager.ConsolidatedStats do
     require Logger
     alias Gt.Model.{Payment, ProjectUser, ProjectUserGame, PokerGame, ProcessedEvent}
+    alias Gt.Manager.Date, as: GtDate
+    use Timex
 
     defmacrop process_data(name, term) do
         quote do
@@ -17,7 +19,7 @@ defmodule Gt.Manager.ConsolidatedStats do
         end
     end
 
-    def update_stats(from, to, project_ids) do
+    def update_daily_stats(from, to, project_ids) do
         Logger.configure([level: :info])
         process_data("payments", Payment.dashboard_stats(from, to, project_ids))
         process_data("first deposits", ProjectUser.first_deposit_stats(from, to, project_ids))
@@ -25,5 +27,13 @@ defmodule Gt.Manager.ConsolidatedStats do
         process_data("netgaming", ProjectUserGame.netgaming(from, to, project_ids))
         process_data("rake", PokerGame.rake(from, to, project_ids))
         process_data("authorizations", ProcessedEvent.authorizations_by_period(from, to, project_ids))
+    end
+
+    def update_monthly_stats(from, to, project_ids) do
+        diff = GtDate.diff(from, to, :months)
+        interval = Interval.new(from: from, until: [months: diff], step: [months: 1], right_open: false)
+        Enum.each(interval, fn v ->
+            IO.inspect(v)
+        end)
     end
 end

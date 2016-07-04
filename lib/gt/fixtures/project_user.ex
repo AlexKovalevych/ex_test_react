@@ -1049,9 +1049,9 @@ defmodule Gt.Fixtures.ProjectUser do
             cash_real,
             cash_user_real
         ] = project_user
-        reg_date = @now |> Timex.subtract(Time.to_timestamp(reg_past_days, :days))
-        last_date = @now |> Timex.subtract(Time.to_timestamp(last_past_days, :days))
-        first_dep_date = @now |> Timex.subtract(Time.to_timestamp(first_dep_past_days, :days))
+        reg_date = @now |> Timex.shift(days: -reg_past_days)
+        last_date = @now |> Timex.shift(days: -last_past_days)
+        first_dep_date = @now |> Timex.shift(days: -first_dep_past_days)
         if project.title == "Loto 6" do
             item_id = item_id <> "32"
         end

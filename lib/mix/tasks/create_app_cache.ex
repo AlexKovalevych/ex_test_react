@@ -37,7 +37,16 @@ defmodule Mix.Tasks.Gt.AppCache do
             {:ok, object_id} = dump(id)
             object_id
         end)
-        Gt.Manager.ConsolidatedStats.update_stats(from, to, project_ids)
+        Gt.Manager.ConsolidatedStats.update_daily_stats(from, to, project_ids)
+        start_date = GtDate.parse(from, :date)
+        end_date = GtDate.parse(to, :date)
+        start_date = case (start_date.year == end_date.year && start_date.month == end_date.month) do
+            true -> start_date |> Timex.shift(months: -1)
+            false -> start_date
+        end
+        last_date = Timex.Calendar.Gregorian.days_in_month(end_date.year, end_date.month)
+        end_date = end_date |> DateTime.set([{:date, {end_date.year, end_date.month, last_date}}])
+        Gt.Manager.ConsolidatedStats.update_monthly_stats(start_date, end_date, project_ids)
     end
 
     def do_process(_) do
