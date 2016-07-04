@@ -43,4 +43,9 @@ defmodule Gt.Model.PomadoroDataSource do
     def type(:casino_users), do: @type_casino_users
     def type(:poker_bonuses), do: @type_poker_bonuses
     def type(:poker_games), do: @type_poker_games
+
+    def limit(query, number) do
+        from pds in query,
+        limit: ^number
+    end
 end

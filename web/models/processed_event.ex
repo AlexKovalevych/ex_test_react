@@ -1,9 +1,10 @@
 defmodule Gt.Model.ProcessedEvent do
     use Timex
     use Gt.Model
-    alias Gt.Manager.Date, as: GtDate
 
     @collection "processed_events"
+
+    def collection, do: @collection
 
     schema @collection do
         field :item_id, :string
@@ -27,7 +28,6 @@ defmodule Gt.Model.ProcessedEvent do
         item_id
         name
         added_at
-        item_id
         state_id
         date
         time

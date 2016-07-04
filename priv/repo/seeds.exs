@@ -35,7 +35,7 @@ ProjectGame.run()
 ProjectUserGame.run()
 PokerGame.run()
 DataSource.run()
-# ProcessedEvent.run()
+ProcessedEvent.run()
 Payment.run()
 end_time = Time.now
 minutes = to_string(Time.diff(end_time, start_time, :minutes))
