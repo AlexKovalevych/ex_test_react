@@ -1,7 +1,9 @@
 defmodule Gt.Model.Project do
     use Gt.Web, :model
 
-    schema "projects" do
+    @collection "projects"
+
+    schema @collection do
         field :title, :string
         field :prefix, :string
         field :item_id, :string

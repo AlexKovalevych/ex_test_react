@@ -10,7 +10,7 @@
 # We recommend using the bang functions (`insert!`, `update!`
 # and so on) as they will fail if something goes wrong.
 
-alias Gt.Fixtures.{Project, User, ProjectUser, Payment, ProjectGame, ProjectUserGame}
+alias Gt.Fixtures.{Project, User, ProjectUser, Payment, ProjectGame, ProjectUserGame, PokerGame}
 
 use Timex
 require Logger
@@ -23,6 +23,7 @@ User.run()
 ProjectUser.run()
 ProjectGame.run()
 ProjectUserGame.run()
+PokerGame.run()
 Payment.run()
 end_time = Time.now
 minutes = to_string(Time.diff(end_time, start_time, :minutes))

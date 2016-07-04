@@ -1,10 +1,7 @@
 defmodule Gt.Fixtures.ProjectUserGame do
     use Timex
     alias Gt.Repo
-    alias Gt.Model.ProjectUserGame
-    alias Gt.Model.Project
-    alias Gt.Model.ProjectGame
-    alias Gt.Model.ProjectUser
+    alias Gt.Model.{ProjectUserGame, Project, ProjectGame, ProjectUser}
     alias Gt.Manager.Date, as: GtDate
     import Gt.Model, only: [object_id: 1]
     require Logger
