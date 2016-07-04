@@ -1,5 +1,6 @@
 defmodule Gt.Manager.Date do
     use Timex
+    require Logger
 
     def today do
         Timex.Date.today
@@ -40,5 +41,11 @@ defmodule Gt.Manager.Date do
     def to_bson(date, :date) when is_bitstring(date) do
         {:ok, date} = Timex.Parse.DateTime.Parser.parse(date, "%Y-%m-%d", :strftime)
         BSON.DateTime.from_datetime({format(date, :date, :tuple), format(date, :microtime, :tuple)})
+    end
+
+    def log_time_diff(start_time, end_time) do
+        minutes = to_string(Time.diff(end_time, start_time, :minutes))
+        seconds = to_string(Time.diff(end_time, start_time, :seconds))
+        Logger.info "Completed in " <> minutes <> "m " <> seconds <> "s"
     end
 end

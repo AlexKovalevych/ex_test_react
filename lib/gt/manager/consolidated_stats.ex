@@ -30,7 +30,7 @@ defmodule Gt.Manager.ConsolidatedStats do
         process_data(rake)
 
         Logger.info "Updating authorizations"
-        authorizations = ProcessedEvent.authorizations_by_period(from, to, project_ids)
+        authorizations = ProcessedEvent.authorizations_by_period(from, to, project_ids) |> Enum.to_list
         Logger.info "Updating dashboard authorizations"
         process_data(authorizations)
     end

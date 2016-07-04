@@ -40,4 +40,24 @@ defmodule Gt.Model.ProcessedEvent do
         model
         |> cast(params, @required_fields, @optional_fields)
     end
+
+    def authorizations_by_period(from, to, project_ids) do
+        Mongo.aggregate(Gt.Repo.__mongo_pool__, @collection, [
+            %{"$match" => %{
+                "name" => "user_login",
+                "date" => %{
+                    "$gte" => from,
+                    "$lte" => to,
+                },
+                "project" => %{"$in" => project_ids}
+            }},
+            %{"$group" => %{
+                "_id" => %{
+                    "project" => "$project",
+                    "date" => "$date"
+                },
+                "authorizationsNumber" => %{"$sum" => 1}
+            }}
+        ])
+    end
 end

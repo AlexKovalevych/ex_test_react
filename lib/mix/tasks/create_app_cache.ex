@@ -12,9 +12,11 @@ defmodule Mix.Tasks.Gt.AppCache do
     """
 
     def run(args) do
+        start_time = Time.now
         OptionParser.parse(args)
         |> parse_args
         |> do_process
+        GtDate.log_time_diff(start_time, Time.now)
     end
 
     def parse_args(args) do
