@@ -1,6 +1,7 @@
 defmodule Mix.Tasks.Gt.AppCache do
     use Mix.Task
     use Timex
+    use Gt.Task
     alias Gt.Manager.Date, as: GtDate
     alias Gt.Model.Project
     import Gt.Model, only: [object_id: 1]
@@ -10,14 +11,6 @@ defmodule Mix.Tasks.Gt.AppCache do
     @moduledoc """
         This is where we would put any long form documentation or doctests.
     """
-
-    def run(args) do
-        start_time = Time.now
-        OptionParser.parse(args)
-        |> parse_args
-        |> do_process
-        GtDate.log_time_diff(start_time, Time.now)
-    end
 
     def parse_args(args) do
         yesterday = GtDate.yesterday |> GtDate.format(:date)

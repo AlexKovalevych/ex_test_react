@@ -1,26 +1,18 @@
 defmodule Mix.Tasks.Gt.SetUsersStat do
     use Mix.Task
+    use Gt.Task
     use Timex
     alias Gt.Manager.Date, as: GtDate
     alias Gt.Model.{Project, ProjectUser, Payment}
     alias Gt.Repo
     import Gt.Model, only: [object_id: 1]
     import Ecto.Query, only: [from: 1, offset: 3, order_by: 3]
-    require Logger
 
     @shortdoc "Sends a greeting to us from Hello Phoenix"
 
     @moduledoc """
         This is where we would put any long form documentation or doctests.
     """
-
-    def run(args) do
-        start_time = Time.now
-        OptionParser.parse(args)
-        |> parse_args
-        |> do_process
-        GtDate.log_time_diff(start_time, Time.now)
-    end
 
     def parse_args(args) do
         Map.merge(%{:skip => 0, :onlyWithStats => false, :projectIds => []}, Map.new(elem(args, 0)))
@@ -46,7 +38,9 @@ defmodule Mix.Tasks.Gt.SetUsersStat do
         |> offset([pu], ^skip)
         |> Repo.all
 
-        Enum.map(project_users, fn project_user ->
+        total = Enum.count(project_users)
+        Enum.each 1..total, fn i ->
+            project_user = Enum.at(project_users, i - 1)
             user_payments = Payment.by_user_id(object_id(project_user.id))
 
             stat_data = Enum.reduce(user_payments, %{}, fn (payment, acc) ->
@@ -58,8 +52,41 @@ defmodule Mix.Tasks.Gt.SetUsersStat do
                 |> first_dates(payment)
             end)
 
-            IO.inspect(stat_data)
-        end)
+            if Enum.empty?(stat_data) do
+                Mongo.update_one(
+                    Gt.Repo.__mongo_pool__,
+                    ProjectUser.collection,
+                    %{"_id" => object_id(project_user.id)},
+                    %{
+                        "$unset" => %{
+                            "stat" => true,
+                            "last_dep_d" => true,
+                            "first_dep_amount" => true,
+                            "first_dep_d" => true,
+                            "first_wdr_amount" => true,
+                            "first_wdr_d" => true
+                        }
+                    }
+                )
+            else
+                Mongo.update_one(
+                    Gt.Repo.__mongo_pool__,
+                    ProjectUser.collection,
+                    %{"_id" => object_id(project_user.id)},
+                    %{
+                        "$set" => %{
+                            "stat" => stat_data.stat,
+                            "last_dep_d" => Map.get(stat_data, :last_deposit_date, nil),
+                            "first_dep_amount" => Map.get(stat_data, :first_deposit_amount, nil),
+                            "first_dep_d" => Map.get(stat_data, :first_deposit_date, nil),
+                            "first_wdr_amount" => Map.get(stat_data, :first_withdrawal_amount, nil),
+                            "first_wdr_d" => Map.get(stat_data, :first_withdrawal_date, nil)
+                        }
+                    }
+                )
+            end
+            ProgressBar.render(i, total)
+        end
     end
     def do_process(_) do
         IO.puts """
@@ -77,10 +104,7 @@ defmodule Mix.Tasks.Gt.SetUsersStat do
     end
 
     defp last_deposit_date(data, payment) do
-        case Map.has_key?(data, :last_deposit_date) do
-            true -> data
-            false -> Map.put(data, :last_deposit_date, payment["add_d"])
-        end
+        Map.put_new(data, :last_deposit_date, payment["add_d"])
     end
 
     defp type_name(data, payment) do
@@ -101,35 +125,34 @@ defmodule Mix.Tasks.Gt.SetUsersStat do
         type = data[:type_name]
         day = data[:day_date]
         month = data[:month_date]
-        initial_map = Map.put(%{}, type, %{
+        initial_map = %{
             "count" => 0,
             "cash_real" => 0
-        })
+        }
 
         stat = case Map.has_key?(data, :stat) do
             true -> data[:stat]
             false -> %{}
         end
 
-        stat = case Map.has_key?(stat, day) do
-            true -> stat
-            false -> Map.put(stat, :day_date, initial_map)
-        end
-        stat = case Map.has_key?(stat, month) do
-            true -> stat
-            false -> Map.put(stat, :month_date, initial_map)
-        end
-        stat = case Map.has_key?(stat, "total") do
-            true -> stat
-            false -> Map.put(stat, "total", initial_map)
-        end
+        day_stat =  Map.get(stat, day, %{}) |> Map.put_new(type, initial_map)
+        month_stat = Map.get(stat, month, %{}) |> Map.put_new(type, initial_map)
+        total_stat = Map.get(stat, "total", %{}) |> Map.put_new(type, initial_map)
 
-        put_in(stat, [day, type, "count"], stat[day][type]["count"] + 1)
+        stat = stat
+        |> Map.put(day, day_stat)
+        |> Map.put(month, month_stat)
+        |> Map.put("total", total_stat)
+
+        stat = stat
+        |> put_in([day, type, "count"], stat[day][type]["count"] + 1)
         |> put_in([month, type, "count"], stat[month][type]["count"] + 1)
         |> put_in(["total", type, "count"], stat["total"][type]["count"] + 1)
         |> put_in([day, type, "cash_real"], stat[day][type]["cash_real"] + payment["goods"]["cash_real"])
         |> put_in([month, type, "cash_real"], stat[month][type]["cash_real"] + payment["goods"]["cash_real"])
         |> put_in(["total", type, "cash_real"], stat["total"][type]["cash_real"] + payment["goods"]["cash_real"])
+
+        Map.put(data, :stat, stat)
     end
 
     defp first_dates(data, payment) do
