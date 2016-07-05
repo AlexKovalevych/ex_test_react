@@ -16,6 +16,11 @@ defmodule Gt.Model.Payment do
     @type_bonus 3
     @type_refund 4
 
+    def type(:deposit), do: @type_deposit
+    def type(:cashout), do: @type_cashout
+    def type(:bonus), do: @type_bonus
+    def type(:refund), do: @type_refund
+
     @traffic_sources [:buying, :webmasters, :internal, :noref]
 
     schema @collection do
@@ -272,5 +277,20 @@ defmodule Gt.Model.Payment do
                 }
             }
         ], [{:allow_disk_use, true}])
+    end
+
+    def user_id(query, user_id) do
+        from p in query,
+        where: p.user == ^user_id
+    end
+
+    def by_user_id(project_user_id) do
+        Mongo.find(Gt.Repo.__mongo_pool__, @collection, %{
+            "user" => project_user_id,
+            "type" => %{"$in" => [@type_deposit, @type_cashout]},
+            "state" => @state_approved,
+            "add_t" => %{"$exists" => true},
+            "goods.cash_real" => %{"$exists" => true}
+        }, sort: %{"add_t": -1})
     end
 end

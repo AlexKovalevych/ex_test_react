@@ -2,9 +2,10 @@ defmodule Mix.Tasks.Gt.SetUsersStat do
     use Mix.Task
     use Timex
     alias Gt.Manager.Date, as: GtDate
-    alias Gt.Model.{Project, ProjectUser}
+    alias Gt.Model.{Project, ProjectUser, Payment}
     alias Gt.Repo
-    import Ecto.Query, only: [offset: 3, order_by: 3]
+    import Gt.Model, only: [object_id: 1]
+    import Ecto.Query, only: [from: 1, offset: 3, order_by: 3]
     require Logger
 
     @shortdoc "Sends a greeting to us from Hello Phoenix"
@@ -45,18 +46,21 @@ defmodule Mix.Tasks.Gt.SetUsersStat do
         |> offset([pu], ^skip)
         |> Repo.all
 
-        # Gt.Manager.ConsolidatedStats.update_daily_stats(from, to, project_ids)
-        # start_date = GtDate.parse(from, :date)
-        # end_date = GtDate.parse(to, :date)
-        # start_date = case (start_date.year == end_date.year && start_date.month == end_date.month) do
-        #     true -> start_date |> Timex.shift(months: -1)
-        #     false -> start_date
-        # end
-        # last_date = Timex.Calendar.Gregorian.days_in_month(end_date.year, end_date.month)
-        # end_date = end_date |> DateTime.set([{:date, {end_date.year, end_date.month, last_date}}])
-        # Gt.Manager.ConsolidatedStats.update_monthly_stats(start_date, end_date, project_ids)
-    end
+        Enum.map(project_users, fn project_user ->
+            user_payments = Payment.by_user_id(object_id(project_user.id))
 
+            stat_data = Enum.reduce(user_payments, %{}, fn (payment, acc) ->
+                acc
+                |> last_deposit_date(payment)
+                |> type_name(payment)
+                |> day_date(payment)
+                |> stat(payment)
+                |> first_dates(payment)
+            end)
+
+            IO.inspect(stat_data)
+        end)
+    end
     def do_process(_) do
         IO.puts """
             Usage:
@@ -70,5 +74,72 @@ defmodule Mix.Tasks.Gt.SetUsersStat do
         """
 
         System.halt(0)
+    end
+
+    defp last_deposit_date(data, payment) do
+        case Map.has_key?(data, :last_deposit_date) do
+            true -> data
+            false -> Map.put(data, :last_deposit_date, payment["add_d"])
+        end
+    end
+
+    defp type_name(data, payment) do
+        type = cond do
+            payment["type"] == Payment.type(:deposit) -> "dep"
+            payment["type"] == Payment.type(:cashout) -> "wdr"
+        end
+        Map.put(data, :type_name, type)
+    end
+
+    defp day_date(data, payment) do
+        date = DateTime.from_milliseconds(payment["add_t"])
+        Map.put(data, :day_date, GtDate.format(date, :stat_date))
+        |> Map.put(:month_date, GtDate.format(date, :stat_month))
+    end
+
+    defp stat(data, payment) do
+        type = data[:type_name]
+        day = data[:day_date]
+        month = data[:month_date]
+        initial_map = Map.put(%{}, type, %{
+            "count" => 0,
+            "cash_real" => 0
+        })
+
+        stat = case Map.has_key?(data, :stat) do
+            true -> data[:stat]
+            false -> %{}
+        end
+
+        stat = case Map.has_key?(stat, day) do
+            true -> stat
+            false -> Map.put(stat, :day_date, initial_map)
+        end
+        stat = case Map.has_key?(stat, month) do
+            true -> stat
+            false -> Map.put(stat, :month_date, initial_map)
+        end
+        stat = case Map.has_key?(stat, "total") do
+            true -> stat
+            false -> Map.put(stat, "total", initial_map)
+        end
+
+        put_in(stat, [day, type, "count"], stat[day][type]["count"] + 1)
+        |> put_in([month, type, "count"], stat[month][type]["count"] + 1)
+        |> put_in(["total", type, "count"], stat["total"][type]["count"] + 1)
+        |> put_in([day, type, "cash_real"], stat[day][type]["cash_real"] + payment["goods"]["cash_real"])
+        |> put_in([month, type, "cash_real"], stat[month][type]["cash_real"] + payment["goods"]["cash_real"])
+        |> put_in(["total", type, "cash_real"], stat["total"][type]["cash_real"] + payment["goods"]["cash_real"])
+    end
+
+    defp first_dates(data, payment) do
+        cond do
+            payment["type"] == Payment.type(:deposit) ->
+                Map.put(data, :first_deposit_date, payment["add_d"])
+                |> Map.put(:first_deposit_amount, payment["goods"]["cash_real"])
+            payment["type"] == Payment.type(:cashout) ->
+                Map.put(data, :first_withdrawal_date, payment["add_d"])
+                |> Map.put(:first_withdrawal_amount, payment["goods"]["cash_real"])
+        end
     end
 end

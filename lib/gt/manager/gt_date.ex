@@ -5,6 +5,8 @@ defmodule Gt.Manager.Date do
     @date_format "%Y-%m-%d"
     @month_format "%Y-%m"
     @time_format "%H-%M-%S"
+    @stat_day_format "%y_%m_%d"
+    @stat_month_format "%y_%m"
 
     def today do
         Timex.Date.today
@@ -26,6 +28,12 @@ defmodule Gt.Manager.Date do
     end
     def format(date, :month) do
         Timex.format!(date, @month_format, :strftime)
+    end
+    def format(date, :stat_date) do
+        Timex.format!(date, @stat_day_format, :strftime)
+    end
+    def format(date, :stat_month) do
+        Timex.format!(date, @stat_month_format, :strftime)
     end
     def format(date, :date, :tuple) do
         {date.year, date.month, date.day}
