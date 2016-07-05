@@ -38,7 +38,11 @@ defmodule Gt.Model.ProjectGame do
         Regex.match?(~r/^.+_mob$/, name)
     end
 
-    def by_project_id(query, project_id) do
+    def projects(query, project_ids) when is_list(project_ids) do
+        from pg in query,
+        where: pg.project in ^project_ids
+    end
+    def projects(query, project_id) do
         from pg in query,
         where: pg.project == ^project_id
     end
