@@ -2868,11 +2868,11 @@ defmodule Gt.Fixtures.ProjectUserGame do
             |> Timex.subtract(Time.to_timestamp(days, :days))
             |> DateTime.set([{:time, {hours, minutes, seconds}}])
             user = ProjectUser
-            |> ProjectUser.by_project_id(projects[project_prefix])
+            |> ProjectUser.projects(projects[project_prefix])
             |> ProjectUser.by_item_id(user_id)
             |> Repo.one
             game = ProjectGame
-            |> ProjectGame.by_project_id(projects[project_prefix])
+            |> ProjectGame.projects(projects[project_prefix])
             |> ProjectGame.by_name(game_ref)
             |> ProjectGame.limit(1)
             |> Repo.one

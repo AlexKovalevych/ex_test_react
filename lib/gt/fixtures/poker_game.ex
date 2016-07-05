@@ -1460,7 +1460,7 @@ defmodule Gt.Fixtures.PokerGame do
             |> Timex.subtract(Time.to_timestamp(endDays, :days))
             |> DateTime.set([{:time, {endHours, endMinutes, endSeconds}}])
             user = ProjectUser
-            |> ProjectUser.by_project_id(project.id)
+            |> ProjectUser.projects(project.id)
             |> ProjectUser.by_item_id(user_item_id)
             |> Repo.one
             poker_game = %{

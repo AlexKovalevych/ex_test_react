@@ -1,5 +1,6 @@
 defmodule Gt.Model.ConsolidatedStats do
     use Gt.Web, :model
+    alias Gt.Manager.Date, as: GtDate
 
     @collection "consolidated_stats"
 
@@ -18,6 +19,7 @@ defmodule Gt.Model.ConsolidatedStats do
         field :averageDeposit, :float
         field :averageArpu, :float
         field :averageFirstDeposit, :float
+        field :netgamingAmount, :integer
         field :betsAmount, :float
         field :winsAmount, :float
         field :betsNumber, :integer
@@ -44,6 +46,7 @@ defmodule Gt.Model.ConsolidatedStats do
         averageDeposit
         averageArpu
         averageFirstDeposit
+        netgamingAmount
         betsAmount
         winsAmount
         betsNumber
@@ -72,5 +75,82 @@ defmodule Gt.Model.ConsolidatedStats do
             },
             [{:upsert, true}]
         )
+    end
+
+    def monthly_by_interval(from, to) do
+        Mongo.aggregate(Gt.Repo.__mongo_pool__, @collection, [
+            %{"$match" => %{
+                "date" => %{
+                    "$gte" => GtDate.format(from, :date),
+                    "$lte" => GtDate.format(to, :date)
+                }
+            }} ,
+            %{"$group" => %{
+                "_id" => %{
+                    "project" => "$project",
+                    "month" => %{"$substr" => ["$date", 0, 7]},
+                },
+                "paymentsAmount" => %{"$sum" => "$paymentsAmount"},
+                "paymentsNumber" => %{"$sum" => "$paymentsNumber"},
+                "depositsAmount" => %{"$sum" => "$depositsAmount"},
+                "cashoutsAmount" => %{"$sum" => "$cashoutsAmount"},
+                "cashoutsNumber" => %{"$sum" => "$cashoutsNumber"},
+                "depositsNumber" => %{"$sum" => "$depositsNumber"},
+                "firstDepositorsNumber" => %{"$sum" => "$firstDepositorsNumber"},
+                "firstDepositsAmount" => %{"$sum" => "$firstDepositsAmount"},
+                "signupsNumber" => %{"$sum" => "$signupsNumber"},
+                "netgamingAmount" => %{"$sum" => "$netgamingAmount"},
+                "betsAmount" => %{"$sum" => "$betsAmount"},
+                "winsAmount" => %{"$sum" => "$winsAmount"},
+                "rakeAmount" => %{"$sum" => "$rakeAmount"},
+                "authorizationsNumber" => %{"$sum" => "$authorizationsNumber"},
+            }},
+            %{"$project" => %{
+                "_id" => 1,
+                "month" => %{
+                    "month" => "$_id.month",
+                    "paymentsAmount" => "$paymentsAmount",
+                    "paymentsNumber" => "$paymentsNumber",
+                    "depositsAmount" => "$depositsAmount",
+                    "cashoutsAmount" => "$cashoutsAmount",
+                    "cashoutsNumber" => "$cashoutsNumber",
+                    "averagePayment" => %{
+                        "$cond" => [
+                            %{"$eq" => ["$paymentsNumber", 0]},
+                            0,
+                            %{"$divide" => ["$paymentsAmount", "$paymentsNumber"]}
+                        ]
+                    },
+                    "averageDeposit" => %{
+                        "$cond" => [
+                            %{"$eq" => ["$depositsNumber", 0]},
+                            0,
+                            %{"$divide" => ["$depositsAmount", "$depositsNumber"]}
+                        ]
+                    },
+                    "averageFirstDeposit" => %{
+                        "$cond" => [
+                            %{"$eq" => ["$firstDepositorsNumber", 0]},
+                            0,
+                            %{"$divide" => ["$firstDepositsAmount", "$firstDepositorsNumber"]}
+                        ]
+                    },
+                    "depositsNumber" => "$depositsNumber",
+                    "depositorsNumber" => "$depositorsNumber",
+                    "firstDepositorsNumber" => "$firstDepositorsNumber",
+                    "firstDepositsAmount" => "$firstDepositsAmount",
+                    "signupsNumber" => "$signupsNumber",
+                    "netgamingAmount" => "$netgamingAmount",
+                    "betsAmount" => "$betsAmount",
+                    "winsAmount" => "$winsAmount",
+                    "rakeAmount" => "$rakeAmount",
+                    "authorizationsNumber" => "$authorizationsNumber"
+                }
+            }},
+            %{'$group' => %{
+                "_id" => "$_id.project",
+                "months" => %{"$push" => "$month"}
+            }}
+        ])
     end
 end

@@ -1,7 +1,16 @@
 defmodule Gt.Manager.ConsolidatedStats do
     require Logger
-    alias Gt.Model.{Payment, ProjectUser, ProjectUserGame, PokerGame, ProcessedEvent}
+    alias Gt.Model.{
+        Payment,
+        ProjectUser,
+        ProjectUserGame,
+        PokerGame,
+        ProcessedEvent,
+        ConsolidatedStats,
+        ConsolidatedStatsMonthly
+    }
     alias Gt.Manager.Date, as: GtDate
+    alias Gt.Repo
     use Timex
 
     defmacrop process_data(name, term) do
@@ -13,7 +22,7 @@ defmodule Gt.Manager.ConsolidatedStats do
             total = length(data)
             Enum.each 1..total, fn i ->
                 project_day = Enum.at(data, i - 1)
-                Gt.Model.ConsolidatedStats.upsert_project_date(project_day["_id"], Map.drop(project_day, ["_id"]))
+                ConsolidatedStats.upsert_project_date(project_day["_id"], Map.drop(project_day, ["_id"]))
                 ProgressBar.render(i, total)
             end
         end
@@ -32,8 +41,32 @@ defmodule Gt.Manager.ConsolidatedStats do
     def update_monthly_stats(from, to, project_ids) do
         diff = GtDate.diff(from, to, :months)
         interval = Interval.new(from: from, until: [months: diff], step: [months: 1], right_open: false)
-        Enum.each(interval, fn v ->
-            IO.inspect(v)
+        periods = Enum.map(interval, fn month ->
+            from = month
+            last_date = Timex.Calendar.Gregorian.days_in_month(from.year, from.month)
+            to = from |> DateTime.set([{:date, {from.year, from.month, last_date}}])
+            {from, to}
+        end)
+        stats = Enum.map(periods, fn {from, to} ->
+            ConsolidatedStats.monthly_by_interval(from, to)
+        end)
+        months = Enum.map(interval, fn datetime ->
+            GtDate.format(datetime, :month)
+        end)
+        ConsolidatedStatsMonthly
+        |> ConsolidatedStatsMonthly.months(months)
+        |> ConsolidatedStatsMonthly.project_ids
+        |> Repo.delete
+        Enum.map(periods, fn {from, to} ->
+            Enum.map(project_ids, fn project_id ->
+                Repo.insert!(ConsolidatedStatsMonthly.changeset(%ConsolidatedStatsMonthly{}, %{
+                    project: project_id,
+                    month: GtDate.format(from, :month),
+                    # vipLevels:
+                    # depositorsNumber:
+                    # transactorsNumber:
+                }))
+            end)
         end)
     end
 end

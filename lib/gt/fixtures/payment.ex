@@ -37660,7 +37660,7 @@ defmodule Gt.Fixtures.Payment do
             user_item_id = user_item_id <> "32"
         end
         user = ProjectUser
-        |> ProjectUser.by_project_id(project.id)
+        |> ProjectUser.projects(project.id)
         |> ProjectUser.by_item_id(user_item_id)
         |> Repo.one
         payments = Enum.map(data, fn payment ->

@@ -3,6 +3,7 @@ defmodule Gt.Manager.Date do
     require Logger
 
     @date_format "%Y-%m-%d"
+    @month_format "%Y-%m"
     @time_format "%H-%M-%S"
 
     def today do
@@ -22,6 +23,9 @@ defmodule Gt.Manager.Date do
     end
     def format(date, :time) do
         Timex.format!(date, @time_format, :strftime)
+    end
+    def format(date, :month) do
+        Timex.format!(date, @month_format, :strftime)
     end
     def format(date, :date, :tuple) do
         {date.year, date.month, date.day}

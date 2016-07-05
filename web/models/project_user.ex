@@ -121,7 +121,11 @@ defmodule Gt.Model.ProjectUser do
         |> cast(params, @required_fields, @optional_fields)
     end
 
-    def by_project_id(query, project_id) do
+    def projects(query, project_ids) when is_list(project_ids) do
+        from pu in query,
+        where: pu.project in ^project_ids
+    end
+    def projects(query, project_id) do
         from pu in query,
         where: pu.project == ^project_id
     end
@@ -129,6 +133,11 @@ defmodule Gt.Model.ProjectUser do
     def by_item_id(query, item_id) do
         from pu in query,
         where: pu.item_id == ^item_id
+    end
+
+    def stat_exists(query, value \\ true) do
+        from pu in query,
+        where: fragment("$exists": "stat")
     end
 
     def first_deposit_stats(from, to, project_ids) do
