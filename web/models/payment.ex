@@ -284,13 +284,34 @@ defmodule Gt.Model.Payment do
         where: p.user == ^user_id
     end
 
-    def by_user_id(project_user_id) do
+    def by_user_id(project_user_id, fields \\ []) do
         Mongo.find(Gt.Repo.__mongo_pool__, @collection, %{
             "user" => project_user_id,
             "type" => %{"$in" => [@type_deposit, @type_cashout]},
             "state" => @state_approved,
             "add_t" => %{"$exists" => true},
             "goods.cash_real" => %{"$exists" => true}
-        }, sort: %{"add_t": -1})
+        }, sort: %{"add_t": -1}, projection: fields)
+    end
+
+    def last_deposit(project_user_id) do
+        from p in __MODULE__,
+        where: p.user == ^project_user_id,
+        order_by: [desc: p.add_t],
+        limit: 1
+    end
+
+    def first_deposit(project_user_id) do
+        from p in __MODULE__,
+        where: p.user == ^project_user_id and p.type == ^@type_deposit,
+        order_by: [asc: p.add_t],
+        limit: 1
+    end
+
+    def first_withdrawal(project_user_id) do
+        from p in __MODULE__,
+        where: p.user == ^project_user_id and p.type == ^@type_cashout,
+        order_by: [asc: p.add_t],
+        limit: 1
     end
 end

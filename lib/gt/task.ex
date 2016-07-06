@@ -5,7 +5,9 @@ defmodule Gt.Task do
 
     defmacro __using__(_) do
         quote do
+            use Mix.Task
             def run(args) do
+                Gt.start_repo_supervisor
                 Logger.configure([level: :info])
                 start_time = Time.now
                 OptionParser.parse(args)

@@ -1,5 +1,4 @@
 defmodule Mix.Tasks.Gt.AppCache do
-    use Mix.Task
     use Timex
     use Gt.Task
     alias Gt.Manager.Date, as: GtDate
@@ -19,7 +18,6 @@ defmodule Mix.Tasks.Gt.AppCache do
     end
 
     def do_process(%{:from => from, :to => to, :projects => projects}) do
-        Gt.start_repo_supervisor
         project_ids = case length(projects) do
             0 -> Project
                 |> Project.get_ids

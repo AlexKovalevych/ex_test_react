@@ -46,12 +46,29 @@ defmodule Gt.Manager.Date do
     end
 
     def parse(date, :date) do
-        {:ok, parsed_date} = Timex.parse(date, @date_format, :strftime)
-        parsed_date
+        Timex.parse!(date, @date_format, :strftime)
+    end
+    def parse(date, :stat_day) do
+        Timex.parse!(date, @stat_day_format, :strftime)
     end
 
     def diff(start_date, end_date, :months) do
         Timex.diff(start_date, end_date, :months)
+    end
+
+    def convert(date, :stat_day, :date) do
+        [year, month, day] = String.split(date, "_")
+        "20#{year}-#{month}-#{day}"
+    end
+    def convert(date, :date, :stat_day) do
+        [year, month, day] = String.split(date, "-")
+        year = String.slice(year, 2..3)
+        "#{year}_#{month}_#{day}"
+    end
+    def convert(date, :date, :stat_month) do
+        [year, month, _] = String.split(date, "-")
+        year = String.slice(year, 2..3)
+        "#{year}_#{month}"
     end
 
     def timestamp(date) do

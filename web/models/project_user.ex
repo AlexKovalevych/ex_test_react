@@ -1,6 +1,20 @@
 defmodule Gt.Model.ProjectUser do
     use Gt.Web, :model
 
+    @vip_level_1000 1000
+    @vip_level_1500 1500
+    @vip_level_2500 2500
+    @vip_level_5000 5000
+
+    def vip_level_options do
+        [
+            @vip_level_1000,
+            @vip_level_1500,
+            @vip_level_2500,
+            @vip_level_5000
+        ]
+    end
+
     @collection "project_users"
 
     def collection, do: @collection
@@ -135,7 +149,7 @@ defmodule Gt.Model.ProjectUser do
         where: pu.item_id == ^item_id
     end
 
-    def stat_exists(query, value \\ true) do
+    def stat_exists(query) do
         from pu in query,
         where: fragment("$exists": "stat")
     end
@@ -160,6 +174,13 @@ defmodule Gt.Model.ProjectUser do
                 "signupsNumber" => %{"$sum" => 1}
             }}
         ])
+    end
+
+    def vip_levels do
+        Mongo.find(Gt.Repo.__mongo_pool__, @collection, %{
+            "stat" => %{"$exists" => true},
+            "stat.total.dep.cash_real" => %{"$gte" => @vip_level_1000}
+        }, sort: %{"_id" => 1})
     end
 
     defp dashboard_match(from, to, project_ids) do

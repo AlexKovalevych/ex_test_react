@@ -1,5 +1,4 @@
 defmodule Mix.Tasks.Gt.SetUsersStat do
-    use Mix.Task
     use Gt.Task
     use Timex
     alias Gt.Manager.Date, as: GtDate
@@ -19,7 +18,6 @@ defmodule Mix.Tasks.Gt.SetUsersStat do
     end
 
     def do_process(%{:skip => skip, :onlyWithStats => onlyWithStats, :projectIds => projectIds}) do
-        Gt.start_repo_supervisor
         project_ids = case length(projectIds) do
             0 -> Project
                 |> Project.get_ids
@@ -37,22 +35,17 @@ defmodule Mix.Tasks.Gt.SetUsersStat do
         |> order_by([pu], asc: pu.id)
         |> offset([pu], ^skip)
         |> Repo.all
+        |> Enum.to_list
 
         total = Enum.count(project_users)
         Enum.each 1..total, fn i ->
             project_user = Enum.at(project_users, i - 1)
-            user_payments = Payment.by_user_id(object_id(project_user.id))
-
-            stat_data = Enum.reduce(user_payments, %{}, fn (payment, acc) ->
-                acc
-                |> last_deposit_date(payment)
-                |> type_name(payment)
-                |> day_date(payment)
-                |> stat(payment)
-                |> first_dates(payment)
-            end)
-
-            if Enum.empty?(stat_data) do
+            project_user_id = object_id(project_user.id)
+            user_payments = Payment.by_user_id(
+                project_user_id,
+                %{"_id" => false, "add_d" => true, "goods" => true, "type" => true, "add_t" => true})
+            |> Enum.to_list
+            if Enum.empty?(user_payments) do
                 Mongo.update_one(
                     Gt.Repo.__mongo_pool__,
                     ProjectUser.collection,
@@ -69,22 +62,50 @@ defmodule Mix.Tasks.Gt.SetUsersStat do
                     }
                 )
             else
+                last_deposit = Payment.last_deposit(project_user.id) |> Repo.one
+                last_deposit_date = case is_map(last_deposit) do
+                    true -> last_deposit.add_d
+                    false -> nil
+                end
+                first_deposit = Payment.first_deposit(project_user.id) |> Repo.one
+                [first_deposit_amount, first_deposit_date] = case is_map(first_deposit) do
+                    true -> [first_deposit.goods["cash_real"], first_deposit.add_d]
+                    false -> [nil, nil]
+                end
+                first_withdrawal = Payment.first_withdrawal(project_user.id) |> Repo.one
+                [first_withdrawal_amount, first_withdrawal_date] = case is_map(first_withdrawal) do
+                    true -> [first_withdrawal.goods["cash_real"], first_withdrawal.add_d]
+                    false -> [nil, nil]
+                end
+                stat = Enum.reduce(user_payments, %{}, fn (payment, acc) ->
+                    type = type_name(payment)
+                    {day, month} = day_date(payment)
+                    sum = payment["goods"]["cash_real"]
+                    day_stat = stat(get_in(acc, [day]), type, sum)
+                    month_stat = stat(get_in(acc, [month]), type, sum)
+                    total_stat = stat(get_in(acc, ["total"]), type, sum)
+                    acc
+                    |> Map.put(day, day_stat)
+                    |> Map.put(month, month_stat)
+                    |> Map.put("total", total_stat)
+                end)
                 Mongo.update_one(
                     Gt.Repo.__mongo_pool__,
                     ProjectUser.collection,
                     %{"_id" => object_id(project_user.id)},
                     %{
                         "$set" => %{
-                            "stat" => stat_data.stat,
-                            "last_dep_d" => Map.get(stat_data, :last_deposit_date, nil),
-                            "first_dep_amount" => Map.get(stat_data, :first_deposit_amount, nil),
-                            "first_dep_d" => Map.get(stat_data, :first_deposit_date, nil),
-                            "first_wdr_amount" => Map.get(stat_data, :first_withdrawal_amount, nil),
-                            "first_wdr_d" => Map.get(stat_data, :first_withdrawal_date, nil)
+                            "stat" => stat,
+                            "last_dep_d" => last_deposit_date,
+                            "first_dep_amount" => first_deposit_amount,
+                            "first_dep_d" => first_deposit_date,
+                            "first_wdr_amount" => first_withdrawal_amount,
+                            "first_wdr_d" => first_withdrawal_date
                         }
                     }
                 )
             end
+
             ProgressBar.render(i, total)
         end
     end
@@ -103,66 +124,34 @@ defmodule Mix.Tasks.Gt.SetUsersStat do
         System.halt(0)
     end
 
-    defp last_deposit_date(data, payment) do
-        Map.put_new(data, :last_deposit_date, payment["add_d"])
-    end
-
-    defp type_name(data, payment) do
-        type = cond do
+    defp type_name(payment) do
+        cond do
             payment["type"] == Payment.type(:deposit) -> "dep"
             payment["type"] == Payment.type(:cashout) -> "wdr"
         end
-        Map.put(data, :type_name, type)
     end
 
-    defp day_date(data, payment) do
-        date = DateTime.from_milliseconds(payment["add_t"])
-        Map.put(data, :day_date, GtDate.format(date, :stat_date))
-        |> Map.put(:month_date, GtDate.format(date, :stat_month))
+    defp day_date(payment) do
+        date = payment["add_d"]
+        {GtDate.convert(date, :date, :stat_day), GtDate.convert(date, :date, :stat_month)}
     end
 
-    defp stat(data, payment) do
-        type = data[:type_name]
-        day = data[:day_date]
-        month = data[:month_date]
-        initial_map = %{
-            "count" => 0,
-            "cash_real" => 0
+    defp initial_map(type, sum) do
+        %{
+            type => %{
+                "cash_real" => sum,
+                "count" => 1
+            }
         }
-
-        stat = case Map.has_key?(data, :stat) do
-            true -> data[:stat]
-            false -> %{}
-        end
-
-        day_stat =  Map.get(stat, day, %{}) |> Map.put_new(type, initial_map)
-        month_stat = Map.get(stat, month, %{}) |> Map.put_new(type, initial_map)
-        total_stat = Map.get(stat, "total", %{}) |> Map.put_new(type, initial_map)
-
-        stat = stat
-        |> Map.put(day, day_stat)
-        |> Map.put(month, month_stat)
-        |> Map.put("total", total_stat)
-
-        stat = stat
-        |> put_in([day, type, "count"], stat[day][type]["count"] + 1)
-        |> put_in([month, type, "count"], stat[month][type]["count"] + 1)
-        |> put_in(["total", type, "count"], stat["total"][type]["count"] + 1)
-        |> put_in([day, type, "cash_real"], stat[day][type]["cash_real"] + payment["goods"]["cash_real"])
-        |> put_in([month, type, "cash_real"], stat[month][type]["cash_real"] + payment["goods"]["cash_real"])
-        |> put_in(["total", type, "cash_real"], stat["total"][type]["cash_real"] + payment["goods"]["cash_real"])
-
-        Map.put(data, :stat, stat)
     end
 
-    defp first_dates(data, payment) do
-        cond do
-            payment["type"] == Payment.type(:deposit) ->
-                Map.put(data, :first_deposit_date, payment["add_d"])
-                |> Map.put(:first_deposit_amount, payment["goods"]["cash_real"])
-            payment["type"] == Payment.type(:cashout) ->
-                Map.put(data, :first_withdrawal_date, payment["add_d"])
-                |> Map.put(:first_withdrawal_amount, payment["goods"]["cash_real"])
+    defp stat(nil, type, sum), do: initial_map(type, sum)
+    defp stat(stat, type, sum) do
+        case Map.has_key?(stat, type) do
+            true ->
+                put_in(stat, [type, "count"], stat[type]["count"] + 1)
+                |> put_in([type, "cash_real"], stat[type]["cash_real"] + sum)
+            false -> Map.merge(stat, initial_map(type, sum))
         end
     end
 end
