@@ -314,4 +314,34 @@ defmodule Gt.Model.Payment do
         order_by: [asc: p.add_t],
         limit: 1
     end
+
+    def depositors_number_by_period(from, to, project_ids) when is_list(project_ids) do
+        project_match = cond do
+            is_list(project_ids) -> %{"$in" => project_ids}
+            true ->project_ids
+        end
+        Mongo.aggregate(Gt.Repo.__mongo_pool__, @collection, [
+            %{"$match" => %{
+                "state" => @state_approved,
+                "type" => @type_deposit,
+                "add_d" => %{
+                    "$gte" => from,
+                    "$lte" => to
+                },
+                "project" => project_match
+            }},
+            %{"$group" => %{
+                "_id" => "$project",
+                "users" => %{"$addToSet" => "$user"}
+            }},
+            %{"$project" => %{
+                "_id" => "$_id",
+                "depositorsNumber" => %{"$size" => "$users"}
+            }}
+        ])
+    end
+
+    def transactors_number_by_period(from, to, project_ids) do
+
+    end
 end
