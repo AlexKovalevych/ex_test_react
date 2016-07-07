@@ -24,7 +24,6 @@ alias Gt.Fixtures.{
 
 use Timex
 require Logger
-alias Gt.Manager.Date, as: GtDate
 
 start_time = Time.now
 Mongo.Ecto.truncate(Gt.Repo)
@@ -38,4 +37,4 @@ PokerGame.run()
 DataSource.run()
 ProcessedEvent.run()
 Payment.run()
-GtDate.log_time_diff(start_time, Time.now)
+Gt.Task.log_time_diff(start_time, Time.now)

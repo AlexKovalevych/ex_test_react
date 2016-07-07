@@ -1,16 +1,16 @@
 defmodule Mix.Tasks.Gt.SetVipUsers do
     use Gt.Task
-    use Timex
     alias Gt.Manager.Date, as: GtDate
     alias Gt.Model.{ProjectUser}
     alias Gt.Repo
-    require Logger
 
-    @shortdoc "Sends a greeting to us from Hello Phoenix"
+    @shortdoc "Set vip users"
 
     @moduledoc """
         This is where we would put any long form documentation or doctests.
     """
+
+    def title, do: @shortdoc
 
     def parse_args(_), do: :ok
 

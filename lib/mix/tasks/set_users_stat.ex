@@ -1,17 +1,18 @@
 defmodule Mix.Tasks.Gt.SetUsersStat do
     use Gt.Task
-    use Timex
     alias Gt.Manager.Date, as: GtDate
     alias Gt.Model.{Project, ProjectUser, Payment}
     alias Gt.Repo
     import Gt.Model, only: [object_id: 1]
     import Ecto.Query, only: [from: 1, offset: 3, order_by: 3]
 
-    @shortdoc "Sends a greeting to us from Hello Phoenix"
+    @shortdoc "Set users stat"
 
     @moduledoc """
         This is where we would put any long form documentation or doctests.
     """
+
+    def title, do: @shortdoc
 
     def parse_args(args) do
         Map.merge(%{:skip => 0, :onlyWithStats => false, :projectIds => []}, Map.new(elem(args, 0)))

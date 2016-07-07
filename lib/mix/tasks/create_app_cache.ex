@@ -1,15 +1,16 @@
 defmodule Mix.Tasks.Gt.AppCache do
-    use Timex
     use Gt.Task
     alias Gt.Manager.Date, as: GtDate
     alias Gt.Model.Project
     import Gt.Model, only: [object_id: 1]
 
-    @shortdoc "Sends a greeting to us from Hello Phoenix"
+    @shortdoc "Create app cache"
 
     @moduledoc """
         This is where we would put any long form documentation or doctests.
     """
+
+    def title, do: @shortdoc
 
     def parse_args(args) do
         yesterday = GtDate.yesterday |> GtDate.format(:date)

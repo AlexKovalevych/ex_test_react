@@ -1,6 +1,5 @@
 defmodule Gt.Manager.Date do
     use Timex
-    require Logger
 
     @date_format "%Y-%m-%d"
     @month_format "%Y-%m"
@@ -85,11 +84,5 @@ defmodule Gt.Manager.Date do
             format(parsed_date, :date, :tuple),
             format(parsed_date, :microtime, :tuple)
         })
-    end
-
-    def log_time_diff(start_time, end_time) do
-        minutes = to_string(Time.diff(end_time, start_time, :minutes))
-        seconds = to_string(Time.diff(end_time, start_time, :seconds))
-        Logger.info "Completed in " <> minutes <> "m " <> seconds <> "s"
     end
 end

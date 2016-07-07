@@ -59,7 +59,18 @@ defmodule Gt.Mixfile do
     #
     # See the documentation for `Mix` for more info on aliases.
     defp aliases do
-        ["ecto.setup": ["ecto.create", "ecto.migrate", "run priv/repo/seeds.exs"],
-         "ecto.reset": ["ecto.drop", "ecto.setup"]]
+        [
+            "ecto.setup": [
+                "ecto.create",
+                "ecto.migrate",
+                "run priv/repo/seeds.exs",
+                "gt.set_users_stat",
+                "gt.set_vip_users"
+            ],
+            "ecto.reset": [
+                "ecto.drop",
+                "ecto.setup"
+            ]
+        ]
     end
 end
