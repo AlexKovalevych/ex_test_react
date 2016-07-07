@@ -36,16 +36,13 @@ defmodule Mix.Tasks.Gt.SetUsersStat do
         |> order_by([pu], asc: pu.id)
         |> offset([pu], ^skip)
         |> Repo.all
-        |> Enum.to_list
 
         total = Enum.count(project_users)
-        Enum.each 1..total, fn i ->
-            project_user = Enum.at(project_users, i - 1)
+        Enum.reduce(project_users, 1, fn (project_user, i) ->
             project_user_id = object_id(project_user.id)
             user_payments = Payment.by_user_id(
                 project_user_id,
                 %{"_id" => false, "add_d" => true, "goods" => true, "type" => true, "add_t" => true})
-            |> Enum.to_list
             if Enum.empty?(user_payments) do
                 Mongo.update_one(
                     Gt.Repo.__mongo_pool__,
@@ -108,7 +105,8 @@ defmodule Mix.Tasks.Gt.SetUsersStat do
             end
 
             ProgressBar.render(i, total)
-        end
+            i + 1
+        end)
     end
     def do_process(_) do
         IO.puts """

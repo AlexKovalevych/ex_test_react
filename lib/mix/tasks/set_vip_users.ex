@@ -15,11 +15,10 @@ defmodule Mix.Tasks.Gt.SetVipUsers do
     def parse_args(_), do: :ok
 
     def do_process(_) do
-        project_users = ProjectUser.vip_levels |> Enum.to_list
+        project_users = ProjectUser.vip_levels
         total = Enum.count(project_users)
 
-        Enum.each 1..total, fn i ->
-            project_user = Enum.at(project_users, i - 1)
+        Enum.reduce(project_users, 1, fn (project_user, i) ->
             stat = Enum.sort(project_user["stat"])
             vip_levels = Enum.reduce(
                 stat,
@@ -50,6 +49,7 @@ defmodule Mix.Tasks.Gt.SetVipUsers do
                 %{"$set" => %{"vipLevel" => Enum.at(vip_levels, 1)}}
             )
             ProgressBar.render(i, total)
-        end
+            i + 1
+        end)
     end
 end
