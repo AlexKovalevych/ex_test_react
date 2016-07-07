@@ -1,5 +1,6 @@
 defmodule Gt.Model.ProjectUser do
     use Gt.Web, :model
+    import ExPrintf
 
     @vip_level_1000 1000
     @vip_level_1500 1500
@@ -181,6 +182,41 @@ defmodule Gt.Model.ProjectUser do
             "stat" => %{"$exists" => true},
             "stat.total.dep.cash_real" => %{"$gte" => @vip_level_1000}
         }, sort: %{"_id" => 1})
+    end
+
+    def vip_levels_by_month(from, to, project_id) do
+        vip_level_match = []
+        project_query = []
+        group_query = %{"_id" => 1}
+        Enum.reduce(vip_level_options, [], fn (vip_level, acc) ->
+            vip_level_match = %{sprintf("vipLevel.%s", vip_level) => %{"$exists" => true, "$lte" => to}}
+            project_query = %{
+                "$cond" => [
+                    %{
+                        "$and" => [
+                            %{"$ifNull" => [sprintf("$vipLevel.%s", [vip_level]), false]},
+                            %{"$lte" => [sprintf("$vipLevel.%s", [vip_level]), to]},
+                        ]
+                    },
+                    1,
+                    0,
+                ]
+            }
+            group_query = %{"$sum" => sprintf("%s", vip_level)}
+            # set to acc
+        end)
+
+        Mongo.aggregate(Gt.Repo.__mongo_pool__, @collection, [
+            %{
+                "$match" => %{
+                    "project" => project_id,
+                    "$or" => vip_level_match,
+                    sprintf("stat.%s.dep", [GtDate.convert(from, :date, :stat_month)]) => %{"$exists" => true}
+                }
+            },
+            %{"$project" => project_query},
+            %{"$group" => group_query}
+        ])['result'];
     end
 
     defp dashboard_match(from, to, project_ids) do

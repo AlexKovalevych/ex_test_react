@@ -59,10 +59,11 @@ defmodule Gt.Manager.ConsolidatedStats do
         |> Repo.delete
         Enum.map(periods, fn {from, to} ->
             Enum.map(project_ids, fn project_id ->
+                vip_levels = ProjectUser.vip_levels_by_month(from, to, project_id)
                 Repo.insert!(ConsolidatedStatsMonthly.changeset(%ConsolidatedStatsMonthly{}, %{
                     project: project_id,
                     month: GtDate.format(from, :month),
-                    # vipLevels:
+                    vipLevels: vip_levels
                     # depositorsNumber:
                     # transactorsNumber:
                 }))
