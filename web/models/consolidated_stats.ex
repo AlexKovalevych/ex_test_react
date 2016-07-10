@@ -147,7 +147,7 @@ defmodule Gt.Model.ConsolidatedStats do
                     "authorizationsNumber" => "$authorizationsNumber"
                 }
             }},
-            %{'$group' => %{
+            %{"$group" => %{
                 "_id" => "$_id.project",
                 "months" => %{"$push" => "$month"}
             }}

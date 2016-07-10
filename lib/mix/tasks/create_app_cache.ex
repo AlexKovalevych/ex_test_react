@@ -1,5 +1,6 @@
 defmodule Mix.Tasks.Gt.AppCache do
     use Gt.Task
+    use Timex
     alias Gt.Manager.Date, as: GtDate
     alias Gt.Model.Project
     import Gt.Model, only: [object_id: 1]
@@ -27,6 +28,7 @@ defmodule Mix.Tasks.Gt.AppCache do
         end
         project_ids = Enum.map(project_ids, &object_id/1)
         Gt.Manager.ConsolidatedStats.update_daily_stats(from, to, project_ids)
+
         start_date = GtDate.parse(from, :date)
         end_date = GtDate.parse(to, :date)
         start_date = case (start_date.year == end_date.year && start_date.month == end_date.month) do

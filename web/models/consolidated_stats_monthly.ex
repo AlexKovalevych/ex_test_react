@@ -63,13 +63,20 @@ defmodule Gt.Model.ConsolidatedStatsMonthly do
         |> cast(params, @required_fields, @optional_fields)
     end
 
-    def months(months) do
-        from csm in ConsolidatedStatsMonthly,
+    def months(query, months) do
+        from csm in query,
         where: csm.month in ^months
     end
 
-    def project_ids(project_ids) do
-        from csm in ConsolidatedStatsMonthly,
+    def project_ids(query, project_ids) do
+        from csm in query,
         where: csm.project in ^project_ids
+    end
+
+    def delete_months_project_ids(months, project_ids) do
+        Mongo.delete_many(Gt.Repo.__mongo_pool__, @collection, %{
+            "month" => %{"$in" => months},
+            "project" => %{"$in" => project_ids}
+        })
     end
 end

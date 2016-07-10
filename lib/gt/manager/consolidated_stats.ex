@@ -47,29 +47,33 @@ defmodule Gt.Manager.ConsolidatedStats do
             to = from |> DateTime.set([{:date, {from.year, from.month, last_date}}])
             {from, to}
         end)
-        stats = Enum.map(periods, fn {from, to} ->
-            ConsolidatedStats.monthly_by_interval(from, to)
-        end)
         months = Enum.map(interval, fn datetime ->
             GtDate.format(datetime, :month)
         end)
-        ConsolidatedStatsMonthly
-        |> ConsolidatedStatsMonthly.months(months)
-        |> ConsolidatedStatsMonthly.project_ids
-        |> Repo.delete
+        ConsolidatedStatsMonthly.delete_months_project_ids(months, project_ids)
         Enum.map(periods, fn {from, to} ->
-            Enum.map(project_ids, fn project_id ->
+            stats = ConsolidatedStats.monthly_by_interval(from, to)
+            Enum.map(stats, fn monthly_stats ->
+                project_id = monthly_stats["_id"]
+                IO.inspect(project_id)
                 vip_levels = ProjectUser.vip_levels_by_month(from, to, project_id)
                 unique_depositors = Payment.depositors_by_period(from, to, project_id)
-                Repo.insert!(ConsolidatedStatsMonthly.changeset(%ConsolidatedStatsMonthly{}, %{
-                    project: project_id,
-                    month: GtDate.format(from, :month),
-                    vipLevels: vip_levels,
-                    unique_depositors: unique_depositors
-                    # depositorsNumber:
-                    # transactorsNumber:
-                }))
+                transactors_number = Payment.transactors_number_by_period(from, to, project_id)
             end)
         end)
+        # Enum.map(periods, fn {from, to} ->
+        #     Enum.map(project_ids, fn project_id ->
+        #         vip_levels = ProjectUser.vip_levels_by_month(from, to, project_id)
+        #         unique_depositors = Payment.depositors_by_period(from, to, project_id)
+        #         transactors_number = Payment.transactors_number_by_period(from, to, project_id)
+        #         Repo.insert!(ConsolidatedStatsMonthly.changeset(%ConsolidatedStatsMonthly{}, %{
+        #             project: project_id,
+        #             month: GtDate.format(from, :month),
+        #             vipLevels: vip_levels,
+        #             depositorsNumber: unique_depositors,
+        #             transactorsNumber: transactors_number
+        #         }))
+        #     end)
+        # end)
     end
 end
