@@ -1,6 +1,7 @@
 defmodule Gt.Model.ProjectUser do
     use Gt.Web, :model
     import ExPrintf
+    alias Gt.Manager.Date, as: GtDate
 
     @vip_level_1000 1000
     @vip_level_1500 1500
@@ -185,25 +186,26 @@ defmodule Gt.Model.ProjectUser do
     end
 
     def vip_levels_by_month(from, to, project_id) do
-        vip_level_match = []
-        project_query = []
-        group_query = %{"_id" => 1}
-        Enum.reduce(vip_level_options, [], fn (vip_level, acc) ->
-            vip_level_match = %{sprintf("vipLevel.%s", vip_level) => %{"$exists" => true, "$lte" => to}}
-            project_query = %{
+        date = GtDate.format(to, :date)
+        vip_level_match = Enum.reduce(vip_level_options, [], fn (vip_level, acc) ->
+            acc ++ [%{sprintf("vipLevel.%d", [vip_level]) => %{"$exists" => true, "$lte" => date}}]
+        end)
+        project_query = Enum.reduce(vip_level_options, %{}, fn (vip_level, acc) ->
+            Map.put(acc, to_string(vip_level), %{
                 "$cond" => [
                     %{
                         "$and" => [
-                            %{"$ifNull" => [sprintf("$vipLevel.%s", [vip_level]), false]},
-                            %{"$lte" => [sprintf("$vipLevel.%s", [vip_level]), to]},
+                            %{"$ifNull" => [sprintf("$vipLevel.%d", [vip_level]), false]},
+                            %{"$lte" => [sprintf("$vipLevel.%d", [vip_level]), date]},
                         ]
                     },
                     1,
                     0,
                 ]
-            }
-            group_query = %{"$sum" => sprintf("%s", vip_level)}
-            # set to acc
+            })
+        end)
+        group_query = Enum.reduce(vip_level_options, %{"_id" => 1}, fn (vip_level, acc) ->
+            Map.put(acc, to_string(vip_level), %{"$sum" => sprintf("%d", [vip_level])})
         end)
 
         Mongo.aggregate(Gt.Repo.__mongo_pool__, @collection, [
@@ -211,12 +213,12 @@ defmodule Gt.Model.ProjectUser do
                 "$match" => %{
                     "project" => project_id,
                     "$or" => vip_level_match,
-                    sprintf("stat.%s.dep", [GtDate.convert(from, :date, :stat_month)]) => %{"$exists" => true}
+                    sprintf("stat.%s.dep", [GtDate.format(from, :stat_month)]) => %{"$exists" => true}
                 }
             },
             %{"$project" => project_query},
             %{"$group" => group_query}
-        ])['result'];
+        ]);
     end
 
     defp dashboard_match(from, to, project_ids) do

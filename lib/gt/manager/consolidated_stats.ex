@@ -55,10 +55,19 @@ defmodule Gt.Manager.ConsolidatedStats do
             stats = ConsolidatedStats.monthly_by_interval(from, to)
             Enum.map(stats, fn monthly_stats ->
                 project_id = monthly_stats["_id"]
-                IO.inspect(project_id)
-                vip_levels = ProjectUser.vip_levels_by_month(from, to, project_id)
-                unique_depositors = Payment.depositors_by_period(from, to, project_id)
-                transactors_number = Payment.transactors_number_by_period(from, to, project_id)
+                vip_levels = ProjectUser.vip_levels_by_month(from, to, project_id) |> Enum.to_list
+                unique_depositors = Payment.depositors_number_by_period(from, to, project_id) |> Enum.to_list
+                transactors_number = Payment.transactors_number_by_period(from, to, project_id) |> Enum.to_list
+                # IO.inspect(vip_levels)
+                # IO.inspect(unique_depositors)
+                # IO.inspect(transactors_number)
+                # Repo.insert!(ConsolidatedStatsMonthly.changeset(%ConsolidatedStatsMonthly{}, %{
+                #     project: project_id,
+                #     month: GtDate.format(from, :month),
+                #     vipLevels: vip_levels,
+                #     depositorsNumber: unique_depositors,
+                #     transactorsNumber: transactors_number
+                # }))
             end)
         end)
         # Enum.map(periods, fn {from, to} ->

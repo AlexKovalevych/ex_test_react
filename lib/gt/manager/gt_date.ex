@@ -19,6 +19,9 @@ defmodule Gt.Manager.Date do
         today |> Timex.shift(days: 1)
     end
 
+    def format(date, _) when is_bitstring(date) do
+        date
+    end
     def format(date, :date) do
         Timex.format!(date, @date_format, :strftime)
     end

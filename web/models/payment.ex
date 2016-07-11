@@ -1,6 +1,7 @@
 defmodule Gt.Model.Payment do
     use Gt.Web, :model
     import ExPrintf
+    alias Gt.Manager.Date, as: GtDate
 
     @collection "payments"
 
@@ -325,8 +326,8 @@ defmodule Gt.Model.Payment do
                 "state" => @state_approved,
                 "type" => @type_deposit,
                 "add_d" => %{
-                    "$gte" => from,
-                    "$lte" => to
+                    "$gte" => GtDate.format(from, :date),
+                    "$lte" => GtDate.format(to, :date)
                 },
                 "project" => project_match
             }},
@@ -351,8 +352,8 @@ defmodule Gt.Model.Payment do
                 "state" => @state_approved,
                 "type" => %{"$in" =>[@type_deposit, @type_cashout]},
                 "add_d" => %{
-                    "$gte" => from,
-                    "$lte" => to
+                    "$gte" => GtDate.format(from, :date),
+                    "$lte" => GtDate.format(to, :date)
                 },
                 "project" => project_match
             }},
