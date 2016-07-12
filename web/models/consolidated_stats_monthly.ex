@@ -29,12 +29,14 @@ defmodule Gt.Model.ConsolidatedStatsMonthly do
         field :authorizationsNumber, :integer
         field :trafficSources, :map
         field :vipLevels, :map
+        field :firstDepositorsNumberToSignupsNumber, :float
 
         field :project, :binary_id
     end
 
-    @required_fields ~w(date project)
-    @optional_fields ~w(paymentsAmount
+    @required_fields ~w(month project)
+    @optional_fields ~w(
+        paymentsAmount
         paymentsNumber
         depositsAmount
         depositsNumber

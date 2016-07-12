@@ -39,6 +39,7 @@ defmodule Gt.Manager.ConsolidatedStats do
     end
 
     def update_monthly_stats(from, to, project_ids) do
+        Logger.info "Aggregating monthly stats"
         diff = GtDate.diff(from, to, :months)
         interval = Interval.new(from: from, until: [months: diff], step: [months: 1], right_open: false)
         periods = Enum.map(interval, fn month ->
@@ -51,35 +52,64 @@ defmodule Gt.Manager.ConsolidatedStats do
             GtDate.format(datetime, :month)
         end)
         ConsolidatedStatsMonthly.delete_months_project_ids(months, project_ids)
-        Enum.map(periods, fn {from, to} ->
+        total = Enum.count(periods)
+        Enum.map(1..total, fn i ->
+            {from, to} = Enum.at(periods, i - 1)
             stats = ConsolidatedStats.monthly_by_interval(from, to)
             Enum.map(stats, fn monthly_stats ->
                 project_id = monthly_stats["_id"]
                 vip_levels = ProjectUser.vip_levels_by_month(from, to, project_id) |> Enum.to_list
+                vip_levels = case Enum.count(vip_levels) > 0 do
+                    true -> Enum.at(vip_levels, 0)
+                    false -> %{}
+                end
                 unique_depositors = Payment.depositors_number_by_period(from, to, project_id) |> Enum.to_list
+                unique_depositors = case Enum.count(unique_depositors) > 0 do
+                    true -> Enum.at(unique_depositors, 0) |> Map.get("depositorsNumber")
+                    false -> 0
+                end
                 transactors_number = Payment.transactors_number_by_period(from, to, project_id) |> Enum.to_list
-                # Repo.insert!(ConsolidatedStatsMonthly.changeset(%ConsolidatedStatsMonthly{}, %{
-                #     project: project_id,
-                #     month: GtDate.format(from, :month),
-                #     vipLevels: vip_levels,
-                #     depositorsNumber: unique_depositors,
-                #     transactorsNumber: transactors_number
-                # }))
+                transactors_number = case Enum.count(transactors_number) > 0 do
+                    true -> Enum.at(transactors_number, 0) |> Map.get("transactorsNumber")
+                    false -> 0
+                end
+                stats = monthly_stats["months"] |> Enum.at(0)
+                average_arpu = case transactors_number do
+                    0 -> 0
+                    _ -> stats["paymentsAmount"] / transactors_number
+                end
+                first_depositors_number_to_signups_number = case stats["signupsNumber"] do
+                    0 -> 0
+                    _ -> stats["firstDepositorsNumber"] / stats["signupsNumber"]
+                end
+                Repo.insert!(ConsolidatedStatsMonthly.changeset(%ConsolidatedStatsMonthly{}, %{
+                    project: Base.encode16(project_id.value, case: :lower),
+                    month: GtDate.format(from, :month),
+                    vipLevels: vip_levels,
+                    depositorsNumber: unique_depositors,
+                    transactorsNumber: transactors_number,
+                    paymentsAmount: stats["paymentsAmount"],
+                    paymentsNumber: stats["paymentsNumber"],
+                    depositsAmount: stats["depositsAmount"],
+                    depositsNumber: stats["depositsNumber"],
+                    cashoutsAmount: stats["cashoutsAmount"],
+                    cashoutsNumber: stats["cashoutsNumber"],
+                    averagePayment: stats["averagePayment"],
+                    averageArpu: average_arpu,
+                    averageDeposit: stats["averageDeposit"],
+                    averageFirstDeposit: stats["averageFirstDeposit"],
+                    firstDepositorsNumber: stats["firstDepositorsNumber"],
+                    firstDepositsAmount: stats["firstDepositsAmount"],
+                    signupsNumber: stats["signupsNumber"],
+                    netgamingAmount: stats["netgamingAmount"],
+                    betsAmount: stats["betsAmount"],
+                    winsAmount: stats["winsAmount"],
+                    rakeAmount: stats["rakeAmount"],
+                    firstDepositorsNumberToSignupsNumber: first_depositors_number_to_signups_number,
+                    authorizationsNumber: stats["authorizationsNumber"]
+                }))
             end)
+            ProgressBar.render(i, total)
         end)
-        # Enum.map(periods, fn {from, to} ->
-        #     Enum.map(project_ids, fn project_id ->
-        #         vip_levels = ProjectUser.vip_levels_by_month(from, to, project_id)
-        #         unique_depositors = Payment.depositors_by_period(from, to, project_id)
-        #         transactors_number = Payment.transactors_number_by_period(from, to, project_id)
-        #         Repo.insert!(ConsolidatedStatsMonthly.changeset(%ConsolidatedStatsMonthly{}, %{
-        #             project: project_id,
-        #             month: GtDate.format(from, :month),
-        #             vipLevels: vip_levels,
-        #             depositorsNumber: unique_depositors,
-        #             transactorsNumber: transactors_number
-        #         }))
-        #     end)
-        # end)
     end
 end
