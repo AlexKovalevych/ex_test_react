@@ -205,7 +205,7 @@ defmodule Gt.Model.ProjectUser do
             })
         end)
         group_query = Enum.reduce(vip_level_options, %{"_id" => 1}, fn (vip_level, acc) ->
-            Map.put(acc, to_string(vip_level), %{"$sum" => sprintf("%d", [vip_level])})
+            Map.put(acc, to_string(vip_level), %{"$sum" => sprintf("$%d", [vip_level])})
         end)
 
         Mongo.aggregate(Gt.Repo.__mongo_pool__, @collection, [

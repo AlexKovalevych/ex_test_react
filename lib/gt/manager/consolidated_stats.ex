@@ -58,9 +58,6 @@ defmodule Gt.Manager.ConsolidatedStats do
                 vip_levels = ProjectUser.vip_levels_by_month(from, to, project_id) |> Enum.to_list
                 unique_depositors = Payment.depositors_number_by_period(from, to, project_id) |> Enum.to_list
                 transactors_number = Payment.transactors_number_by_period(from, to, project_id) |> Enum.to_list
-                # IO.inspect(vip_levels)
-                # IO.inspect(unique_depositors)
-                # IO.inspect(transactors_number)
                 # Repo.insert!(ConsolidatedStatsMonthly.changeset(%ConsolidatedStatsMonthly{}, %{
                 #     project: project_id,
                 #     month: GtDate.format(from, :month),
