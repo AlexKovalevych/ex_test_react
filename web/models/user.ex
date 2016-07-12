@@ -10,11 +10,17 @@ defmodule Gt.Model.User do
         field :password, :string
         field :password_plain, :string, virtual: true
         field :permissions, :map
+        field :settings, :map, default: %{
+            "dashboardSort" => "paymentsAmount",
+            "dashboardChartType" => "paymentsAmount",
+            "dashboardPeriod" => "month",
+            "dashboardComparePeriod" => nil
+        }
 
         timestamps
     end
 
-    @required_fields ~w(email password_plain permissions)
+    @required_fields ~w(email password_plain permissions settings)
     @optional_fields ~w(password)
 
     def changeset(model, params \\ :empty) do

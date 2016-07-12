@@ -11,6 +11,8 @@ defmodule Gt.UserChannel do
     end
 
     def handle_in("dashboard", params, socket) do
+        current_user = socket.assigns.current_user
+        IO.inspect(current_user)
         # response = case User.signin(params) do
         #     {:ok, user} ->
         #         assign(socket, :user, user.id)
