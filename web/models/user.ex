@@ -60,4 +60,10 @@ defmodule Gt.Model.User do
         end
         {:error, "Invalid email or password"}
     end
+
+    def by_id(query, user_id) do
+        from u in query,
+        where: u.id == ^user_id,
+        limit: 1
+    end
 end

@@ -1,5 +1,6 @@
 defmodule Gt.PageController do
     use Gt.Web, :controller
+    alias Gt.Model.User
 
     def login(conn, _params) do
         initial_state = %{}
@@ -18,11 +19,14 @@ defmodule Gt.PageController do
 
     def index(conn, _params) do
         conn = conn |> fetch_session
-        user = get_session(conn, :current_user)
+        user_id = get_session(conn, :current_user)
 
-        if is_nil(user) do
+        if is_nil(user_id) do
             redirect conn, to: "/login"
         else
+            user = User
+            |> User.by_id(user_id)
+            |> Repo.one
             initial_state = %{"auth" => %{"user" => user}}
             props = %{
                 "location" => conn.request_path,

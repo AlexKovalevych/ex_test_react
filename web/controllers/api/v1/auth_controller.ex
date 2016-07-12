@@ -9,7 +9,7 @@ defmodule Gt.AuthController do
                 {:ok, jwt, _full_claims} = user |> Guardian.encode_and_sign(:token)
                 conn = conn
                 |> fetch_session
-                |> put_session(:current_user, user)
+                |> put_session(:current_user, user.id)
                 conn
                 |> put_status(:created)
                 |> render("show.json", jwt: jwt, user: user)
