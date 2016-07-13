@@ -84,7 +84,7 @@ defmodule Gt.Model.ConsolidatedStats do
                     "$gte" => GtDate.format(from, :date),
                     "$lte" => GtDate.format(to, :date)
                 }
-            }} ,
+            }},
             %{"$group" => %{
                 "_id" => %{
                     "project" => "$project",
@@ -150,6 +150,76 @@ defmodule Gt.Model.ConsolidatedStats do
             %{"$group" => %{
                 "_id" => "$_id.project",
                 "months" => %{"$push" => "$month"}
+            }}
+        ])
+    end
+
+    def dashboard(from, to, project_ids) do
+        Mongo.aggregate(Gt.Repo.__mongo_pool__, @collection, [
+            %{"$match" => %{
+                "date" => %{
+                    "$gte" => GtDate.format(from, :date),
+                    "$lte" => GtDate.format(to, :date)
+                },
+                "project" => %{"$in" => project_ids}
+            }},
+            %{"$group" => %{
+                "_id" => %{
+                    "project" => "$project"
+                },
+                "paymentsAmount" => %{"$sum" => "$paymentsAmount"},
+                "paymentsNumber" => %{"$sum" => "$paymentsNumber"},
+                "depositsAmount" => %{"$sum" => "$depositsAmount"},
+                "cashoutsAmount" => %{"$sum" => "$cashoutsAmount"},
+                "cashoutsNumber" => %{"$sum" => "$cashoutsNumber"},
+                "depositsNumber" => %{"$sum" => "$depositsNumber"},
+                "firstDepositorsNumber" => %{"$sum" => "$firstDepositorsNumber"},
+                "firstDepositsAmount" => %{"$sum" => "$firstDepositsAmount"},
+                "signupsNumber" => %{"$sum" => "$signupsNumber"},
+                "netgamingAmount" => %{"$sum" => "$netgamingAmount"},
+                "betsAmount" => %{"$sum" => "$betsAmount"},
+                "winsAmount" => %{"$sum" => "$winsAmount"},
+                "rakeAmount" => %{"$sum" => "$rakeAmount"},
+                "authorizationsNumber" => %{"$sum" => "$authorizationsNumber"},
+                "transactorsNumber" => %{"$sum" => "$transactorsNumber"}
+            }},
+            %{"$project" => %{
+                "_id" => 1,
+                "paymentsAmount" => "$paymentsAmount",
+                "paymentsNumber" => "$paymentsNumber",
+                "depositsAmount" => "$depositsAmount",
+                "cashoutsAmount" => "$cashoutsAmount",
+                "cashoutsNumber" => "$cashoutsNumber",
+                "averageDeposit" => %{
+                    "$cond" => [
+                        %{"$eq" => ["$depositsNumber", 0]},
+                        0,
+                        %{"$divide" => ["$depositsAmount", "$depositsNumber"]}
+                    ]
+                },
+                "averageFirstDeposit" => %{
+                    "$cond" => [
+                        %{"$eq" => ["$firstDepositorsNumber", 0]},
+                        0,
+                        %{"$divide" => ["$firstDepositsAmount", "$firstDepositorsNumber"]}
+                    ]
+                },
+                "arpu" => %{
+                    "$cond" => [
+                        %{"$eq" => ["$transactorsNumber", 0]},
+                        0,
+                        %{"$divide" => ["$paymentsAmount", "$transactorsNumber"]}
+                    ]
+                },
+                "depositsNumber" => "$depositsNumber",
+                "firstDepositorsNumber" => "$firstDepositorsNumber",
+                "firstDepositsAmount" => "$firstDepositsAmount",
+                "signupsNumber" => "$signupsNumber",
+                "netgamingAmount" => "$netgamingAmount",
+                "betsAmount" => "$betsAmount",
+                "winsAmount" => "$winsAmount",
+                "rakeAmount" => "$rakeAmount",
+                "authorizationsNumber" => "$authorizationsNumber"
             }}
         ])
     end

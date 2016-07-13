@@ -14,9 +14,13 @@ defmodule Gt.UserChannel do
         current_user = socket.assigns.current_user
         settings = current_user.settings
         project_ids = Gt.Manager.Permissions.get(current_user.permissions, "dashboard_index")
+        |> Enum.map(fn id ->
+            {:ok, object_id} = Mongo.Ecto.ObjectID.dump(id)
+            object_id
+        end)
         stats = Gt.Manager.Dashboard.get_stats(
-            String.to_atom(settings.dashboardPeriod),
-            settings.dashboardComparePeriod,
+            String.to_atom(settings["dashboardPeriod"]),
+            settings["dashboardComparePeriod"],
             project_ids
         )
         # response = case User.signin(params) do

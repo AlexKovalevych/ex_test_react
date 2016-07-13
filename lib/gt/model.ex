@@ -4,6 +4,10 @@ defmodule Gt.Model do
         mongo_id
     end
 
+    def id_to_string(id) do
+        Base.encode16(id.value, case: :lower)
+    end
+
     defmacro __using__(_) do
         quote do
             use Ecto.Model
