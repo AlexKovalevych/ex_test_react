@@ -14,7 +14,7 @@ defmodule Gt.Model.User do
             "dashboardSort" => "paymentsAmount",
             "dashboardChartType" => "paymentsAmount",
             "dashboardPeriod" => "month",
-            "dashboardComparePeriod" => nil
+            "dashboardComparePeriod" => -1
         }
 
         timestamps

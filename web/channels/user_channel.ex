@@ -12,7 +12,13 @@ defmodule Gt.UserChannel do
 
     def handle_in("dashboard", params, socket) do
         current_user = socket.assigns.current_user
-        IO.inspect(current_user)
+        settings = current_user.settings
+        project_ids = Gt.Manager.Permissions.get(current_user.permissions, "dashboard_index")
+        stats = Gt.Manager.Dashboard.get_stats(
+            String.to_atom(settings.dashboardPeriod),
+            settings.dashboardComparePeriod,
+            project_ids
+        )
         # response = case User.signin(params) do
         #     {:ok, user} ->
         #         assign(socket, :user, user.id)

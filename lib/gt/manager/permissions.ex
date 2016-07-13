@@ -65,4 +65,19 @@ defmodule Gt.Manager.Permissions do
             end
         end)
     end
+
+    def get(permissions, name) do
+        Enum.reduce(permissions, [], fn ({_, node}, acc) ->
+            if Enum.count(acc) > 0 do
+                acc
+            else
+                Enum.reduce(node, [], fn ({k, v}, acc) ->
+                    cond do
+                        k == name -> v
+                        true -> acc
+                    end
+                end)
+            end
+        end)
+    end
 end
