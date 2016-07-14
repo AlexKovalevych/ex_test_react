@@ -36,12 +36,14 @@ defmodule Gt.Manager.Dashboard do
         |> Enum.to_list
         |> set_depositors(stats, comparison_key)
 
-        # current_period_stats = ConsolidatedStats.dashboard(current_start, current_end, project_ids)
-        # |> Enum.to_list
-        # IO.inspect(current_period_stats)
-        # comparison_period_stats = ConsolidatedStats.dashboard(comparison_start, comparison_end, project_ids)
-        # |> Enum.to_list
-        # IO.inspect(comparison_period_stats)
+        stats = ConsolidatedStats.dashboard(current_start, current_end, project_ids)
+        |> Enum.to_list
+        |> set_stats(stats, current_key)
+
+        ConsolidatedStats.dashboard(comparison_start, comparison_end, project_ids)
+        |> Enum.to_list
+        |> set_stats(stats, comparison_key)
+        # |> Poison.encode!
     end
     def get_stats(:month_period, project_ids) do
 
@@ -55,7 +57,16 @@ defmodule Gt.Manager.Dashboard do
 
     defp set_depositors(data, stats, key) do
         Enum.reduce(data, stats, fn (project_stats, acc) ->
-            put_in(acc, [Gt.Model.id_to_string(project_stats["_id"]), key], project_stats["depositorsNumber"])
+            put_in(acc, [Gt.Model.id_to_string(project_stats["_id"]), key, "depositorsNumber"], project_stats["depositorsNumber"])
+        end)
+    end
+
+    defp set_stats(data, stats, key) do
+        Enum.reduce(data, stats, fn (project_stats, acc) ->
+            project_id = Gt.Model.id_to_string(project_stats["_id"])
+            metrics_stats = Map.drop(project_stats, ["_id"])
+            project_period_stats = get_in(stats, [project_id, key])
+            put_in(acc, [project_id, key], Map.merge(project_period_stats, metrics_stats))
         end)
     end
 end

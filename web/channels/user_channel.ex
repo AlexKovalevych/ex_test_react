@@ -23,14 +23,6 @@ defmodule Gt.UserChannel do
             settings["dashboardComparePeriod"],
             project_ids
         )
-        # response = case User.signin(params) do
-        #     {:ok, user} ->
-        #         assign(socket, :user, user.id)
-        #         # Mix.shell.info socket.assigns[:user]
-
-        #         {:ok, %{:token => get_sl_token(user), :user => user}}
-        #     {:error, error} -> {:error, %{"error" => error}}
-        # end
-        {:reply, {:ok, %{"message" => "HELLO"}}, socket}
+        {:reply, {:ok, stats}, socket}
     end
 end

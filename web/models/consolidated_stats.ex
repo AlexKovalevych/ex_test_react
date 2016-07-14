@@ -164,9 +164,7 @@ defmodule Gt.Model.ConsolidatedStats do
                 "project" => %{"$in" => project_ids}
             }},
             %{"$group" => %{
-                "_id" => %{
-                    "project" => "$project"
-                },
+                "_id" => "$project",
                 "paymentsAmount" => %{"$sum" => "$paymentsAmount"},
                 "paymentsNumber" => %{"$sum" => "$paymentsNumber"},
                 "depositsAmount" => %{"$sum" => "$depositsAmount"},
