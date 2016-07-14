@@ -1,6 +1,8 @@
 defmodule Gt.Model.Project do
     use Gt.Web, :model
 
+    @derive {Poison.Encoder, only: [:id, :title, :isPoker, :isPartner]}
+
     @collection "projects"
 
     schema @collection do
@@ -25,6 +27,11 @@ defmodule Gt.Model.Project do
         model
         |> cast(params, @required_fields, @optional_fields)
         |> unique_constraint(:item_id, message: "Project with this item_id already exists")
+    end
+
+    def ids(query, project_ids) do
+        from u in query,
+        where: u.id in ^project_ids
     end
 
     def get_ids(query) do

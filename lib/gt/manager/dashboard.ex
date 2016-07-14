@@ -43,7 +43,6 @@ defmodule Gt.Manager.Dashboard do
         ConsolidatedStats.dashboard(comparison_start, comparison_end, project_ids)
         |> Enum.to_list
         |> set_stats(stats, comparison_key)
-        # |> Poison.encode!
     end
     def get_stats(:month_period, project_ids) do
 
