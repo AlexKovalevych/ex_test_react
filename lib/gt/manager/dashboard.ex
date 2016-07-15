@@ -11,12 +11,12 @@ defmodule Gt.Manager.Dashboard do
         current_end = now
         comparison_start = Timex.shift(current_start, months: previous_period)
         comparison_end = now |> Timex.shift(months: previous_period)
+        current_period = [GtDate.format(current_start, :date), GtDate.format(current_end, :date)]
+        comparison_period = [GtDate.format(comparison_start, :date), GtDate.format(comparison_end, :date)]
 
-        current_key = sprintf("%s|%s", [GtDate.format(current_start, :date), GtDate.format(current_end, :date)])
-        comparison_key = sprintf("%s|%s", [GtDate.format(comparison_start, :date), GtDate.format(comparison_end, :date)])
         initial = %{
-            current_key => %{},
-            comparison_key => %{}
+            "current" => %{},
+            "comparison" => %{}
         }
         stats = Enum.into(project_ids, %{}, fn id ->
             {Gt.Model.id_to_string(id), initial}
@@ -27,22 +27,27 @@ defmodule Gt.Manager.Dashboard do
             project_ids
         )
         |> Enum.to_list
-        |> set_depositors(stats, current_key)
+        |> set_depositors(stats, "current")
         stats = Payment.depositors_number_by_period(
             comparison_start,
             comparison_end,
             project_ids
         )
         |> Enum.to_list
-        |> set_depositors(stats, comparison_key)
+        |> set_depositors(stats, "comparison")
 
         stats = ConsolidatedStats.dashboard(current_start, current_end, project_ids)
         |> Enum.to_list
-        |> set_stats(stats, current_key)
+        |> set_stats(stats, "current")
 
-        ConsolidatedStats.dashboard(comparison_start, comparison_end, project_ids)
+        stats = ConsolidatedStats.dashboard(comparison_start, comparison_end, project_ids)
         |> Enum.to_list
-        |> set_stats(stats, comparison_key)
+        |> set_stats(stats, "comparison")
+
+        %{
+            stats: stats,
+            periods: %{current: current_period, comparison: comparison_period}
+        }
     end
     def get_stats(:month_period, project_ids) do
 

@@ -10,7 +10,8 @@ import DashboardCharts from 'components/Dashboard/DashboardCharts';
 class Dashboard extends React.Component {
     static propTypes = {
         dispatch: PropTypes.func,
-        data: PropTypes.object
+        data: PropTypes.object,
+        user: PropTypes.object
     };
 
     static contextTypes = {
@@ -20,7 +21,7 @@ class Dashboard extends React.Component {
     loadData(props) {
         const { dispatch } = props;
         if (props.ws.channel && !props.data.lastUpdated) {
-            dispatch(dashboardActions.loadStats());
+            dispatch(dashboardActions.loadStats({period: this.props.user.settings.dashboardPeriod}));
             dispatch(dashboardActions.loadCharts());
         }
     }
@@ -35,9 +36,7 @@ class Dashboard extends React.Component {
 
     renderProject(project) {
         let projectStats = this.props.data.stats[project.id];
-        let currentPeriod = Object.keys(projectStats)[1];
-        let previousPeriod = Object.keys(projectStats)[0];
-        if (Object.keys(projectStats[currentPeriod]).length == 0 || Object.keys(projectStats[previousPeriod]).length == 0) {
+        if (Object.keys(projectStats.current).length == 0 || Object.keys(projectStats.comparison).length == 0) {
             return '';
         }
         return (
@@ -48,9 +47,8 @@ class Dashboard extends React.Component {
                         <DashboardCharts stats={this.props.data.charts} />
                         <div className="col-lg-8">
                             <ConsolidatedTable
+                                periods={this.props.data.periods}
                                 project={project}
-                                currentPeriod={currentPeriod}
-                                previousPeriod={previousPeriod}
                                 stats={projectStats}
                             />
                         </div>
@@ -74,6 +72,7 @@ class Dashboard extends React.Component {
 
 const mapStateToProps = (state) => {
     return {
+        user: state.auth.user,
         data: state.dashboard,
         ws: state.ws
     };

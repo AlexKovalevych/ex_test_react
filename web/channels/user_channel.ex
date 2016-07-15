@@ -20,12 +20,12 @@ defmodule Gt.UserChannel do
             {:ok, object_id} = Mongo.Ecto.ObjectID.dump(id)
             object_id
         end)
-        stats = Gt.Manager.Dashboard.get_stats(
+        data = Gt.Manager.Dashboard.get_stats(
             String.to_atom(settings["dashboardPeriod"]),
             settings["dashboardComparePeriod"],
             project_ids
         )
-        {:reply, {:ok, %{stats: stats, projects: projects}}, socket}
+        {:reply, {:ok, %{stats: data.stats, periods: data.periods, projects: projects}}, socket}
     end
     def handle_in("dashboard_charts", params, socket) do
         current_user = socket.assigns.current_user

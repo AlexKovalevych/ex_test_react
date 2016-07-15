@@ -1,4 +1,5 @@
 const initialState = {
+    periods: null,
     stats: null,
     charts: null,
     projects: [],
@@ -11,6 +12,7 @@ export default function reducer(state = initialState, action = {}) {
         return {
             ...state,
             stats: action.data.stats,
+            periods: action.data.periods,
             projects: action.data.projects,
             lastUpdated: action.lastUpdated
         };

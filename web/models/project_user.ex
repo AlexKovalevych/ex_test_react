@@ -170,7 +170,14 @@ defmodule Gt.Model.ProjectUser do
 
     def signup_stats(from, to, project_ids) do
         Mongo.aggregate(Gt.Repo.__mongo_pool__, @collection, [
-            %{"$match" => dashboard_match(from, to, project_ids)},
+            %{"$match" => %{
+                "reg_d" => %{
+                    "$exists" => true,
+                    "$gte" => from,
+                    "$lte" => to
+                },
+                "project" => %{"$in" => project_ids}
+            }},
             %{"$group" => %{
                 "_id" => dashboard_group_id,
                 "signupsNumber" => %{"$sum" => 1}
