@@ -45,3 +45,19 @@
 .nav-group-items > .sidenav-item {
     padding-left: 32px;
 }
+
+.arrow-up, .arrow-down {
+    width: 0;
+    height: 0;
+    display: inline-block;
+    border-left: 6px solid transparent;
+    border-right: 6px solid transparent;
+}
+
+.arrow-up {
+    border-bottom: 9px solid #7ac943;
+}
+
+.arrow-down {
+    border-top: 9px solid #f15a24;
+}
