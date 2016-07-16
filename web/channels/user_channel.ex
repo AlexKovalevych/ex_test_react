@@ -11,7 +11,7 @@ defmodule Gt.UserChannel do
         end
     end
 
-    def handle_in("dashboard_stats", params, socket) do
+    def handle_in("dashboard_stats", _, socket) do
         current_user = socket.assigns.current_user
         settings = current_user.settings
         project_ids = Gt.Manager.Permissions.get(current_user.permissions, "dashboard_index")
@@ -25,7 +25,7 @@ defmodule Gt.UserChannel do
             settings["dashboardComparePeriod"],
             project_ids
         )
-        {:reply, {:ok, %{stats: data.stats, periods: data.periods, projects: projects}}, socket}
+        {:reply, {:ok, %{stats: data.stats, periods: data.periods, totals: data.totals, projects: projects}}, socket}
     end
     def handle_in("dashboard_charts", params, socket) do
         current_user = socket.assigns.current_user

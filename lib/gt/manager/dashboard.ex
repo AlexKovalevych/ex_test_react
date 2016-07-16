@@ -1,6 +1,5 @@
 defmodule Gt.Manager.Dashboard do
     use Timex
-    import ExPrintf
     alias Gt.Manager.Date, as: GtDate
     alias Gt.Model.Payment
     alias Gt.Model.ConsolidatedStats
@@ -14,6 +13,7 @@ defmodule Gt.Manager.Dashboard do
         current_period = [GtDate.format(current_start, :date), GtDate.format(current_end, :date)]
         comparison_period = [GtDate.format(comparison_start, :date), GtDate.format(comparison_end, :date)]
 
+        # calculate project stats
         initial = %{
             "current" => %{},
             "comparison" => %{}
@@ -44,9 +44,38 @@ defmodule Gt.Manager.Dashboard do
         |> Enum.to_list
         |> set_stats(stats, "comparison")
 
+        # calculate totals
+        totals = initial
+        totals = Payment.depositors_number_by_period(
+            current_start,
+            current_end,
+            project_ids,
+            :total
+        )
+        |> Enum.to_list
+        |> set_depositors(totals, "current", :total)
+
+        totals = Payment.depositors_number_by_period(
+            comparison_start,
+            comparison_end,
+            project_ids,
+            :total
+        )
+        |> Enum.to_list
+        |> set_depositors(totals, "comparison", :total)
+
+        totals = ConsolidatedStats.dashboard(current_start, current_end, project_ids, :total)
+        |> Enum.to_list
+        |> set_stats(totals, "current", :total)
+
+        totals = ConsolidatedStats.dashboard(comparison_start, comparison_end, project_ids, :total)
+        |> Enum.to_list
+        |> set_stats(totals, "comparison", :total)
+
         %{
             stats: stats,
-            periods: %{current: current_period, comparison: comparison_period}
+            periods: %{current: current_period, comparison: comparison_period},
+            totals: totals
         }
     end
     def get_stats(:month_period, project_ids) do
@@ -64,6 +93,9 @@ defmodule Gt.Manager.Dashboard do
             put_in(acc, [Gt.Model.id_to_string(project_stats["_id"]), key, "depositorsNumber"], project_stats["depositorsNumber"])
         end)
     end
+    defp set_depositors(data, totals, key, :total) do
+        put_in(totals, [key, "depositorsNumber"], Enum.at(data, 0)["depositorsNumber"])
+    end
 
     defp set_stats(data, stats, key) do
         Enum.reduce(data, stats, fn (project_stats, acc) ->
@@ -72,5 +104,10 @@ defmodule Gt.Manager.Dashboard do
             project_period_stats = get_in(stats, [project_id, key])
             put_in(acc, [project_id, key], Map.merge(project_period_stats, metrics_stats))
         end)
+    end
+    defp set_stats(data, totals, key, :total) do
+        metrics_stats = Map.drop(Enum.at(data, 0), ["_id"])
+        total_period_stats = get_in(totals, [key])
+        put_in(totals, [key], Map.merge(total_period_stats, metrics_stats))
     end
 end

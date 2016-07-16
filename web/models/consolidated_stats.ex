@@ -154,7 +154,11 @@ defmodule Gt.Model.ConsolidatedStats do
         ])
     end
 
-    def dashboard(from, to, project_ids) do
+    def dashboard(from, to, project_ids, group_by \\ :project) do
+        group_id = case group_by do
+            :project -> "$project"
+            :total -> 1
+        end
         Mongo.aggregate(Gt.Repo.__mongo_pool__, @collection, [
             %{"$match" => %{
                 "date" => %{
@@ -164,7 +168,7 @@ defmodule Gt.Model.ConsolidatedStats do
                 "project" => %{"$in" => project_ids}
             }},
             %{"$group" => %{
-                "_id" => "$project",
+                "_id" => group_id,
                 "paymentsAmount" => %{"$sum" => "$paymentsAmount"},
                 "paymentsNumber" => %{"$sum" => "$paymentsNumber"},
                 "depositsAmount" => %{"$sum" => "$depositsAmount"},

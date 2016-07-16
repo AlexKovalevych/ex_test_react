@@ -316,7 +316,11 @@ defmodule Gt.Model.Payment do
         limit: 1
     end
 
-    def depositors_number_by_period(from, to, project_ids) do
+    def depositors_number_by_period(from, to, project_ids, group_by \\ :project) do
+        group_id = case group_by do
+            :project -> "$project"
+            :total -> 1
+        end
         project_match = cond do
             is_list(project_ids) -> %{"$in" => project_ids}
             true ->project_ids
@@ -332,7 +336,7 @@ defmodule Gt.Model.Payment do
                 "project" => project_match
             }},
             %{"$group" => %{
-                "_id" => "$project",
+                "_id" => group_id,
                 "users" => %{"$addToSet" => "$user"}
             }},
             %{"$project" => %{
