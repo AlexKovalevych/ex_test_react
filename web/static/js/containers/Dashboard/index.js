@@ -48,7 +48,6 @@ class Dashboard extends React.Component {
                         <div className="col-lg-8">
                             <ConsolidatedTable
                                 periods={this.props.data.periods}
-                                project={project}
                                 stats={projectStats}
                             />
                         </div>
@@ -62,9 +61,27 @@ class Dashboard extends React.Component {
         return (
             <div>
                 <h1>Dashboard</h1>
-                <div className="row">
-                    {this.props.data.projects.map(this.renderProject.bind(this))}
-                </div>
+                {
+                    this.props.data.lastUpdated && (
+                        <div className="row">
+                            <div className="col-sm-12">
+                                <div className="card">
+                                    <h5 className="card-header">Total</h5>
+                                    <div className="card-block row">
+                                        <DashboardCharts stats={this.props.data.charts} />
+                                        <div className="col-lg-8">
+                                            <ConsolidatedTable
+                                                periods={this.props.data.periods}
+                                                stats={this.props.data.totals}
+                                            />
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            {this.props.data.projects.map(this.renderProject.bind(this))}
+                        </div>
+                    )
+                }
             </div>
         );
     }

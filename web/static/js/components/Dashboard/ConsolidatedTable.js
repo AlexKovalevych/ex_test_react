@@ -4,7 +4,6 @@ import Delta from 'components/Delta';
 
 export default class ConsolidatedTable extends React.Component {
     static propTypes = {
-        project: PropTypes.object,
         periods: PropTypes.object,
         stats: PropTypes.object
     };
