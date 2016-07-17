@@ -1,9 +1,14 @@
 import React, { PropTypes } from 'react';
-import { IndexLink } from 'react-router';
 import { connect } from 'react-redux';
 import authActions from '../../actions/auth';
-import { Dropdown } from 'react-bootstrap';
 import counterpart from 'counterpart';
+import spacing from 'material-ui/styles/spacing';
+import FlatButton from 'material-ui/FlatButton';
+import {Toolbar, ToolbarGroup} from 'material-ui/Toolbar';
+import DropDownMenu from 'material-ui/DropDownMenu';
+import MenuItem from 'material-ui/MenuItem';
+import ExitToAppIcon from 'material-ui/svg-icons/action/exit-to-app';
+import IconButton from 'material-ui/IconButton';
 // import Translate from 'react-translate-component';
 
 class App extends React.Component {
@@ -21,8 +26,14 @@ class App extends React.Component {
         router: PropTypes.object.isRequired
     }
 
-    setLocale(locale) {
+    constructor(props) {
+        super(props);
+        this.state = {locale: 'ru'};
+    }
+
+    setLocale(e, i, locale) {
         counterpart.setLocale(locale);
+        this.setState({locale});
     }
 
     onLogout(e) {
@@ -33,38 +44,46 @@ class App extends React.Component {
 
     render() {
         return (
-            <div className="container-fluid">
-                <div className="row">
-                    <nav className="navbar navbar-full navbar-light bg-faded">
-                        <IndexLink to="/" className="navbar-brand">
-                            Globotunes
-                        </IndexLink>
-                        <ul className="nav navbar-nav pull-xs-right">
-                            <Dropdown className="nav-item" componentClass="li" id="locale">
-                                <Dropdown.Toggle className="nav-link" useAnchor>
-                                    Language
-                                </Dropdown.Toggle>
-                                <Dropdown.Menu>
-                                    <a className="dropdown-item" href="#" onClick={this.setLocale.bind(this, 'ru')}>
-                                        Russian
-                                    </a>
-                                    <a className="dropdown-item" href="#" onClick={this.setLocale.bind(this, 'en')}>
-                                        English
-                                    </a>
-                                </Dropdown.Menu>
-                            </Dropdown>
-                            <li className="nav-item">
-                                <a onClick={this.onLogout.bind(this)} className="nav-link" href="#">Logout</a>
-                            </li>
-                        </ul>
-                    </nav>
-                    <div className="col-sm-2">
-                        <div className="row">{this.props.menu}</div>
-                    </div>
-                    <div className="col-sm-10">
-                        {this.props.main}
-                    </div>
+            <div>
+                <div style={{paddingLeft: spacing.desktopKeylineIncrement * 4}}>
+                    <Toolbar>
+                        <ToolbarGroup firstChild={true}>
+                            <DropDownMenu value={this.state.locale} onChange={this.setLocale.bind(this)}>
+                                <MenuItem
+                                    value='ru'
+                                    primaryText="Russian"
+                                    leftIcon={<img src="/images/flags/ru_2.png" width="25" />}
+                                    label={
+                                        <FlatButton
+                                            label="Russian"
+                                            labelPosition="after"
+                                            icon={<img src="/images/flags/ru_2.png" width="25" />}
+                                        />
+                                    }
+                                />
+                                <MenuItem
+                                    value='en'
+                                    primaryText="English"
+                                    leftIcon={<img src="/images/flags/en_2.png" width="25" />}
+                                    label={
+                                        <FlatButton
+                                            label="English"
+                                            labelPosition="after"
+                                            icon={<img src="/images/flags/en_2.png" width="25" />}
+                                        />
+                                    }
+                                />
+                            </DropDownMenu>
+                        </ToolbarGroup>
+                        <ToolbarGroup>
+                            <IconButton onClick={this.onLogout.bind(this)}>
+                                <ExitToAppIcon />
+                            </IconButton>
+                        </ToolbarGroup>
+                    </Toolbar>
+                    {this.props.main}
                 </div>
+                {this.props.menu}
             </div>
         );
     }

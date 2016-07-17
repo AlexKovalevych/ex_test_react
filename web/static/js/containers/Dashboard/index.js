@@ -3,6 +3,7 @@ import { connect } from 'react-redux';
 import dashboardActions from 'actions/dashboard';
 import ConsolidatedTable from 'components/Dashboard/ConsolidatedTable';
 import DashboardCharts from 'components/Dashboard/DashboardCharts';
+import DashboardProgress from 'components/Dashboard/DashboardProgress';
 // import { Dropdown } from 'react-bootstrap';
 // import counterpart from 'counterpart';
 // import Translate from 'react-translate-component';
@@ -34,17 +35,34 @@ class Dashboard extends React.Component {
         this.loadData(newProps);
     }
 
-    renderProject(project) {
-        let projectStats = this.props.data.stats[project.id];
+    renderProject(data) {
+        let projectId = data[0];
+        let project;
+        for (let projectData of this.props.data.projects) {
+            if (projectData.id == projectId) {
+                project = projectData;
+                break;
+            }
+        }
+        let projectStats = this.props.data.stats[projectId];
         if (Object.keys(projectStats.current).length == 0 || Object.keys(projectStats.comparison).length == 0) {
             return '';
         }
+
         return (
-            <div key={project.id} className="col-sm-12">
+            <div key={projectId} className="col-sm-12">
                 <div className="card">
                     <h5 className="card-header">{project.title}</h5>
                     <div className="card-block row">
-                        <DashboardCharts stats={this.props.data.charts} />
+                        <div className="col-lg-4">
+                            <DashboardProgress
+                                sortBy={this.props.user.settings.dashboardSort}
+                                periods={this.props.data.periods}
+                                totals={this.props.data.totals}
+                                stats={projectStats}
+                            />
+                            <DashboardCharts stats={this.props.data.charts} />
+                        </div>
                         <div className="col-lg-8">
                             <ConsolidatedTable
                                 periods={this.props.data.periods}
@@ -58,6 +76,21 @@ class Dashboard extends React.Component {
     }
 
     render() {
+        let sortedStats = null;
+        if (this.props.data.lastUpdated) {
+            sortedStats = [];
+            let sortBy = this.props.user.settings.dashboardSort;
+            for (let projectId of Object.keys(this.props.data.stats)) {
+                let value = this.props.data.stats[projectId].current[sortBy];
+                if (value) {
+                    sortedStats.push([projectId, value]);
+                }
+            }
+            sortedStats.sort((a, b) => {
+                return b[1] - a[1];
+            });
+        }
+
         return (
             <div>
                 <h1>Dashboard</h1>
@@ -78,7 +111,7 @@ class Dashboard extends React.Component {
                                     </div>
                                 </div>
                             </div>
-                            {this.props.data.projects.map(this.renderProject.bind(this))}
+                            {sortedStats.map(this.renderProject.bind(this))}
                         </div>
                     )
                 }

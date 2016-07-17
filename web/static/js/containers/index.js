@@ -4,17 +4,24 @@ import { Router, RouterContext, browserHistory, createMemoryHistory, match } fro
 import { syncHistoryWithStore } from 'react-router-redux';
 import configureStore from '../store';
 import configRoutes from '../routes';
+import injectTapEventPlugin from 'react-tap-event-plugin';
+import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider';
+import getMuiTheme from 'material-ui/styles/getMuiTheme';
 
 export default class Index extends React.Component {
     static propTypes = {
         initial_state: PropTypes.object,
-        location: PropTypes.object
+        location: PropTypes.object,
+        user_agent: PropTypes.string
     };
 
     render() {
         let initialState, history, router, store;
+        let themeProps = {};
+        injectTapEventPlugin();
         if (typeof window === 'undefined') {
             initialState = this.props.initial_state;
+            themeProps.muiTheme = getMuiTheme({userAgent: this.props.user_agent});
             store = configureStore(initialState);
             history = createMemoryHistory();
             let routes = configRoutes(store);
@@ -40,7 +47,9 @@ export default class Index extends React.Component {
 
         return (
             <Provider store={store}>
-                {router}
+                <MuiThemeProvider {...themeProps}>
+                    {router}
+                </MuiThemeProvider>
             </Provider>
         );
     }

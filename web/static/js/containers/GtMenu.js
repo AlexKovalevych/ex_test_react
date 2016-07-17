@@ -1,6 +1,18 @@
 import React, { PropTypes } from 'react';
 import { connect } from 'react-redux';
-import SideNav from 'menu/SideNav';
+// import SideNav from 'menu/SideNav';
+import AppBar from 'material-ui/AppBar';
+import Drawer from 'material-ui/Drawer';
+import MenuItem from 'material-ui/MenuItem';
+import { push } from 'react-router-redux';
+
+
+
+const styles = {
+    title: {
+        cursor: 'pointer'
+    }
+};
 
 const ICONS = {
     dashboard: 'fa-dashboard',
@@ -14,7 +26,8 @@ const ICONS = {
 class GtMenu extends React.Component {
     static propTypes = {
         user: PropTypes.object,
-        location: PropTypes.object
+        location: PropTypes.object,
+        dispatch: PropTypes.func
     };
 
     static contextTypes = {
@@ -26,6 +39,11 @@ class GtMenu extends React.Component {
         this.state = {
             selectedItem: null
         };
+    }
+
+    handleTouchTap() {
+        const { dispatch } = this.props;
+        dispatch(push('/'));
     }
 
     getSelectedItem() {
@@ -107,12 +125,16 @@ class GtMenu extends React.Component {
         }
 
         return (
-            <SideNav
-                navs={navi}
-                selected={this.state.selectedItem}
-                style={{overflow: 'hidden'}}
-                onSelection={this.setSelectedItem.bind(this)}
-            />
+            <Drawer open={true} docked={true}>
+                <AppBar
+                    title={<span style={styles.title}>Globotunes 3.0</span>}
+                    onTitleTouchTap={this.handleTouchTap.bind(this)}
+                    iconElementLeft={<img src="/images/logo.png" width="50" height="50" />}
+                />
+                {navi.map((group) => {
+                    return (<MenuItem key={group.id}>{group.text}</MenuItem>);
+                })}
+            </Drawer>
         );
     }
 }

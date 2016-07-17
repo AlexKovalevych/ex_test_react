@@ -49,6 +49,7 @@ defmodule Gt.Mixfile do
             {:tzdata, "~> 0.1.8", override: true},
             {:exprintf, "~> 0.1.6"},
             {:progress_bar, "~> 1.5"}
+            # {:nio_google_authenticator, "~> 1.0.1"} Required newer ecto
         ]
     end
 

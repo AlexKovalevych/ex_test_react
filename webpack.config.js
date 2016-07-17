@@ -31,7 +31,7 @@ module.exports = {
     entry: [
         './web/static/js/index.js',
         'font-awesome/css/font-awesome.css',
-        'bootstrap/dist/css/bootstrap.css',
+        // 'bootstrap/dist/css/bootstrap.css',
         './web/static/css/app.css'
     ],
     output: {
