@@ -12,6 +12,7 @@ import ShowChartIcon from 'material-ui/svg-icons/editor/show-chart';
 import ArrowDropRight from 'material-ui/svg-icons/navigation-arrow-drop-right';
 import SettingsIcon from 'material-ui/svg-icons/action/settings';
 import gtTheme from 'themes';
+import Translate from 'react-translate-component';
 
 const styles = {
     title: {
@@ -184,7 +185,7 @@ class GtMenu extends React.Component {
                         style: Object.assign({}, styles.menu),
                         leftIcon: React.createElement(group.icon),
                         key: group.id,
-                        primaryText: group.text
+                        primaryText: <Translate content={`menu.${group.text}`} />
                     };
                     if (group.navlist.length > 0) {
                         props.rightIcon = (<ArrowDropRight />);
@@ -192,7 +193,7 @@ class GtMenu extends React.Component {
                         group.navlist.map((child) => {
                             props.menuItems.push(
                                 <MenuItem
-                                    primaryText={child.text}
+                                    primaryText={<Translate content={`menu.${child.text}`} />}
                                     onClick={this.changeUrl.bind(this, child.url)}
                                     style={styles.title}
                                 />
