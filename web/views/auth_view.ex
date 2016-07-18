@@ -8,8 +8,8 @@ defmodule Gt.AuthView do
         }
     end
 
-    def render("error.json", _) do
-        %{error: "Invalid email or password"}
+    def render("error.json", %{error: error}) do
+        %{error: error}
     end
 
     def render("delete.json", _) do

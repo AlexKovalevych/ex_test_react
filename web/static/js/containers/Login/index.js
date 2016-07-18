@@ -1,11 +1,13 @@
 import React, { PropTypes } from 'react';
 import { connect } from 'react-redux';
-import authActions from '../../actions/auth';
+import authActions from 'actions/auth';
 import { IndexLink } from 'react-router';
 import Divider from 'material-ui/Divider';
 import Paper from 'material-ui/Paper';
 import TextField from 'material-ui/TextField';
 import RaisedButton from 'material-ui/RaisedButton';
+import Translate from 'react-translate-component';
+import counterpart from 'counterpart';
 
 const styles = {
     input: {
@@ -40,6 +42,11 @@ class Login extends React.Component {
     }
 
     render() {
+        let error;
+        if (this.props.error) {
+            error = (<Translate content={this.props.error} />);
+        }
+        counterpart.setLocale('ru');
         return (
             <div style={styles.form}>
                 <IndexLink to="/">
@@ -47,20 +54,20 @@ class Login extends React.Component {
                 </IndexLink>
                 <Paper zDepth={2}>
                     <TextField
-                        hintText="Email"
+                        hintText={<Translate content="form.email" />}
                         ref="email"
                         id="email"
                         style={styles.input}
                         underlineShow={false}
                         fullWidth={true}
-                        errorText={this.props.error}
+                        errorText={error}
                     />
                     <Divider />
                     <TextField
                         type="password"
                         ref="password"
                         id="password"
-                        hintText="Password"
+                        hintText={<Translate content="form.password" />}
                         style={styles.input}
                         underlineShow={false}
                         fullWidth={true}
@@ -68,7 +75,7 @@ class Login extends React.Component {
                     <Divider />
                     <div>
                         <RaisedButton
-                            label="Login"
+                            label={<Translate content="form.login" />}
                             primary={true}
                             style={{
                                 margin: '20px'

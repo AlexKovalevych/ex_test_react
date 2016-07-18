@@ -10,6 +10,12 @@ import ExitToAppIcon from 'material-ui/svg-icons/action/exit-to-app';
 import IconButton from 'material-ui/IconButton';
 import Translate from 'react-translate-component';
 
+const styles = {
+    link: {
+        cursor: 'pointer'
+    }
+};
+
 class App extends React.Component {
     static propTypes = {
         menu: PropTypes.object,

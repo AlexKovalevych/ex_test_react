@@ -26,7 +26,7 @@ export default function configRoutes(store) {
             }
         }
 
-        counterpart.setLocale(user ? user.locale : 'ru');
+        counterpart.setLocale(user.locale);
         callback();
     };
 

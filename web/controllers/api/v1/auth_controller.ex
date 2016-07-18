@@ -14,10 +14,10 @@ defmodule Gt.AuthController do
                 |> put_status(:created)
                 |> render("show.json", jwt: jwt, user: user)
 
-            {:error, _} ->
+            {:error, error} ->
                 conn
                 |> put_status(:unprocessable_entity)
-                |> render("error.json")
+                |> render("error.json", error: error)
         end
     end
 

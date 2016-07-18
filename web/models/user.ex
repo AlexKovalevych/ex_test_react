@@ -59,14 +59,14 @@ defmodule Gt.Model.User do
     defp check_password(%__MODULE__{password: hash} = user, password) do
         case Comeonin.Bcrypt.checkpw(password, hash) do
             true -> {:ok, user}
-            false -> {:error, "Invalid email or password"}
+            false -> {:error, "validation.invalid_email_password"}
         end
     end
     defp check_password(nil, _password) do
         if Mix.env == :prod do
             Comeonin.Bcrypt.dummy_checkpw()
         end
-        {:error, "Invalid email or password"}
+        {:error, "validation.invalid_email_password"}
     end
 
     def by_id(query, user_id) do
