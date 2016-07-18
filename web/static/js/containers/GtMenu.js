@@ -1,27 +1,43 @@
 import React, { PropTypes } from 'react';
 import { connect } from 'react-redux';
-// import SideNav from 'menu/SideNav';
 import AppBar from 'material-ui/AppBar';
 import Drawer from 'material-ui/Drawer';
 import MenuItem from 'material-ui/MenuItem';
 import { push } from 'react-router-redux';
-
-
+import AccountBalanceIcon from 'material-ui/svg-icons/action/account-balance';
+import DashboardIcon from 'material-ui/svg-icons/action/dashboard';
+import EventIcon from 'material-ui/svg-icons/action/event';
+import AccountBoxIcon from 'material-ui/svg-icons/action/account-box';
+import ShowChartIcon from 'material-ui/svg-icons/editor/show-chart';
+import ArrowDropRight from 'material-ui/svg-icons/navigation-arrow-drop-right';
+import getMuiTheme from 'material-ui/styles/getMuiTheme';
 
 const styles = {
     title: {
+        cursor: 'pointer'
+    },
+    menu: {
         cursor: 'pointer'
     }
 };
 
 const ICONS = {
-    dashboard: 'fa-dashboard',
-    finance: 'fa-money',
-    statistics: 'fa-area-chart',
-    calendar_events: 'fa-th',
-    players: 'fa-users',
-    settings: 'fa-cogs'
+    dashboard: DashboardIcon,
+    finance: AccountBalanceIcon,
+    statistics: ShowChartIcon,
+    calendar_events: EventIcon,
+    players: AccountBoxIcon
+    // settings: 'fa-cogs'
 };
+
+const MENU_ORDER = [
+    'dashboard',
+    'finance',
+    'statistics',
+    'calendar_events',
+    'players',
+    'settings'
+];
 
 class GtMenu extends React.Component {
     static propTypes = {
@@ -75,6 +91,11 @@ class GtMenu extends React.Component {
         this.setState({selectedItem: item.id});
     }
 
+    changeUrl(url) {
+        const {dispatch} = this.props;
+        dispatch(push(url));
+    }
+
     getGroupChildren(block) {
         let parentBlock = this.props.user.permissions[block];
         let permissions = Object.keys(parentBlock).filter((node) => {
@@ -110,7 +131,7 @@ class GtMenu extends React.Component {
                 navi.push({
                     id: group,
                     text: group,
-                    icon: `fa ${ICONS[group]}`,
+                    icon: ICONS[group],
                     url: this.getUrl(group, 'dashboard_index'),
                     navlist: this.getGroupChildren(group)
                 });
@@ -118,11 +139,15 @@ class GtMenu extends React.Component {
                 navi.push({
                     id: group,
                     text: group,
-                    icon: `fa ${ICONS[group]}`,
+                    icon: ICONS[group],
                     navlist: this.getGroupChildren(group)
                 });
             }
         }
+
+        navi.sort((a, b) => {
+            return MENU_ORDER.indexOf(a.id) - MENU_ORDER.indexOf(b.id);
+        });
 
         return (
             <Drawer open={true} docked={true}>
@@ -132,7 +157,34 @@ class GtMenu extends React.Component {
                     iconElementLeft={<img src="/images/logo.png" width="50" height="50" />}
                 />
                 {navi.map((group) => {
-                    return (<MenuItem key={group.id}>{group.text}</MenuItem>);
+                    let props = {
+                        style: Object.assign({}, styles.menu),
+                        leftIcon: React.createElement(group.icon),
+                        key: group.id,
+                        primaryText: group.text
+                    };
+                    if (group.navlist.length > 0) {
+                        props.rightIcon = (<ArrowDropRight />);
+                        props.menuItems = [];
+                        group.navlist.map((child) => {
+                            props.menuItems.push(
+                                <MenuItem
+                                    primaryText={child.text}
+                                    onClick={this.changeUrl.bind(this, child.url)}
+                                    style={styles.title}
+                                />
+                            );
+                        });
+                    } else {
+                        props.onClick = this.changeUrl.bind(this, group.url);
+                    }
+                    if (this.isSelectedItem(group.id)) {
+                        props.style.backgroundColor = getMuiTheme().appBar.color;
+                        props.style.color = getMuiTheme().appBar.textColor;
+                    }
+                    return (
+                        <MenuItem {...props} />
+                    );
                 })}
             </Drawer>
         );
