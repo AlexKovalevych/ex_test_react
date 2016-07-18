@@ -3,13 +3,31 @@ defmodule Gt.PageController do
     alias Gt.Model.User
 
     def login(conn, _params) do
+        conn = conn |> fetch_session
+        user_id = get_session(conn, :current_user)
+        if !is_nil(user_id) do
+            user = User
+            |> User.by_id(user_id)
+            |> Repo.one
+            if !is_nil(user) do
+                redirect conn, to: "/"
+            else
+                render_login(conn)
+            end
+        else
+            render_login(conn)
+        end
+    end
+
+    defp render_login(conn) do
         initial_state = %{}
         props = %{
             "location" => conn.request_path,
-            "initial_state" => initial_state
+            "initial_state" => initial_state,
+            "user_agent" => conn |> get_req_header("user-agent") |> Enum.at(0)
         }
 
-        result = Gt.ReactIO.json_call!(%{
+        {:ok, result} = Gt.ReactIO.json_call(%{
             component: "./priv/static/server/js/app.js",
             props: props,
         })

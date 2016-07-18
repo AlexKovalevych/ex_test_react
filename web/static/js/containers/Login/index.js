@@ -2,12 +2,25 @@ import React, { PropTypes } from 'react';
 import { connect } from 'react-redux';
 import authActions from '../../actions/auth';
 import { IndexLink } from 'react-router';
+import Divider from 'material-ui/Divider';
+import Paper from 'material-ui/Paper';
+import TextField from 'material-ui/TextField';
+import RaisedButton from 'material-ui/RaisedButton';
+
+const styles = {
+    input: {
+        paddingLeft: 20
+    },
+    form: {
+        width: '33%',
+        margin: '0 auto',
+        textAlign: 'center'
+    }
+};
 
 class Login extends React.Component {
     static propTypes = {
         dispatch: PropTypes.func,
-        // isAuthenticated: PropTypes.bool,
-        // loginFailed: PropTypes.bool,
         error: PropTypes.string
     };
 
@@ -22,62 +35,48 @@ class Login extends React.Component {
         });
     }
 
-    // componentWillMount() {
-    //     const { isAuthenticated } = this.props;
-    //     if (isAuthenticated) {
-    //         this.context.router.push('/');
-    //     }
-    // }
-
     componentDidMount() {
         this.resetError();
     }
 
     render() {
-        let error;
-        if (this.props.error) {
-            error = (
-                <div className="alert alert-danger" role="alert">
-                    {this.props.error}
-                </div>
-            );
-        }
-
         return (
-            <div className="container">
-                <div className="row">
-                    <div className="col-sm-offset-4 col-sm-4">
-                        <IndexLink to="/">
-                            <img src="/images/logo.png" alt="logo" className="center-block" />
-                        </IndexLink>
+            <div style={styles.form}>
+                <IndexLink to="/">
+                    <img src="/images/logo.png" alt="logo" />
+                </IndexLink>
+                <Paper zDepth={2}>
+                    <TextField
+                        hintText="Email"
+                        ref="email"
+                        id="email"
+                        style={styles.input}
+                        underlineShow={false}
+                        fullWidth={true}
+                        errorText={this.props.error}
+                    />
+                    <Divider />
+                    <TextField
+                        type="password"
+                        ref="password"
+                        id="password"
+                        hintText="Password"
+                        style={styles.input}
+                        underlineShow={false}
+                        fullWidth={true}
+                    />
+                    <Divider />
+                    <div>
+                        <RaisedButton
+                            label="Login"
+                            primary={true}
+                            style={{
+                                margin: '20px'
+                            }}
+                            onMouseUp={this.onSubmit.bind(this)}
+                        />
                     </div>
-                    <form onSubmit={this.onSubmit.bind(this)} className="col-sm-offset-3 col-sm-6">
-                        {error}
-                        <div className="form-group">
-                            <input
-                                type="email"
-                                className="form-control"
-                                id="email"
-                                placeholder="Email"
-                                ref="email"
-                                onFocus={this.resetError.bind(this)}
-                            />
-                        </div>
-                        <div className="form-group">
-                            <input
-                                type="password"
-                                className="form-control"
-                                id="password"
-                                placeholder="Password"
-                                ref="password"
-                                onFocus={this.resetError.bind(this)}
-                            />
-                        </div>
-                        <div className="form-group">
-                            <button type="submit" className="btn btn-primary center-block">LOGIN</button>
-                        </div>
-                    </form>
-                </div>
+                </Paper>
             </div>
         );
     }
@@ -86,7 +85,7 @@ class Login extends React.Component {
         e.preventDefault();
         const { email, password } = this.refs;
         const { dispatch } = this.props;
-        const params = {email: email.value, password: password.value};
+        const params = {email: email.input.value, password: password.input.value};
 
         dispatch(authActions.login(params));
     }
