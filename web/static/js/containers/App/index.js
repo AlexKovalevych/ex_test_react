@@ -60,6 +60,7 @@ class App extends React.Component {
                                             icon={<img src="/images/flags/ru_2.png" width="25" />}
                                         />
                                     }
+                                    style={styles.link}
                                 />
                                 <MenuItem
                                     value='en'
@@ -72,6 +73,7 @@ class App extends React.Component {
                                             icon={<img src="/images/flags/en_2.png" width="25" />}
                                         />
                                     }
+                                    style={styles.link}
                                 />
                             </DropDownMenu>
                         </ToolbarGroup>

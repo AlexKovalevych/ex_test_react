@@ -10,8 +10,8 @@ import Translate from 'react-translate-component';
 import counterpart from 'counterpart';
 
 const styles = {
-    input: {
-        paddingLeft: 20
+    paper: {
+        padding: '0 20px'
     },
     form: {
         width: '33%',
@@ -52,12 +52,11 @@ class Login extends React.Component {
                 <IndexLink to="/">
                     <img src="/images/logo.png" alt="logo" />
                 </IndexLink>
-                <Paper zDepth={2}>
+                <Paper zDepth={2} style={styles.paper}>
                     <TextField
                         hintText={<Translate content="form.email" />}
                         ref="email"
                         id="email"
-                        style={styles.input}
                         underlineShow={false}
                         fullWidth={true}
                         errorText={error}
@@ -68,7 +67,6 @@ class Login extends React.Component {
                         ref="password"
                         id="password"
                         hintText={<Translate content="form.password" />}
-                        style={styles.input}
                         underlineShow={false}
                         fullWidth={true}
                     />
