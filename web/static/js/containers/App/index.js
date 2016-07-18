@@ -10,12 +10,6 @@ import ExitToAppIcon from 'material-ui/svg-icons/action/exit-to-app';
 import IconButton from 'material-ui/IconButton';
 import Translate from 'react-translate-component';
 
-const styles = {
-    link: {
-        cursor: 'pointer'
-    }
-};
-
 class App extends React.Component {
     static propTypes = {
         menu: PropTypes.object,
@@ -68,7 +62,7 @@ class App extends React.Component {
                                             icon={<img src="/images/flags/ru_2.png" width="25" />}
                                         />
                                     }
-                                    style={styles.link}
+                                    style={gtTheme.theme.link}
                                 />
                                 <MenuItem
                                     value='en'
@@ -82,7 +76,7 @@ class App extends React.Component {
                                             style={tooltipStyles}
                                         />
                                     }
-                                    style={styles.link}
+                                    style={gtTheme.theme.link}
                                 />
                             </DropDownMenu>
                         </ToolbarGroup>
@@ -92,7 +86,9 @@ class App extends React.Component {
                             </IconButton>
                         </ToolbarGroup>
                     </Toolbar>
-                    {this.props.main}
+                    <div style={gtTheme.theme.content}>
+                        {this.props.main}
+                    </div>
                 </div>
                 {this.props.menu}
             </div>

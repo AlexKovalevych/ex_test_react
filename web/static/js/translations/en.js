@@ -41,5 +41,8 @@ counterpart.registerTranslations('en', {
     },
     validation: {
         invalid_email_password: 'Invalid email or password'
+    },
+    dashboard: {
+        title: 'Projects indicators'
     }
 });

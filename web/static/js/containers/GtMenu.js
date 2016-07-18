@@ -183,7 +183,6 @@ class GtMenu extends React.Component {
                 {navi.map((group) => {
                     let props = {
                         style: Object.assign({}, styles.menu),
-                        leftIcon: React.createElement(group.icon),
                         key: group.id,
                         primaryText: <Translate content={`menu.${group.text}`} />
                     };
@@ -205,6 +204,9 @@ class GtMenu extends React.Component {
                     if (this.isSelectedItem(group.id)) {
                         props.style.backgroundColor = gtTheme.theme.drawer.selectedColor;
                         props.style.color = gtTheme.theme.appBar.textColor;
+                        props.leftIcon = React.createElement(group.icon, {style: {fill: gtTheme.theme.drawer.selectedIcon}});
+                    } else {
+                        props.leftIcon = React.createElement(group.icon);
                     }
                     return (
                         <MenuItem {...props} />

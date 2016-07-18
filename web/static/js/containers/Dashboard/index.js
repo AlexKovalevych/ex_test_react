@@ -4,9 +4,10 @@ import dashboardActions from 'actions/dashboard';
 import ConsolidatedTable from 'components/Dashboard/ConsolidatedTable';
 import DashboardCharts from 'components/Dashboard/DashboardCharts';
 import DashboardProgress from 'components/Dashboard/DashboardProgress';
-// import { Dropdown } from 'react-bootstrap';
-// import counterpart from 'counterpart';
-// import Translate from 'react-translate-component';
+import Translate from 'react-translate-component';
+import gtTheme from 'themes';
+import Subheader from 'material-ui/Subheader';
+import Paper from 'material-ui/Paper';
 
 class Dashboard extends React.Component {
     static propTypes = {
@@ -93,24 +94,22 @@ class Dashboard extends React.Component {
 
         return (
             <div>
-                <h1>Dashboard</h1>
+                <h1 style={gtTheme.theme.title}><Translate content="dashboard.title" /></h1>
                 {
                     this.props.data.lastUpdated && (
-                        <div className="row">
-                            <div className="col-sm-12">
-                                <div className="card">
-                                    <h5 className="card-header">Total</h5>
-                                    <div className="card-block row">
-                                        <DashboardCharts stats={this.props.data.charts} />
-                                        <div className="col-lg-8">
-                                            <ConsolidatedTable
-                                                periods={this.props.data.periods}
-                                                stats={this.props.data.totals}
-                                            />
-                                        </div>
+                        <div>
+                            <Paper zDepth={2} style={{marginTop: gtTheme.theme.content.padding}}>
+                                <Subheader>Total</Subheader>
+                                <div className="card-block row">
+                                    <DashboardCharts stats={this.props.data.charts} />
+                                    <div className="col-lg-8">
+                                        <ConsolidatedTable
+                                            periods={this.props.data.periods}
+                                            stats={this.props.data.totals}
+                                        />
                                     </div>
                                 </div>
-                            </div>
+                            </Paper>
                             {sortedStats.map(this.renderProject.bind(this))}
                         </div>
                     )
