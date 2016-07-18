@@ -11,7 +11,7 @@ import AccountBoxIcon from 'material-ui/svg-icons/action/account-box';
 import ShowChartIcon from 'material-ui/svg-icons/editor/show-chart';
 import ArrowDropRight from 'material-ui/svg-icons/navigation-arrow-drop-right';
 import SettingsIcon from 'material-ui/svg-icons/action/settings';
-import getMuiTheme from 'material-ui/styles/getMuiTheme';
+import gtTheme from 'themes';
 
 const styles = {
     title: {
@@ -202,8 +202,8 @@ class GtMenu extends React.Component {
                         props.onClick = this.changeUrl.bind(this, group.url);
                     }
                     if (this.isSelectedItem(group.id)) {
-                        props.style.backgroundColor = getMuiTheme().appBar.color;
-                        props.style.color = getMuiTheme().appBar.textColor;
+                        props.style.backgroundColor = gtTheme.theme.drawer.selectedColor;
+                        props.style.color = gtTheme.theme.appBar.textColor;
                     }
                     return (
                         <MenuItem {...props} />

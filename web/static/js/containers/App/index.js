@@ -1,7 +1,7 @@
 import React, { PropTypes } from 'react';
 import { connect } from 'react-redux';
 import authActions from '../../actions/auth';
-import spacing from 'material-ui/styles/spacing';
+import gtTheme from 'themes';
 import FlatButton from 'material-ui/FlatButton';
 import {Toolbar, ToolbarGroup} from 'material-ui/Toolbar';
 import DropDownMenu from 'material-ui/DropDownMenu';
@@ -43,18 +43,26 @@ class App extends React.Component {
     }
 
     render() {
+        let tooltipStyles = {
+            color: gtTheme.theme.appBar.textColor
+        };
+
         return (
             <div>
-                <div style={{paddingLeft: spacing.desktopKeylineIncrement * 4}}>
+                <div style={{paddingLeft: gtTheme.theme.drawer.width}}>
                     <Toolbar>
                         <ToolbarGroup firstChild={true}>
-                            <DropDownMenu value={this.props.user.locale} onChange={this.setLocale.bind(this)}>
+                            <DropDownMenu
+                                value={this.props.user.locale}
+                                onChange={this.setLocale.bind(this)}
+                            >
                                 <MenuItem
                                     value='ru'
                                     primaryText={<Translate content="ru" />}
                                     leftIcon={<img src="/images/flags/ru_2.png" width="25" />}
                                     label={
                                         <FlatButton
+                                            style={tooltipStyles}
                                             label={<Translate content="ru" />}
                                             labelPosition="after"
                                             icon={<img src="/images/flags/ru_2.png" width="25" />}
@@ -71,6 +79,7 @@ class App extends React.Component {
                                             label={<Translate content="en" />}
                                             labelPosition="after"
                                             icon={<img src="/images/flags/en_2.png" width="25" />}
+                                            style={tooltipStyles}
                                         />
                                     }
                                     style={styles.link}
@@ -78,7 +87,7 @@ class App extends React.Component {
                             </DropDownMenu>
                         </ToolbarGroup>
                         <ToolbarGroup>
-                            <IconButton onClick={this.onLogout.bind(this)}>
+                            <IconButton onClick={this.onLogout.bind(this)} iconStyle={tooltipStyles}>
                                 <ExitToAppIcon />
                             </IconButton>
                         </ToolbarGroup>

@@ -6,8 +6,9 @@ import configureStore from '../store';
 import configRoutes from '../routes';
 import injectTapEventPlugin from 'react-tap-event-plugin';
 import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider';
-import getMuiTheme from 'material-ui/styles/getMuiTheme';
 import 'translations';
+import indigo from 'themes/indigo';
+import gtTheme from 'themes';
 
 export default class Index extends React.Component {
     static propTypes = {
@@ -22,7 +23,7 @@ export default class Index extends React.Component {
         injectTapEventPlugin();
         if (typeof window === 'undefined') {
             initialState = this.props.initial_state;
-            themeProps.muiTheme = getMuiTheme({userAgent: this.props.user_agent});
+            indigo.create(this.props.user_agent);
             store = configureStore(initialState);
             history = createMemoryHistory();
             let routes = configRoutes(store);
@@ -36,6 +37,7 @@ export default class Index extends React.Component {
             });
         } else {
             initialState = window.__INITIAL_STATE__;
+            indigo.create(initialState.user_agent);
             store = configureStore(initialState.initial_state, browserHistory);
             const history = syncHistoryWithStore(browserHistory, store);
 
@@ -45,6 +47,8 @@ export default class Index extends React.Component {
                 </Router>
             );
         }
+        themeProps.muiTheme = indigo.theme;
+        gtTheme.theme = themeProps.muiTheme;
 
         return (
             <Provider store={store}>
