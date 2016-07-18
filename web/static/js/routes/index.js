@@ -8,23 +8,25 @@ import ErrorPage from '../components/ErrorPage';
 import GtMenu from '../containers/GtMenu';
 import authActions, { setCurrentUser } from '../actions/auth';
 import Main from '../containers/main';
+import counterpart from 'counterpart';
 
 export default function configRoutes(store) {
     const _ensureAuthenticated = (nextState, replace, callback) => {
         const { dispatch } = store;
         const { auth } = store.getState();
-        const { currentUser } = auth;
+        const { user } = auth;
 
         if (typeof window !== 'undefined') {
-            if (!currentUser && localStorage.getItem('jwtToken')) {
-                dispatch(authActions.currentUser());
+            if (!user && localStorage.getItem('jwtToken')) {
+                dispatch(authActions.user());
             } else if (!localStorage.getItem('jwtToken')) {
                 replace('/login');
-            } else if (currentUser) {
-                setCurrentUser(dispatch, currentUser);
+            } else if (user) {
+                setCurrentUser(dispatch, user);
             }
         }
 
+        counterpart.setLocale(user ? user.locale : 'ru');
         callback();
     };
 

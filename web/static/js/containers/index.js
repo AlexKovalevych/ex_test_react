@@ -7,6 +7,7 @@ import configRoutes from '../routes';
 import injectTapEventPlugin from 'react-tap-event-plugin';
 import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider';
 import getMuiTheme from 'material-ui/styles/getMuiTheme';
+import 'translations';
 
 export default class Index extends React.Component {
     static propTypes = {

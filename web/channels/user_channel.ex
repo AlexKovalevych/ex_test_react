@@ -1,6 +1,7 @@
 defmodule Gt.UserChannel do
     use Gt.Web, :channel
     alias Gt.Model.Project
+    alias Gt.Model.User
 
     def join("users:" <> user_id, _params, socket) do
         current_user = socket.assigns.current_user
@@ -44,5 +45,14 @@ defmodule Gt.UserChannel do
         # )
         {:reply, {:ok, %{}}, socket}
         # {:reply, {:ok, %{stats: stats, projects: projects}}, socket}
+    end
+    def handle_in("locale", locale, socket) do
+        user_id = socket.assigns.current_user.id
+        user = Repo.get(User, user_id)
+        user = Ecto.Changeset.change user, locale: locale
+        case Repo.update user do
+            {:ok, user} -> {:reply, {:ok, user}, socket}
+            {:error, changeset} -> {:error, %{reason: changeset}}
+        end
     end
 end

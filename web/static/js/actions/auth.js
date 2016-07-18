@@ -1,5 +1,6 @@
 import { push } from 'react-router-redux';
 import { Socket } from 'phoenix';
+import counterpart from 'counterpart';
 
 const defaultHeaders = {
     Accept: 'application/json',
@@ -110,6 +111,26 @@ const authActions = {
                 console.log(error);
                 dispatch(push('/login'));
             });
+        };
+    },
+
+    setLocale: (locale) => {
+        return (dispatch, getState) => {
+            const { auth } = getState();
+            auth.channel
+                .push('locale', locale)
+                .receive('ok', (user) => {
+                    counterpart.setLocale(user.locale);
+                    dispatch({
+                        type: 'CURRENT_USER',
+                        currentUser: user,
+                        socket: auth.socket,
+                        channel: auth.channel
+                    });
+                })
+                .receive('error', (msg) => {
+                    console.log(msg);
+                });
         };
     }
 };

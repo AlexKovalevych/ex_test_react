@@ -1,7 +1,6 @@
 import React, { PropTypes } from 'react';
 import { connect } from 'react-redux';
 import authActions from '../../actions/auth';
-import counterpart from 'counterpart';
 import spacing from 'material-ui/styles/spacing';
 import FlatButton from 'material-ui/FlatButton';
 import {Toolbar, ToolbarGroup} from 'material-ui/Toolbar';
@@ -9,7 +8,7 @@ import DropDownMenu from 'material-ui/DropDownMenu';
 import MenuItem from 'material-ui/MenuItem';
 import ExitToAppIcon from 'material-ui/svg-icons/action/exit-to-app';
 import IconButton from 'material-ui/IconButton';
-// import Translate from 'react-translate-component';
+import Translate from 'react-translate-component';
 
 class App extends React.Component {
     static propTypes = {
@@ -17,7 +16,7 @@ class App extends React.Component {
         main: PropTypes.object,
         children: PropTypes.object,
         dispatch: PropTypes.func,
-        currentUser: PropTypes.object,
+        user: PropTypes.object,
         socket: PropTypes.object,
         channel: PropTypes.object
     };
@@ -26,14 +25,9 @@ class App extends React.Component {
         router: PropTypes.object.isRequired
     }
 
-    constructor(props) {
-        super(props);
-        this.state = {locale: 'ru'};
-    }
-
     setLocale(e, i, locale) {
-        counterpart.setLocale(locale);
-        this.setState({locale});
+        const { dispatch } = this.props;
+        dispatch(authActions.setLocale(locale));
     }
 
     onLogout(e) {
@@ -48,14 +42,14 @@ class App extends React.Component {
                 <div style={{paddingLeft: spacing.desktopKeylineIncrement * 4}}>
                     <Toolbar>
                         <ToolbarGroup firstChild={true}>
-                            <DropDownMenu value={this.state.locale} onChange={this.setLocale.bind(this)}>
+                            <DropDownMenu value={this.props.user.locale} onChange={this.setLocale.bind(this)}>
                                 <MenuItem
                                     value='ru'
-                                    primaryText="Russian"
+                                    primaryText={<Translate content="ru" />}
                                     leftIcon={<img src="/images/flags/ru_2.png" width="25" />}
                                     label={
                                         <FlatButton
-                                            label="Russian"
+                                            label={<Translate content="ru" />}
                                             labelPosition="after"
                                             icon={<img src="/images/flags/ru_2.png" width="25" />}
                                         />
@@ -63,11 +57,11 @@ class App extends React.Component {
                                 />
                                 <MenuItem
                                     value='en'
-                                    primaryText="English"
+                                    primaryText={<Translate content="en" />}
                                     leftIcon={<img src="/images/flags/en_2.png" width="25" />}
                                     label={
                                         <FlatButton
-                                            label="English"
+                                            label={<Translate content="en" />}
                                             labelPosition="after"
                                             icon={<img src="/images/flags/en_2.png" width="25" />}
                                         />
@@ -90,7 +84,7 @@ class App extends React.Component {
 }
 
 const mapStateToProps = (state) => ({
-    currentUser: state.auth.currentUser,
+    user: state.auth.user,
     socket: state.auth.socket,
     channel: state.auth.channel
 });
