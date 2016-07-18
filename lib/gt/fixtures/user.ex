@@ -9,11 +9,18 @@ defmodule Gt.Fixtures.User do
     @users [
         {
             "alex@example.com",
-            permissions
+            permissions,
+            true
         },
         {
             "admin@example.com",
-            permissions
+            permissions,
+            true
+        },
+        {
+            "test@example.com",
+            permissions,
+            false
         }
     ]
 
@@ -26,13 +33,13 @@ defmodule Gt.Fixtures.User do
     end
 
     def insert_user(user, project_ids) do
-        email = elem(user, 0)
+        {email, permissions, is_admin} = user;
         [pass, _] = String.split(email, "@")
-        permissions = elem(user, 1)
         Repo.insert!(User.changeset(%User{}, %{
             email: email,
             password_plain: pass,
-            permissions: add(permissions, Map.keys(permissions), project_ids)
+            permissions: add(permissions, Map.keys(permissions), project_ids),
+            is_admin: is_admin
         }))
     end
 end

@@ -10,6 +10,7 @@ import EventIcon from 'material-ui/svg-icons/action/event';
 import AccountBoxIcon from 'material-ui/svg-icons/action/account-box';
 import ShowChartIcon from 'material-ui/svg-icons/editor/show-chart';
 import ArrowDropRight from 'material-ui/svg-icons/navigation-arrow-drop-right';
+import SettingsIcon from 'material-ui/svg-icons/action/settings';
 import getMuiTheme from 'material-ui/styles/getMuiTheme';
 
 const styles = {
@@ -26,8 +27,8 @@ const ICONS = {
     finance: AccountBalanceIcon,
     statistics: ShowChartIcon,
     calendar_events: EventIcon,
-    players: AccountBoxIcon
-    // settings: 'fa-cogs'
+    players: AccountBoxIcon,
+    settings: SettingsIcon
 };
 
 const MENU_ORDER = [
@@ -116,6 +117,18 @@ class GtMenu extends React.Component {
         return navi;
     }
 
+    getSettingsChildren() {
+        let navi = [];
+        for (let node of ['users', 'projects', 'notifications', 'permissions', 'data_sources', 'smtp_servers']) {
+            navi.push({
+                id: node,
+                text: node,
+                url: this.getUrl('settings', node)
+            });
+        }
+        return navi;
+    }
+
     render() {
         let permissions = Object.keys(this.props.user.permissions).filter((block) => {
             let parentBlock = this.props.user.permissions[block];
@@ -143,6 +156,16 @@ class GtMenu extends React.Component {
                     navlist: this.getGroupChildren(group)
                 });
             }
+        }
+
+        if (this.props.user.is_admin) {
+            let group = 'settings';
+            navi.push({
+                id: group,
+                text: group,
+                icon: ICONS[group],
+                navlist: this.getSettingsChildren()
+            });
         }
 
         navi.sort((a, b) => {

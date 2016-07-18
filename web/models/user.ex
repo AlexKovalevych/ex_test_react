@@ -1,7 +1,7 @@
 defmodule Gt.Model.User do
     use Gt.Web, :model
 
-    @derive {Poison.Encoder, only: [:id, :email, :permissions, :settings]}
+    @derive {Poison.Encoder, only: [:id, :email, :permissions, :settings, :is_admin]}
 
     @collection "users"
 
@@ -16,11 +16,12 @@ defmodule Gt.Model.User do
             "dashboardPeriod" => "month",
             "dashboardComparePeriod" => -1
         }
+        field :is_admin, :boolean, default: false
 
         timestamps
     end
 
-    @required_fields ~w(email password_plain permissions settings)
+    @required_fields ~w(email password_plain permissions settings is_admin)
     @optional_fields ~w(password)
 
     def changeset(model, params \\ :empty) do
