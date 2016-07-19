@@ -1,5 +1,6 @@
 import accounting from 'accounting';
 // import moment from 'moment';
+import translate from 'counterpart';
 
 class Formatter {
     static monthNames = [
@@ -58,8 +59,15 @@ class Formatter {
         return accounting.formatMoney(value, {symbol: symbol, format: format, precision: precision});
     }
 
-    formatNumber(value, precision=0) {
+    formatNumber(value, precision=0)    {
         return accounting.formatNumber(value, precision);
+    }
+
+    formatDashboardPeriod(type, value) {
+        switch (type) {
+        case 'month':
+            return this.formatMonth(value);
+        }
     }
 
     // formatDate(date) {
@@ -85,12 +93,12 @@ class Formatter {
     //     return `${this._getZero(dateObj.getDate())}.${this._getZero(dateObj.getMonth() + 1)}.${dateObj.getFullYear()}`;
     // }
 
-    // formatMonth(date) {
-    //     let dateObj = new Date(date);
-    //     let month = Translator.trans(Formatter.monthNames[dateObj.getMonth()]);
+    formatMonth(date) {
+        let dateObj = new Date(date);
+        let month = translate(`months.${Formatter.monthNames[dateObj.getMonth()]}`);
 
-    //     return `${month} ${dateObj.getFullYear()}`;
-    // }
+        return `${month} ${dateObj.getFullYear()}`;
+    }
 
     // formatMinutes(date) {
     //     let dateObj = new Date(date);

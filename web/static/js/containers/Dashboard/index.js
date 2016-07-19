@@ -52,28 +52,27 @@ class Dashboard extends React.Component {
         }
 
         return (
-            <div key={projectId} className="col-sm-12">
-                <div className="card">
-                    <h5 className="card-header">{project.title}</h5>
-                    <div className="card-block row">
-                        <div className="col-lg-4">
-                            <DashboardProgress
-                                sortBy={this.props.user.settings.dashboardSort}
-                                periods={this.props.data.periods}
-                                totals={this.props.data.totals}
-                                stats={projectStats}
-                            />
-                            <DashboardCharts stats={this.props.data.charts} />
-                        </div>
-                        <div className="col-lg-8">
-                            <ConsolidatedTable
-                                periods={this.props.data.periods}
-                                stats={projectStats}
-                            />
-                        </div>
+            <Paper key={projectId} style={{marginTop: gtTheme.theme.content.padding}}>
+                <Subheader>{project.title}</Subheader>
+                <div className='row'>
+                    <div className='col-md-4 col-xs-12'>
+                        <DashboardProgress
+                            sortBy={this.props.user.settings.dashboardSort}
+                            periods={this.props.data.periods}
+                            totals={this.props.data.totals}
+                            stats={projectStats}
+                        />
+                        <DashboardCharts stats={this.props.data.charts} />
+                    </div>
+                    <div className='col-md-8 col-xs-12'>
+                        <ConsolidatedTable
+                            periodType={this.props.user.settings.dashboardPeriod}
+                            periods={this.props.data.periods}
+                            stats={projectStats}
+                        />
                     </div>
                 </div>
-            </div>
+            </Paper>
         );
     }
 
@@ -99,7 +98,7 @@ class Dashboard extends React.Component {
                 {
                     this.props.data.lastUpdated && (
                         <div>
-                            <Paper zDepth={2} style={{marginTop: gtTheme.theme.content.padding}}>
+                            <Paper style={{marginTop: gtTheme.theme.content.padding}}>
                                 <Subheader>Total</Subheader>
                                 <div className='row'>
                                     <div className='col-md-4 col-xs-12'>
@@ -107,6 +106,7 @@ class Dashboard extends React.Component {
                                     </div>
                                     <div className='col-md-8 col-xs-12'>
                                         <ConsolidatedTable
+                                            periodType={this.props.user.settings.dashboardPeriod}
                                             periods={this.props.data.periods}
                                             stats={this.props.data.totals}
                                         />

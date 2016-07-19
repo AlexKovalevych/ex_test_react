@@ -3,6 +3,22 @@ import counterpart from 'counterpart';
 counterpart.registerTranslations('en', {
     ru: 'Russian',
     en: 'English',
+    months: {
+        Jan: 'Jan',
+        Feb: 'Feb',
+        Mar: 'Mar',
+        Apr: 'Apr',
+        May: 'May',
+        Jun: 'Jun',
+        Jul: 'Jul',
+        Aug: 'Aug',
+        Sep: 'Sep',
+        Oct: 'Oct',
+        Nov: 'Nov',
+        Dec: 'Dec'
+    },
+    difference: 'Difference',
+    charts: 'Charts',
     menu: {
         dashboard: 'Project indicators',
         finance: 'Finance',

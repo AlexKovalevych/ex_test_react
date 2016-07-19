@@ -7,7 +7,8 @@ import Translate from 'react-translate-component';
 export default class ConsolidatedTable extends React.Component {
     static propTypes = {
         periods: PropTypes.object,
-        stats: PropTypes.object
+        stats: PropTypes.object,
+        periodType: PropTypes.string
     };
 
     render() {
@@ -16,18 +17,18 @@ export default class ConsolidatedTable extends React.Component {
 
         return (
             <Table selectable={false}>
-                <TableHeader displaySelectAll={false} adjustForCheckbox={false}>
+                <TableHeader displaySelectAll={false} adjustForCheckbox={false} style={{tableLayout: 'auto'}}>
                     <TableRow>
-                        <TableHeaderColumn></TableHeaderColumn>
-                        <TableHeaderColumn>Current</TableHeaderColumn>
-                        <TableHeaderColumn>Previous</TableHeaderColumn>
-                        <TableHeaderColumn>Delta</TableHeaderColumn>
-                        <TableHeaderColumn>Charts</TableHeaderColumn>
+                        <TableHeaderColumn style={{width: '35%'}}></TableHeaderColumn>
+                        <TableHeaderColumn>{formatter.formatDashboardPeriod(this.props.periodType, this.props.periods.current[0])}</TableHeaderColumn>
+                        <TableHeaderColumn>{formatter.formatDashboardPeriod(this.props.periodType, this.props.periods.comparison[0])}</TableHeaderColumn>
+                        <TableHeaderColumn><Translate content="difference" /></TableHeaderColumn>
+                        <TableHeaderColumn><Translate content="charts" /></TableHeaderColumn>
                     </TableRow>
                 </TableHeader>
-                <TableBody displayRowCheckbox={false}>
+                <TableBody displayRowCheckbox={false} style={{tableLayout: 'auto'}}>
                     <TableRow>
-                        <TableRowColumn><Translate content='dashboard.average_deposit' /></TableRowColumn>
+                        <TableRowColumn style={{width: '35%'}}><Translate content='dashboard.average_deposit' /></TableRowColumn>
                         <TableRowColumn>{formatter.formatValue(currentStats.averageDeposit, 'averageDeposit')}</TableRowColumn>
                         <TableRowColumn>{formatter.formatValue(comparisonStats.averageDeposit, 'averageDeposit')}</TableRowColumn>
                         <TableRowColumn>
