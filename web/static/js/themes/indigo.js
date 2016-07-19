@@ -39,13 +39,15 @@ class Indigo {
                 padding: spacing.desktopGutter
             },
             tableHeaderColumn: {
-                height: 48
+                height: 48,
+                spacing: 8
             },
             tableRow: {
                 height: 32
             },
             tableRowColumn: {
-                height: 32
+                height: 32,
+                spacing: 8
             },
             padding: {
                 md: spacing.desktopGutterLess,

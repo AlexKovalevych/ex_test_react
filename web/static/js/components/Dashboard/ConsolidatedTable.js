@@ -22,8 +22,8 @@ export default class ConsolidatedTable extends React.Component {
                         <TableHeaderColumn style={{width: '35%'}}></TableHeaderColumn>
                         <TableHeaderColumn>{formatter.formatDashboardPeriod(this.props.periodType, this.props.periods.current[0])}</TableHeaderColumn>
                         <TableHeaderColumn>{formatter.formatDashboardPeriod(this.props.periodType, this.props.periods.comparison[0])}</TableHeaderColumn>
-                        <TableHeaderColumn><Translate content="difference" /></TableHeaderColumn>
-                        <TableHeaderColumn><Translate content="charts" /></TableHeaderColumn>
+                        <TableHeaderColumn style={{width: '20%'}}><Translate content="difference" /></TableHeaderColumn>
+                        <TableHeaderColumn style={{width: '13%'}}><Translate content="charts" /></TableHeaderColumn>
                     </TableRow>
                 </TableHeader>
                 <TableBody displayRowCheckbox={false} style={{tableLayout: 'auto'}}>
@@ -31,10 +31,10 @@ export default class ConsolidatedTable extends React.Component {
                         <TableRowColumn style={{width: '35%'}}><Translate content='dashboard.average_deposit' /></TableRowColumn>
                         <TableRowColumn>{formatter.formatValue(currentStats.averageDeposit, 'averageDeposit')}</TableRowColumn>
                         <TableRowColumn>{formatter.formatValue(comparisonStats.averageDeposit, 'averageDeposit')}</TableRowColumn>
-                        <TableRowColumn>
+                        <TableRowColumn style={{width: '20%'}}>
                             <Delta value={formatter.formatValue(currentStats.averageDeposit - comparisonStats.averageDeposit, 'averageDeposit')} />
                         </TableRowColumn>
-                        <TableRowColumn>
+                        <TableRowColumn style={{width: '13%'}}>
                             <span className="chart-icon">
                                 <i className="fa fa-area-chart fa-lg padding-5"></i>
                             </span>
