@@ -68,6 +68,8 @@ counterpart.registerTranslations('en', {
         first_depositors_number: 'First depositors number',
         signups_number: 'Signups number',
         first_deposits_amount: 'First deposits amount',
-        authorizations_number: 'Authorizations number'
+        authorizations_number: 'Authorizations number',
+        inout: 'Inout',
+        netgaming: 'Netgaming'
     }
 });

@@ -1,4 +1,7 @@
 import React, {PropTypes} from 'react';
+import {Tabs, Tab} from 'material-ui/Tabs';
+import Translate from 'react-translate-component';
+import gtTheme from 'themes';
 
 export default class DashboardCharts extends React.Component {
     static propTypes = {
@@ -12,14 +15,14 @@ export default class DashboardCharts extends React.Component {
         }
 
         return (
-            <div className="col-lg-4">
-                <div ref="dailyChart" className="text-center">
+            <Tabs>
+                <Tab label={<Translate content="dashboard.inout" />} style={gtTheme.theme.tab}>
                     {loadingIcon}
-                </div>
-                <div ref="monthlyChart" className="text-center">
+                </Tab>
+                <Tab label={<Translate content="dashboard.netgaming" />} style={gtTheme.theme.tab}>
                     {loadingIcon}
-                </div>
-            </div>
+                </Tab>
+            </Tabs>
         );
     }
 }

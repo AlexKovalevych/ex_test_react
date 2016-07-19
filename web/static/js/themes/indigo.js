@@ -1,5 +1,5 @@
 import getMuiTheme from 'material-ui/styles/getMuiTheme';
-import {fullWhite, indigo500, indigo700, pinkA200, indigo900} from 'material-ui/styles/colors';
+import {fullWhite, indigo500, indigo700, pinkA200, indigo900, indigo50} from 'material-ui/styles/colors';
 import spacing from 'material-ui/styles/spacing';
 import typography from 'material-ui/styles/typography';
 import lightTheme from 'material-ui/styles/baseThemes/lightBaseTheme';
@@ -29,7 +29,8 @@ class Indigo {
             title: {
                 fontSize: typography.fontStyleButtonFontSize * 2,
                 fontFamily: lightTheme.fontFamily,
-                color: indigo900
+                color: indigo900,
+                marginTop: 0
             },
             link: {
                 cursor: 'pointer'
@@ -49,6 +50,12 @@ class Indigo {
             padding: {
                 md: spacing.desktopGutterLess,
                 sm: spacing.desktopGutterMini
+            },
+            tabs: {
+                backgroundColor: indigo50
+            },
+            tab: {
+                color: indigo900
             }
         });
     }

@@ -44,7 +44,7 @@ class App extends React.Component {
         return (
             <div>
                 <div style={{paddingLeft: gtTheme.theme.drawer.width}}>
-                    <Toolbar>
+                    <Toolbar style={{height: gtTheme.theme.appBar.height + 3}}>
                         <ToolbarGroup firstChild={true}>
                             <DropDownMenu
                                 value={this.props.user.locale}
