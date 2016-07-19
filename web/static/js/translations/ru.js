@@ -37,7 +37,7 @@ counterpart.registerTranslations('ru', {
     form: {
         email: 'Логин',
         password: 'Пароль',
-        login: 'Логин'
+        login: 'Войти'
     },
     validation: {
         invalid_email_password: 'Неправильный логин или пароль'
