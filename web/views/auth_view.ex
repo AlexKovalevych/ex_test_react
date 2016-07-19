@@ -1,4 +1,4 @@
-defmodule Gt.AuthView do
+defmodule Gt.Api.V1.AuthView do
     use Gt.Web, :view
 
     def render("show.json", %{jwt: jwt, user: user}) do

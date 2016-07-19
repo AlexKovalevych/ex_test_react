@@ -1,7 +1,7 @@
-defmodule Gt.CurrentUserController do
+defmodule Gt.Api.V1.CurrentUserController do
     use Gt.Web, :controller
 
-    plug Guardian.Plug.EnsureAuthenticated, handler: Gt.AuthController
+    plug Guardian.Plug.EnsureAuthenticated, handler: Gt.Api.V1.AuthController
 
     def show(conn, _) do
         user = Guardian.Plug.current_resource(conn)

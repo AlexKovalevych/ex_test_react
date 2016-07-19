@@ -29,17 +29,18 @@ defmodule Gt.Router do
         pipe_through [:api, :api_session]
 
         scope "/v1" do
-            post "/auth", AuthController, :auth
-            delete "/auth", AuthController, :delete
-            get "/current_user", CurrentUserController, :show
+            post "/auth", Api.V1.AuthController, :auth
+            delete "/auth", Api.V1.AuthController, :delete
+            get "/current_user", Api.V1.CurrentUserController, :show
         end
     end
 
     scope "/", Gt do
         pipe_through [:browser, :browser_session] # Use the default browser stack
 
-        get "/login", PageController, :login
-        get "/logout", PageController, :logout
+        get "/login", AuthController, :login
+        get "/logout", AuthController, :logout
+        get "/", DashboardController, :index
         get "/*path", PageController, :index
     end
 end

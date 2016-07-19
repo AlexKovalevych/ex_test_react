@@ -38,6 +38,7 @@ defmodule Gt.Web do
 
             import Gt.Router.Helpers
             import Gt.Gettext
+            import Gt.Session, only: [current_user: 1, logged_in?: 1]
         end
     end
 

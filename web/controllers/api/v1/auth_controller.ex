@@ -1,4 +1,4 @@
-defmodule Gt.AuthController do
+defmodule Gt.Api.V1.AuthController do
     use Gt.Web, :controller
 
     plug :scrub_params, "auth" when action in [:auth]
@@ -20,7 +20,6 @@ defmodule Gt.AuthController do
                 |> render("error.json", error: error)
         end
     end
-
 
     def delete(conn, _) do
         {:ok, claims} = Guardian.Plug.claims(conn)
