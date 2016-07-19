@@ -8,6 +8,7 @@ import Translate from 'react-translate-component';
 import gtTheme from 'themes';
 import Subheader from 'material-ui/Subheader';
 import Paper from 'material-ui/Paper';
+import Title from 'components/Title';
 
 class Dashboard extends React.Component {
     static propTypes = {
@@ -94,15 +95,17 @@ class Dashboard extends React.Component {
 
         return (
             <div>
-                <h1 style={gtTheme.theme.title}><Translate content="dashboard.title" /></h1>
+                <Title title={<Translate content="dashboard.title" />} />
                 {
                     this.props.data.lastUpdated && (
                         <div>
                             <Paper zDepth={2} style={{marginTop: gtTheme.theme.content.padding}}>
                                 <Subheader>Total</Subheader>
-                                <div className="card-block row">
-                                    <DashboardCharts stats={this.props.data.charts} />
-                                    <div className="col-lg-8">
+                                <div className='row'>
+                                    <div className='col-xs'>
+                                        <DashboardCharts stats={this.props.data.charts} />
+                                    </div>
+                                    <div className='col-xs'>
                                         <ConsolidatedTable
                                             periods={this.props.data.periods}
                                             stats={this.props.data.totals}
