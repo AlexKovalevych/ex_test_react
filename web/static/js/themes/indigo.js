@@ -36,6 +36,15 @@ class Indigo {
             },
             content: {
                 padding: spacing.desktopGutter
+            },
+            tableHeaderColumn: {
+                height: 48
+            },
+            tableRow: {
+                height: 32
+            },
+            tableRowColumn: {
+                height: 32
             }
         });
     }

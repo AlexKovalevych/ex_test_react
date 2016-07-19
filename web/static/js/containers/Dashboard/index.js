@@ -102,10 +102,10 @@ class Dashboard extends React.Component {
                             <Paper zDepth={2} style={{marginTop: gtTheme.theme.content.padding}}>
                                 <Subheader>Total</Subheader>
                                 <div className='row'>
-                                    <div className='col-xs'>
+                                    <div className='col-md-4 col-xs-12'>
                                         <DashboardCharts stats={this.props.data.charts} />
                                     </div>
-                                    <div className='col-xs'>
+                                    <div className='col-md-8 col-xs-12'>
                                         <ConsolidatedTable
                                             periods={this.props.data.periods}
                                             stats={this.props.data.totals}

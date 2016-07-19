@@ -43,6 +43,15 @@ counterpart.registerTranslations('en', {
         invalid_email_password: 'Invalid email or password'
     },
     dashboard: {
-        title: 'Projects indicators'
+        title: 'Projects indicators',
+        average_deposit: 'Average receipt',
+        arpu: 'ARPU',
+        average_first_deposit: 'Average first deposit',
+        deposits_number: 'Deposits number',
+        depositors_number: 'Depositors number',
+        first_depositors_number: 'First depositors number',
+        signups_number: 'Signups number',
+        first_deposits_amount: 'First deposits amount',
+        authorizations_number: 'Authorizations number'
     }
 });

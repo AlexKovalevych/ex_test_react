@@ -43,6 +43,15 @@ counterpart.registerTranslations('ru', {
         invalid_email_password: 'Неправильный логин или пароль'
     },
     dashboard: {
-        title: 'Показатели проектов'
+        title: 'Показатели проектов',
+        average_deposit: 'Средний чек',
+        arpu: 'ARPU',
+        average_first_deposit: 'Средний первый депозит',
+        deposits_number: 'Количество депозитов',
+        depositors_number: 'Количество депозиторов',
+        first_depositors_number: 'Количество перводепозиторов',
+        signups_number: 'Количество регистраций',
+        first_deposits_amount: 'Сумма первых депозитов',
+        authorizations_number: 'Количество авторизаций'
     }
 });

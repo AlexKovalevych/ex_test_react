@@ -1,6 +1,8 @@
 import React, {PropTypes} from 'react';
 import formatter from 'managers/Formatter';
 import Delta from 'components/Delta';
+import {Table, TableBody, TableHeader, TableHeaderColumn, TableRow, TableRowColumn} from 'material-ui/Table';
+import Translate from 'react-translate-component';
 
 export default class ConsolidatedTable extends React.Component {
     static propTypes = {
@@ -13,163 +15,147 @@ export default class ConsolidatedTable extends React.Component {
         let comparisonStats = this.props.stats.comparison;
 
         return (
-            <table className="table table-sm table-hover">
-                <thead className="thead-default">
-                    <tr>
-                        <th></th>
-                        <th>Current</th>
-                        <th>Previous</th>
-                        <th>Delta</th>
-                        <th>Charts</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr>
-                        <th scope="row">Average receipt</th>
-                        <td>{formatter.formatValue(currentStats.averageDeposit, 'averageDeposit')}</td>
-                        <td>{formatter.formatValue(comparisonStats.averageDeposit, 'averageDeposit')}</td>
-                        <td>
+            <Table selectable={false}>
+                <TableHeader displaySelectAll={false} adjustForCheckbox={false}>
+                    <TableRow>
+                        <TableHeaderColumn></TableHeaderColumn>
+                        <TableHeaderColumn>Current</TableHeaderColumn>
+                        <TableHeaderColumn>Previous</TableHeaderColumn>
+                        <TableHeaderColumn>Delta</TableHeaderColumn>
+                        <TableHeaderColumn>Charts</TableHeaderColumn>
+                    </TableRow>
+                </TableHeader>
+                <TableBody displayRowCheckbox={false}>
+                    <TableRow>
+                        <TableRowColumn><Translate content='dashboard.average_deposit' /></TableRowColumn>
+                        <TableRowColumn>{formatter.formatValue(currentStats.averageDeposit, 'averageDeposit')}</TableRowColumn>
+                        <TableRowColumn>{formatter.formatValue(comparisonStats.averageDeposit, 'averageDeposit')}</TableRowColumn>
+                        <TableRowColumn>
                             <Delta value={formatter.formatValue(currentStats.averageDeposit - comparisonStats.averageDeposit, 'averageDeposit')} />
-                        </td>
-                        <td className="text-overflow">
+                        </TableRowColumn>
+                        <TableRowColumn>
                             <span className="chart-icon">
                                 <i className="fa fa-area-chart fa-lg padding-5"></i>
                             </span>
                             <span className="chart-icon mar-no">
                                 <i className="fa fa-bar-chart fa-lg padding-5"></i>
                             </span>
-                        </td>
-                    </tr>
-                    <tr>
-                        <th scope="row">ARPU</th>
-                        <td>{formatter.formatValue(currentStats.arpu, 'arpu')}</td>
-                        <td>{formatter.formatValue(comparisonStats.arpu, 'arpu')}</td>
-                        <td>
+                        </TableRowColumn>
+                    </TableRow>
+                    <TableRow>
+                        <TableRowColumn><Translate content='dashboard.arpu' /></TableRowColumn>
+                        <TableRowColumn>{formatter.formatValue(currentStats.arpu, 'arpu')}</TableRowColumn>
+                        <TableRowColumn>{formatter.formatValue(comparisonStats.arpu, 'arpu')}</TableRowColumn>
+                        <TableRowColumn>
                             <Delta value={formatter.formatValue(currentStats.arpu - comparisonStats.arpu, 'arpu')} />
-                        </td>
-                        <td className="text-overflow">
+                        </TableRowColumn>
+                        <TableRowColumn>
                             <span className="chart-icon">
                                 <i className="fa fa-area-chart fa-lg padding-5"></i>
                             </span>
                             <span className="chart-icon mar-no">
                                 <i className="fa fa-bar-chart fa-lg padding-5"></i>
                             </span>
-                        </td>
-                    </tr>
-                    <tr>
-                        <th scope="row">Average first deposit</th>
-                        <td>{formatter.formatValue(currentStats.averageFirstDeposit, 'averageFirstDeposit')}</td>
-                        <td>{formatter.formatValue(comparisonStats.averageFirstDeposit, 'averageFirstDeposit')}</td>
-                        <td>
+                        </TableRowColumn>
+                    </TableRow>
+                    <TableRow>
+                        <TableRowColumn><Translate content='dashboard.average_first_deposit' /></TableRowColumn>
+                        <TableRowColumn>{formatter.formatValue(currentStats.averageFirstDeposit, 'averageFirstDeposit')}</TableRowColumn>
+                        <TableRowColumn>{formatter.formatValue(comparisonStats.averageFirstDeposit, 'averageFirstDeposit')}</TableRowColumn>
+                        <TableRowColumn>
                             <Delta value={formatter.formatValue(currentStats.averageFirstDeposit - comparisonStats.averageFirstDeposit, 'averageFirstDeposit')} />
-                        </td>
-                        <td className="text-overflow">
+                        </TableRowColumn>
+                        <TableRowColumn>
                             <span className="chart-icon">
                                 <i className="fa fa-area-chart fa-lg padding-5"></i>
                             </span>
                             <span className="chart-icon mar-no">
                                 <i className="fa fa-bar-chart fa-lg padding-5"></i>
                             </span>
-                        </td>
-                    </tr>
-                    <tr>
-                        <th scope="row">Deposits number</th>
-                        <td>{formatter.formatValue(currentStats.depositsNumber, 'depositsNumber')}</td>
-                        <td>{formatter.formatValue(comparisonStats.depositsNumber, 'depositsNumber')}</td>
-                        <td>
+                        </TableRowColumn>
+                    </TableRow>
+                    <TableRow>
+                        <TableRowColumn><Translate content='dashboard.deposits_number' /></TableRowColumn>
+                        <TableRowColumn>{formatter.formatValue(currentStats.depositsNumber, 'depositsNumber')}</TableRowColumn>
+                        <TableRowColumn>{formatter.formatValue(comparisonStats.depositsNumber, 'depositsNumber')}</TableRowColumn>
+                        <TableRowColumn>
                             <Delta value={formatter.formatValue(currentStats.depositsNumber - comparisonStats.depositsNumber, 'depositsNumber')} />
-                        </td>
-                        <td className="text-overflow">
+                        </TableRowColumn>
+                        <TableRowColumn>
                             <span className="chart-icon">
                                 <i className="fa fa-area-chart fa-lg padding-5"></i>
                             </span>
                             <span className="chart-icon mar-no">
                                 <i className="fa fa-bar-chart fa-lg padding-5"></i>
                             </span>
-                        </td>
-                    </tr>
-                    <tr>
-                        <th scope="row">Depositors number</th>
-                        <td>{formatter.formatValue(currentStats.depositorsNumber, 'depositorsNumber')}</td>
-                        <td>{formatter.formatValue(comparisonStats.depositorsNumber, 'depositorsNumber')}</td>
-                        <td>
-                            <Delta value={formatter.formatValue(currentStats.depositorsNumber - comparisonStats.depositorsNumber, 'depositorsNumber')} />
-                        </td>
-                        <td className="text-overflow">
-                            <span className="chart-icon">
-                                <i className="fa fa-area-chart fa-lg padding-5"></i>
-                            </span>
-                            <span className="chart-icon mar-no">
-                                <i className="fa fa-bar-chart fa-lg padding-5"></i>
-                            </span>
-                        </td>
-                    </tr>
-                    <tr>
-                        <th scope="row">First depositors number</th>
-                        <td>{formatter.formatValue(currentStats.firstDepositorsNumber, 'firstDepositorsNumber')}</td>
-                        <td>{formatter.formatValue(comparisonStats.firstDepositorsNumber, 'firstDepositorsNumber')}</td>
-                        <td>
+                        </TableRowColumn>
+                    </TableRow>
+                    <TableRow>
+                        <TableRowColumn><Translate content='dashboard.depositors_number' /></TableRowColumn>
+                        <TableRowColumn>{formatter.formatValue(currentStats.firstDepositorsNumber, 'firstDepositorsNumber')}</TableRowColumn>
+                        <TableRowColumn>{formatter.formatValue(comparisonStats.firstDepositorsNumber, 'firstDepositorsNumber')}</TableRowColumn>
+                        <TableRowColumn>
                             <Delta value={formatter.formatValue(currentStats.firstDepositorsNumber - comparisonStats.firstDepositorsNumber, 'firstDepositorsNumber')} />
-                        </td>
-                        <td className="text-overflow">
+                        </TableRowColumn>
+                        <TableRowColumn>
                             <span className="chart-icon">
                                 <i className="fa fa-area-chart fa-lg padding-5"></i>
                             </span>
                             <span className="chart-icon mar-no">
                                 <i className="fa fa-bar-chart fa-lg padding-5"></i>
                             </span>
-                        </td>
-                    </tr>
-                    <tr>
-                        <th scope="row">Signups number</th>
-                        <td>{formatter.formatValue(currentStats.signupsNumber, 'signupsNumber')}</td>
-                        <td>{formatter.formatValue(comparisonStats.signupsNumber, 'signupsNumber')}</td>
-                        <td>
+                        </TableRowColumn>
+                    </TableRow>
+                    <TableRow>
+                        <TableRowColumn><Translate content='dashboard.signups_number' /></TableRowColumn>
+                        <TableRowColumn>{formatter.formatValue(currentStats.signupsNumber, 'signupsNumber')}</TableRowColumn>
+                        <TableRowColumn>{formatter.formatValue(comparisonStats.signupsNumber, 'signupsNumber')}</TableRowColumn>
+                        <TableRowColumn>
                             <Delta value={formatter.formatValue(currentStats.signupsNumber - comparisonStats.signupsNumber, 'signupsNumber')} />
-                        </td>
-                        <td className="text-overflow">
+                        </TableRowColumn>
+                        <TableRowColumn>
                             <span className="chart-icon">
                                 <i className="fa fa-area-chart fa-lg padding-5"></i>
                             </span>
                             <span className="chart-icon mar-no">
                                 <i className="fa fa-bar-chart fa-lg padding-5"></i>
                             </span>
-                        </td>
-                    </tr>
-                    <tr>
-                        <th scope="row">First deposits amount</th>
-                        <td>{formatter.formatValue(currentStats.firstDepositsAmount, 'firstDepositsAmount')}</td>
-                        <td>{formatter.formatValue(comparisonStats.firstDepositsAmount, 'firstDepositsAmount')}</td>
-                        <td>
+                        </TableRowColumn>
+                    </TableRow>
+                    <TableRow>
+                        <TableRowColumn><Translate content='dashboard.first_deposits_amount' /></TableRowColumn>
+                        <TableRowColumn>{formatter.formatValue(currentStats.firstDepositsAmount, 'firstDepositsAmount')}</TableRowColumn>
+                        <TableRowColumn>{formatter.formatValue(comparisonStats.firstDepositsAmount, 'firstDepositsAmount')}</TableRowColumn>
+                        <TableRowColumn>
                             <Delta value={formatter.formatValue(currentStats.firstDepositsAmount - comparisonStats.firstDepositsAmount, 'firstDepositsAmount')} />
-                        </td>
-                        <td className="text-overflow">
+                        </TableRowColumn>
+                        <TableRowColumn>
                             <span className="chart-icon">
                                 <i className="fa fa-area-chart fa-lg padding-5"></i>
                             </span>
                             <span className="chart-icon mar-no">
                                 <i className="fa fa-bar-chart fa-lg padding-5"></i>
                             </span>
-                        </td>
-                    </tr>
-                    <tr>
-                        <th scope="row">Authorizations number</th>
-                        <td>{formatter.formatValue(currentStats.authorizationsNumber, 'authorizationsNumber')}</td>
-                        <td>{formatter.formatValue(comparisonStats.authorizationsNumber, 'authorizationsNumber')}</td>
-                        <td>
+                        </TableRowColumn>
+                    </TableRow>
+                    <TableRow>
+                        <TableRowColumn><Translate content='dashboard.authorizations_number' /></TableRowColumn>
+                        <TableRowColumn>{formatter.formatValue(currentStats.authorizationsNumber, 'authorizationsNumber')}</TableRowColumn>
+                        <TableRowColumn>{formatter.formatValue(comparisonStats.authorizationsNumber, 'authorizationsNumber')}</TableRowColumn>
+                        <TableRowColumn>
                             <Delta value={formatter.formatValue(currentStats.authorizationsNumber - comparisonStats.authorizationsNumber, 'authorizationsNumber')} />
-                        </td>
-                        <td className="text-overflow">
+                        </TableRowColumn>
+                        <TableRowColumn>
                             <span className="chart-icon">
                                 <i className="fa fa-area-chart fa-lg padding-5"></i>
                             </span>
                             <span className="chart-icon mar-no">
                                 <i className="fa fa-bar-chart fa-lg padding-5"></i>
                             </span>
-                        </td>
-                    </tr>
-                </tbody>
-            </table>
+                        </TableRowColumn>
+                    </TableRow>
+                </TableBody>
+            </Table>
         );
     }
 }
