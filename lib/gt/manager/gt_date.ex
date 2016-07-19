@@ -12,7 +12,7 @@ defmodule Gt.Manager.Date do
     end
 
     def now do
-        Timex.DateTime.today
+        Timex.DateTime.now
     end
 
     def yesterday do

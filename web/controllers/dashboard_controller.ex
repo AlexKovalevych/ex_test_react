@@ -1,11 +1,14 @@
 defmodule Gt.DashboardController do
     use Gt.Web, :controller
+    require Gt.AuthController
+    # alias Gt.Model.Project
+    # alias Gt.Manager.Date, as: GtDate
 
     plug Gt.Guardian.EnsureAuthenticated, handler: Gt.AuthController
 
     def index(conn, _) do
         user = current_user(conn)
-        IO.inspect(user)
+        # TODO: cant render large response yet
         # settings = user.settings
         # project_ids = Gt.Manager.Permissions.get(user.permissions, "dashboard_index")
         # projects = Project |> Project.ids(project_ids) |> Repo.all
@@ -18,22 +21,17 @@ defmodule Gt.DashboardController do
         #     settings["dashboardComparePeriod"],
         #     project_ids
         # )
+        initial_state = %{
+            "auth" => %{"user" => user}
+            # "dashboard" => %{
+            #     "stats" => data.stats,
+            #     "periods" => data.periods,
+            #     "totals" => data.totals,
+            #     "projects" => projects,
+            #     "lastUpdated" => GtDate.timestamp(GtDate.now)
+            # }
+        }
 
-        # initial_state = %{
-        #     "auth" => %{"user" => user},
-        #     "dashboard" => %{stats: data.stats, periods: data.periods, totals: data.totals, projects: projects}
-        # }
-        # props = %{
-        #     "location" => conn.request_path,
-        #     "initial_state" => initial_state,
-        #     "user_agent" => conn |> get_req_header("user-agent") |> Enum.at(0)
-        # }
-
-        # {:ok, result} = Gt.ReactIO.json_call(%{
-        #     component: "./priv/static/server/js/app.js",
-        #     props: props,
-        # })
-
-        # render(conn, "index.html", html: result["html"], props: Poison.encode!(props))
+        Gt.AuthController.render_react(conn, initial_state)
     end
 end
