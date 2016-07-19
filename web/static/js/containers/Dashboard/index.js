@@ -37,7 +37,7 @@ class Dashboard extends React.Component {
         this.loadData(newProps);
     }
 
-    renderProject(data) {
+    renderProject(maximumValue, data) {
         let projectId = data[0];
         let project;
         for (let projectData of this.props.data.projects) {
@@ -59,8 +59,9 @@ class Dashboard extends React.Component {
                         <DashboardProgress
                             sortBy={this.props.user.settings.dashboardSort}
                             periods={this.props.data.periods}
-                            totals={this.props.data.totals}
                             stats={projectStats}
+                            periodType={this.props.user.settings.dashboardPeriod}
+                            maximumValue={maximumValue}
                         />
                         <DashboardCharts stats={this.props.data.charts} />
                     </div>
@@ -77,46 +78,64 @@ class Dashboard extends React.Component {
     }
 
     render() {
-        let sortedStats = null;
-        if (this.props.data.lastUpdated) {
-            sortedStats = [];
-            let sortBy = this.props.user.settings.dashboardSort;
-            for (let projectId of Object.keys(this.props.data.stats)) {
-                let value = this.props.data.stats[projectId].current[sortBy];
-                if (value) {
-                    sortedStats.push([projectId, value]);
-                }
-            }
-            sortedStats.sort((a, b) => {
-                return b[1] - a[1];
-            });
+        let title = (<Title title={<Translate content="dashboard.title" />} />);
+        if (!this.props.data.lastUpdated) {
+            return (
+                <div>{title}</div>
+            );
         }
+
+        let sortedStats = [];
+        let sortBy = this.props.user.settings.dashboardSort;
+        for (let projectId of Object.keys(this.props.data.stats)) {
+            let value = this.props.data.stats[projectId].current[sortBy];
+            if (value) {
+                sortedStats.push([projectId, value]);
+            }
+        }
+        sortedStats.sort((a, b) => {
+            return b[1] - a[1];
+        });
+
+        let projectValues = [this.props.data.totals.current[sortBy], this.props.data.totals.comparison[sortBy]];
+        for (let key in this.props.data.stats) {
+            if (Object.keys(this.props.data.stats[key].current).length !== 0) {
+                projectValues.push(this.props.data.stats[key].current[sortBy]);
+            }
+            if (Object.keys(this.props.data.stats[key].comparison).length !== 0) {
+                projectValues.push(this.props.data.stats[key].comparison[sortBy]);
+            }
+        }
+        let maximumValue = Math.max.apply(null, projectValues);
 
         return (
             <div>
-                <Title title={<Translate content="dashboard.title" />} />
-                {
-                    this.props.data.lastUpdated && (
-                        <div>
-                            <Paper style={{marginTop: gtTheme.theme.content.padding}}>
-                                <Subheader>Total</Subheader>
-                                <div className='row'>
-                                    <div className='col-md-4 col-xs-12'>
-                                        <DashboardCharts stats={this.props.data.charts} />
-                                    </div>
-                                    <div className='col-md-8 col-xs-12'>
-                                        <ConsolidatedTable
-                                            periodType={this.props.user.settings.dashboardPeriod}
-                                            periods={this.props.data.periods}
-                                            stats={this.props.data.totals}
-                                        />
-                                    </div>
-                                </div>
-                            </Paper>
-                            {sortedStats.map(this.renderProject.bind(this))}
+                {title}
+                <div>
+                    <Paper style={{marginTop: gtTheme.theme.content.padding}}>
+                        <Subheader>Total</Subheader>
+                        <div className='row'>
+                            <div className='col-md-4 col-xs-12'>
+                                <DashboardProgress
+                                    sortBy={this.props.user.settings.dashboardSort}
+                                    periods={this.props.data.periods}
+                                    stats={this.props.data.totals}
+                                    periodType={this.props.user.settings.dashboardPeriod}
+                                    maximumValue={maximumValue}
+                                />
+                                <DashboardCharts stats={this.props.data.charts} />
+                            </div>
+                            <div className='col-md-8 col-xs-12'>
+                                <ConsolidatedTable
+                                    periodType={this.props.user.settings.dashboardPeriod}
+                                    periods={this.props.data.periods}
+                                    stats={this.props.data.totals}
+                                />
+                            </div>
                         </div>
-                    )
-                }
+                    </Paper>
+                    {sortedStats.map(this.renderProject.bind(this, maximumValue))}
+                </div>
             </div>
         );
     }
