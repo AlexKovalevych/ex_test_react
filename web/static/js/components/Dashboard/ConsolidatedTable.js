@@ -4,6 +4,13 @@ import Delta from 'components/Delta';
 import {Table, TableBody, TableHeader, TableHeaderColumn, TableRow, TableRowColumn} from 'material-ui/Table';
 import Translate from 'react-translate-component';
 
+let styles = {
+    cell: {
+        width: '30%',
+        whiteSpace: 'normal'
+    }
+};
+
 export default class ConsolidatedTable extends React.Component {
     static propTypes = {
         periods: PropTypes.object,
@@ -19,7 +26,7 @@ export default class ConsolidatedTable extends React.Component {
             <Table selectable={false}>
                 <TableHeader displaySelectAll={false} adjustForCheckbox={false} style={{tableLayout: 'auto'}}>
                     <TableRow>
-                        <TableHeaderColumn style={{width: '35%'}}></TableHeaderColumn>
+                        <TableHeaderColumn style={styles.cell}></TableHeaderColumn>
                         <TableHeaderColumn>{formatter.formatDashboardPeriod(this.props.periodType, this.props.periods.current[0])}</TableHeaderColumn>
                         <TableHeaderColumn>{formatter.formatDashboardPeriod(this.props.periodType, this.props.periods.comparison[0])}</TableHeaderColumn>
                         <TableHeaderColumn style={{width: '20%'}}><Translate content="difference" /></TableHeaderColumn>
@@ -28,7 +35,7 @@ export default class ConsolidatedTable extends React.Component {
                 </TableHeader>
                 <TableBody displayRowCheckbox={false} style={{tableLayout: 'auto'}}>
                     <TableRow>
-                        <TableRowColumn style={{width: '35%'}}><Translate content='dashboard.average_deposit' /></TableRowColumn>
+                        <TableRowColumn style={styles.cell}><Translate content='dashboard.average_deposit' /></TableRowColumn>
                         <TableRowColumn>{formatter.formatValue(currentStats.averageDeposit, 'averageDeposit')}</TableRowColumn>
                         <TableRowColumn>{formatter.formatValue(comparisonStats.averageDeposit, 'averageDeposit')}</TableRowColumn>
                         <TableRowColumn style={{width: '20%'}}>
@@ -44,7 +51,7 @@ export default class ConsolidatedTable extends React.Component {
                         </TableRowColumn>
                     </TableRow>
                     <TableRow>
-                        <TableRowColumn><Translate content='dashboard.arpu' /></TableRowColumn>
+                        <TableRowColumn style={styles.cell}><Translate content='dashboard.arpu' /></TableRowColumn>
                         <TableRowColumn>{formatter.formatValue(currentStats.arpu, 'arpu')}</TableRowColumn>
                         <TableRowColumn>{formatter.formatValue(comparisonStats.arpu, 'arpu')}</TableRowColumn>
                         <TableRowColumn>
@@ -60,7 +67,7 @@ export default class ConsolidatedTable extends React.Component {
                         </TableRowColumn>
                     </TableRow>
                     <TableRow>
-                        <TableRowColumn><Translate content='dashboard.average_first_deposit' /></TableRowColumn>
+                        <TableRowColumn style={styles.cell}><Translate content='dashboard.average_first_deposit' /></TableRowColumn>
                         <TableRowColumn>{formatter.formatValue(currentStats.averageFirstDeposit, 'averageFirstDeposit')}</TableRowColumn>
                         <TableRowColumn>{formatter.formatValue(comparisonStats.averageFirstDeposit, 'averageFirstDeposit')}</TableRowColumn>
                         <TableRowColumn>
@@ -76,7 +83,7 @@ export default class ConsolidatedTable extends React.Component {
                         </TableRowColumn>
                     </TableRow>
                     <TableRow>
-                        <TableRowColumn><Translate content='dashboard.deposits_number' /></TableRowColumn>
+                        <TableRowColumn style={styles.cell}><Translate content='dashboard.deposits_number' /></TableRowColumn>
                         <TableRowColumn>{formatter.formatValue(currentStats.depositsNumber, 'depositsNumber')}</TableRowColumn>
                         <TableRowColumn>{formatter.formatValue(comparisonStats.depositsNumber, 'depositsNumber')}</TableRowColumn>
                         <TableRowColumn>
@@ -92,7 +99,7 @@ export default class ConsolidatedTable extends React.Component {
                         </TableRowColumn>
                     </TableRow>
                     <TableRow>
-                        <TableRowColumn><Translate content='dashboard.depositors_number' /></TableRowColumn>
+                        <TableRowColumn style={styles.cell}><Translate content='dashboard.depositors_number' /></TableRowColumn>
                         <TableRowColumn>{formatter.formatValue(currentStats.firstDepositorsNumber, 'firstDepositorsNumber')}</TableRowColumn>
                         <TableRowColumn>{formatter.formatValue(comparisonStats.firstDepositorsNumber, 'firstDepositorsNumber')}</TableRowColumn>
                         <TableRowColumn>
@@ -108,7 +115,7 @@ export default class ConsolidatedTable extends React.Component {
                         </TableRowColumn>
                     </TableRow>
                     <TableRow>
-                        <TableRowColumn><Translate content='dashboard.signups_number' /></TableRowColumn>
+                        <TableRowColumn style={styles.cell}><Translate content='dashboard.signups_number' /></TableRowColumn>
                         <TableRowColumn>{formatter.formatValue(currentStats.signupsNumber, 'signupsNumber')}</TableRowColumn>
                         <TableRowColumn>{formatter.formatValue(comparisonStats.signupsNumber, 'signupsNumber')}</TableRowColumn>
                         <TableRowColumn>
@@ -124,7 +131,7 @@ export default class ConsolidatedTable extends React.Component {
                         </TableRowColumn>
                     </TableRow>
                     <TableRow>
-                        <TableRowColumn><Translate content='dashboard.first_deposits_amount' /></TableRowColumn>
+                        <TableRowColumn style={styles.cell}><Translate content='dashboard.first_deposits_amount' /></TableRowColumn>
                         <TableRowColumn>{formatter.formatValue(currentStats.firstDepositsAmount, 'firstDepositsAmount')}</TableRowColumn>
                         <TableRowColumn>{formatter.formatValue(comparisonStats.firstDepositsAmount, 'firstDepositsAmount')}</TableRowColumn>
                         <TableRowColumn>
@@ -140,7 +147,7 @@ export default class ConsolidatedTable extends React.Component {
                         </TableRowColumn>
                     </TableRow>
                     <TableRow>
-                        <TableRowColumn><Translate content='dashboard.authorizations_number' /></TableRowColumn>
+                        <TableRowColumn style={styles.cell}><Translate content='dashboard.authorizations_number' /></TableRowColumn>
                         <TableRowColumn>{formatter.formatValue(currentStats.authorizationsNumber, 'authorizationsNumber')}</TableRowColumn>
                         <TableRowColumn>{formatter.formatValue(comparisonStats.authorizationsNumber, 'authorizationsNumber')}</TableRowColumn>
                         <TableRowColumn>
