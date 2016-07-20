@@ -70,6 +70,9 @@ counterpart.registerTranslations('ru', {
         first_deposits_amount: 'Сумма первых депозитов',
         authorizations_number: 'Количество авторизаций',
         inout: 'Inout',
-        netgaming: 'Netgaming'
+        netgaming: 'Netgaming',
+        paymentsAmount: 'Inout',
+        depositsAmount: 'Депозиты',
+        cashoutsAmount: 'Выплаты'
     }
 });

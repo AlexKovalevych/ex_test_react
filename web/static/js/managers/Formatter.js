@@ -70,12 +70,11 @@ class Formatter {
         }
     }
 
-    // formatDate(date) {
-    //     let dateObj = new Date(date);
-    //     let month = Translator.trans(Formatter.monthNames[dateObj.getMonth()]);
-
-    //     return `${month} ${dateObj.getDate()}, ${dateObj.getFullYear()}`;
-    // }
+    formatDate(date) {
+        let dateObj = new Date(date);
+        let month = translate(`months.${Formatter.monthNames[dateObj.getMonth()]}`);
+        return `${month} ${dateObj.getDate()}, ${dateObj.getFullYear()}`;
+    }
 
     // formatDateForDatepicker(date) {
     //     return moment.utc(date).format('YYYY-MM-DD');
@@ -96,7 +95,6 @@ class Formatter {
     formatMonth(date) {
         let dateObj = new Date(date);
         let month = translate(`months.${Formatter.monthNames[dateObj.getMonth()]}`);
-
         return `${month} ${dateObj.getFullYear()}`;
     }
 
@@ -155,6 +153,11 @@ class Formatter {
     //     }
     //     return months;
     // }
+
+    toTimestamp(date) {
+        let dateObj = new Date(date);
+        return dateObj.getTime();
+    }
 
     ucfirst(string) {
         return string.charAt(0).toUpperCase() + string.slice(1);

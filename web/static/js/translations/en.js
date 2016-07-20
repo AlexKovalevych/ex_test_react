@@ -70,6 +70,9 @@ counterpart.registerTranslations('en', {
         first_deposits_amount: 'First deposits amount',
         authorizations_number: 'Authorizations number',
         inout: 'Inout',
-        netgaming: 'Netgaming'
+        netgaming: 'Netgaming',
+        paymentsAmount: 'Inout',
+        depositsAmount: 'Deposits',
+        cashoutsAmount: 'Withdrawal'
     }
 });

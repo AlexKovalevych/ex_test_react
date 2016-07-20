@@ -2,7 +2,7 @@ import React, {PropTypes} from 'react';
 import {Tabs, Tab} from 'material-ui/Tabs';
 import Translate from 'react-translate-component';
 import gtTheme from 'themes';
-import ReactHighstock from 'react-highcharts/dist/ReactHighstock.src';
+import ReactHighcharts from 'react-highcharts/dist/ReactHighcharts.src';
 import formatter from 'managers/Formatter';
 import colorManager from 'managers/ColorManager';
 import translate from 'counterpart';
@@ -12,11 +12,12 @@ let defaultChartOptions = {
         backgroundColor: null,
         borderWidth: 0,
         type: 'area',
-        margin: [2, 0, 2, 0],
+        margin: [0, 0, 0, 0],
         style: {
             overflow: 'visible'
         },
-        skipClone: true
+        skipClone: true,
+        height: 40
     },
     title: {
         text: null
@@ -33,6 +34,8 @@ let defaultChartOptions = {
         },
         startOnTick: false,
         endOnTick: false,
+        minPadding:0,
+        maxPadding:0,
         tickPositions: []
     },
     yAxis: {
@@ -101,10 +104,9 @@ export default class DashboardCharts extends React.Component {
         defaultOptions.tooltip.formatter = function() {
             let result = `${formatter.formatDate(this.x)}`;
             let points = [];
-            $.each(this.points, function() {
-                points.push(`<span style="color: ${this.color};">●</span>${formatter.formatMoney(this.y)}`);
-            });
-
+            for (let point of this.points) {
+                points.push(`<span style="color: ${point.color};">●</span>${formatter.formatMoney(point.y)}`);
+            }
             return `${points.join(' ')} (${result})`;
         };
 
@@ -112,20 +114,23 @@ export default class DashboardCharts extends React.Component {
     }
 
     getDailyChart(metrics) {
-        let projectData = this.props.stats.daily[this.props.id];
-        if (!Object.keys(projectData)) {
+        let data = this.props.id ? this.props.stats.daily[this.props.id] : this.props.stats.daily;
+        if (!Object.keys(data)) {
             return (<div>No data</div>);
         }
 
         let options = this.getDailyChartOptions();
+        options.tooltip.positioner = function() {
+            return { x: 75, y: -25};
+        };
 
         options.series = [];
         for (let singleMetrics of metrics) {
             let chartData = [];
-            for (let date in projectData) {
-                options.series.push({
-                    x: projectData[date][singleMetrics],
-                    y: date // TODO: convert to timestamp
+            for (let date in data) {
+                chartData.push({
+                    x: formatter.toTimestamp(date),
+                    y: Math.abs(data[date][singleMetrics] ? data[date][singleMetrics] : 0)
                 });
             }
             options.series.push({
@@ -135,7 +140,11 @@ export default class DashboardCharts extends React.Component {
             });
         }
 
-        return (<ReactHighstock config={options} />);
+        return (
+            <div style={{height: 40}}>
+                <ReactHighcharts config={options} />
+            </div>
+        );
     }
 
     render() {
@@ -147,7 +156,14 @@ export default class DashboardCharts extends React.Component {
         return (
             <Tabs>
                 <Tab label={<Translate content="dashboard.inout" />} style={gtTheme.theme.tab}>
-                    {this.getDailyChart(['paymentsAmount'])}
+                    {['paymentsAmount', 'depositsAmount', 'cashoutsAmount'].map((metrics) => {
+                        return (
+                            <div key={metrics} style={{color: colorManager.getChartColor(metrics)}}>
+                                <Translate content={`dashboard.${metrics}`} />
+                                {this.getDailyChart([metrics])}
+                            </div>
+                        );
+                    })}
                 </Tab>
                 <Tab label={<Translate content="dashboard.netgaming" />} style={gtTheme.theme.tab}>
                     {loadingIcon}
