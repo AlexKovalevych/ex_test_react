@@ -21,6 +21,7 @@ defmodule Gt.DashboardController do
             settings["dashboardComparePeriod"],
             project_ids
         )
+        charts = Gt.Manager.Dashboard.get_charts(String.to_atom(settings["dashboardPeriod"]), project_ids)
         initial_state = %{
             "auth" => %{"user" => user},
             "dashboard" => %{
@@ -28,6 +29,7 @@ defmodule Gt.DashboardController do
                 "periods" => data.periods,
                 "totals" => data.totals,
                 "projects" => projects,
+                "charts" => charts,
                 "lastUpdated" => GtDate.timestamp(GtDate.now)
             }
         }

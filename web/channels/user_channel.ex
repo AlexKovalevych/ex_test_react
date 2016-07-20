@@ -37,9 +37,8 @@ defmodule Gt.UserChannel do
             {:ok, object_id} = Mongo.Ecto.ObjectID.dump(id)
             object_id
         end)
-        charts = Gt.Manager.Dashboard.get_charts(String.to_atom(settings["dashboardPeriod"]), project_ids)
-        {:reply, {:ok, %{}}, socket}
-        # {:reply, {:ok, %{stats: stats, projects: projects}}, socket}
+        data = Gt.Manager.Dashboard.get_charts(String.to_atom(settings["dashboardPeriod"]), project_ids)
+        {:reply, {:ok, data}, socket}
     end
     def handle_in("locale", locale, socket) do
         user_id = socket.assigns.current_user.id

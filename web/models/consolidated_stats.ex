@@ -240,6 +240,7 @@ defmodule Gt.Model.ConsolidatedStats do
     def dashboard_charts(query) do
         from cs in query,
         select: %{
+            date: cs.date,
             paymentsAmount: cs.paymentsAmount,
             depositsAmount: cs.depositsAmount,
             cashoutsAmount: cs.cashoutsAmount,
