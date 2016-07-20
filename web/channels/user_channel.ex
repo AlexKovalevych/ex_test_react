@@ -37,12 +37,7 @@ defmodule Gt.UserChannel do
             {:ok, object_id} = Mongo.Ecto.ObjectID.dump(id)
             object_id
         end)
-        :timer.sleep(5000)
-        # charts = Gt.Manager.Dashboard.get_stats(
-        #     String.to_atom(settings["dashboardPeriod"]),
-        #     settings["dashboardComparePeriod"],
-        #     project_ids
-        # )
+        charts = Gt.Manager.Dashboard.get_charts(String.to_atom(settings["dashboardPeriod"]), project_ids)
         {:reply, {:ok, %{}}, socket}
         # {:reply, {:ok, %{stats: stats, projects: projects}}, socket}
     end
