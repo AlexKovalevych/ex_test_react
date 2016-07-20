@@ -100,6 +100,22 @@ export default class ConsolidatedTable extends React.Component {
                     </TableRow>
                     <TableRow>
                         <TableRowColumn style={styles.cell}><Translate content='dashboard.depositors_number' /></TableRowColumn>
+                        <TableRowColumn>{formatter.formatValue(currentStats.depositorsNumber, 'depositorsNumber')}</TableRowColumn>
+                        <TableRowColumn>{formatter.formatValue(comparisonStats.depositorsNumber, 'depositorsNumber')}</TableRowColumn>
+                        <TableRowColumn>
+                            <Delta value={formatter.formatValue(currentStats.depositorsNumber - comparisonStats.depositorsNumber, 'depositorsNumber')} />
+                        </TableRowColumn>
+                        <TableRowColumn>
+                            <span className="chart-icon">
+                                <i className="fa fa-area-chart fa-lg padding-5"></i>
+                            </span>
+                            <span className="chart-icon mar-no">
+                                <i className="fa fa-bar-chart fa-lg padding-5"></i>
+                            </span>
+                        </TableRowColumn>
+                    </TableRow>
+                    <TableRow>
+                        <TableRowColumn style={styles.cell}><Translate content='dashboard.first_depositors_number' /></TableRowColumn>
                         <TableRowColumn>{formatter.formatValue(currentStats.firstDepositorsNumber, 'firstDepositorsNumber')}</TableRowColumn>
                         <TableRowColumn>{formatter.formatValue(comparisonStats.firstDepositorsNumber, 'firstDepositorsNumber')}</TableRowColumn>
                         <TableRowColumn>
