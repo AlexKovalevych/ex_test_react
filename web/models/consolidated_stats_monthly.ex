@@ -1,6 +1,5 @@
 defmodule Gt.Model.ConsolidatedStatsMonthly do
     use Gt.Web, :model
-    alias Gt.Manager.Date, as: GtDate
 
     @collection "consolidated_stats_monthly"
 
@@ -73,6 +72,30 @@ defmodule Gt.Model.ConsolidatedStatsMonthly do
     def project_ids(query, project_ids) do
         from csm in query,
         where: csm.project in ^project_ids
+    end
+
+    def project_id(query, project_id) do
+        from cs in query,
+        where: cs.project == ^project_id
+    end
+
+    def period(query, from, to) do
+        from cs in query,
+        where: cs.month >= ^from and cs.month <= ^to,
+        order_by: cs.month
+    end
+
+    def dashboard_charts(query) do
+        from cs in query,
+        select: %{
+            month: cs.month,
+            paymentsAmount: cs.paymentsAmount,
+            depositsAmount: cs.depositsAmount,
+            cashoutsAmount: cs.cashoutsAmount,
+            netgamingAmount: cs.netgamingAmount,
+            betsAmount: cs.betsAmount,
+            winsAmount: cs.winsAmount
+        }
     end
 
     def delete_months_project_ids(months, project_ids) do

@@ -84,3 +84,11 @@ config :guardian, Guardian,
     # }
 
 config :porcelain, :driver, Porcelain.Driver.Basic
+
+config :gt, Gt.ReactIO,
+    pool_size: 20, # default 5
+    max_overflow: 10, # default 10
+    script: Path.join([__DIR__, "../node_modules/react-stdio/bin/react-stdio"]),
+    watch_files: [
+        Path.join([__DIR__, "../priv/static/server/js/app.js"])
+    ]

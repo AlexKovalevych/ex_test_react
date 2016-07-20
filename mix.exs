@@ -41,7 +41,7 @@ defmodule Gt.Mixfile do
             {:gettext, "~> 0.9"},
             {:cowboy, "~> 1.0"},
             {:mongodb_ecto, "~> 0.1.4"},
-            {:std_json_io, "~> 0.1"},
+            {:std_json_io, git: "https://github.com/AlexKovalevych/std_json_io.git", branch: "fix-large-output"},
             {:comeonin, "~> 2.4"},
             {:guardian, "~> 0.12.0"},
             {:excoveralls, "~> 0.5.5"},

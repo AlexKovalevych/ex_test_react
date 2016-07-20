@@ -3,8 +3,21 @@ defmodule Gt.Manager.Dashboard do
     alias Gt.Manager.Date, as: GtDate
     alias Gt.Model.Payment
     alias Gt.Model.ConsolidatedStats
+    alias Gt.Model.ConsolidatedStatsMonthly
+    alias Gt.Repo
 
-    def get_stats(:month, previous_period, project_ids) do
+    def get_period(:month) do
+        now = GtDate.today
+        current_start = now |> Date.set([day: 1])
+        current_end = now
+        [GtDate.format(current_start, :date), GtDate.format(current_end, :date)]
+    end
+    def get_period(:year_period) do
+        current_end = GtDate.today |> Date.set([day: 1])
+        current_start = current_end |> Timex.shift(months: -11)
+        [GtDate.format(current_start, :date), GtDate.format(current_end, :date)]
+    end
+    def get_period(:month, previous_period) do
         now = GtDate.today
         current_start = now |> Date.set([day: 1])
         current_end = now
@@ -12,6 +25,11 @@ defmodule Gt.Manager.Dashboard do
         comparison_end = now |> Timex.shift(months: previous_period)
         current_period = [GtDate.format(current_start, :date), GtDate.format(current_end, :date)]
         comparison_period = [GtDate.format(comparison_start, :date), GtDate.format(comparison_end, :date)]
+        [current_start, current_end, comparison_start, comparison_end, current_period, comparison_period]
+    end
+
+    def get_stats(:month, previous_period, project_ids) do
+        [current_start, current_end, comparison_start, comparison_end, current_period, comparison_period] = get_period(:month, previous_period)
 
         # calculate project stats
         initial = %{
@@ -86,6 +104,48 @@ defmodule Gt.Manager.Dashboard do
     end
     def get_stats(:year_period, project_ids) do
 
+    end
+
+    def get_charts(:month, project_ids) do
+        [daily_from, daily_to] = get_period(:month)
+        [monthly_from, monthly_to] = get_period(:year_period)
+
+        daily_charts = Enum.reduce(project_ids, %{}, fn (project_id, acc) ->
+            id = Gt.Model.id_to_string(project_id)
+            data = ConsolidatedStats
+            |> ConsolidatedStats.dashboard_charts
+            |> ConsolidatedStats.project_id(id)
+            |> ConsolidatedStats.period(daily_from, daily_to)
+            |> Repo.all
+            |> Enum.reduce(%{}, fn (daily_stat, acc) ->
+                Map.put(acc, daily_stat[:date], daily_stat)
+            end)
+            Map.put(acc, id, data)
+        end)
+
+        monthly_charts = Enum.reduce(project_ids, %{}, fn (project_id, acc) ->
+            id = Gt.Model.id_to_string(project_id)
+            data = ConsolidatedStatsMonthly
+            |> ConsolidatedStatsMonthly.dashboard_charts
+            |> ConsolidatedStatsMonthly.project_id(id)
+            |> ConsolidatedStatsMonthly.period(monthly_from, monthly_to)
+            |> Repo.all
+            |> Enum.reduce(%{}, fn (daily_stat, acc) ->
+                Map.put(acc, daily_stat[:month], daily_stat)
+            end)
+            Map.put(acc, id, data)
+        end)
+
+        %{
+            stats: %{
+                daily: daily_charts,
+                monthly: monthly_charts
+            },
+            totals: %{
+                daily: nil,
+                monthly: nil
+            }
+        }
     end
 
     defp set_depositors(data, stats, key) do

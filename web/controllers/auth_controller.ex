@@ -51,7 +51,7 @@ defmodule Gt.AuthController do
             props: props,
         })
 
-        render(conn, "index.html", html: result["html"], props: Poison.encode!(props))
+        render(conn, Gt.PageView, "index.html", html: result["html"], props: Poison.encode!(props))
     end
 
     def unauthenticated(conn, _params) do

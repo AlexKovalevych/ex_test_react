@@ -97,23 +97,6 @@ const authActions = {
         };
     },
 
-    currentUser: () => {
-        return dispatch => {
-            return fetch('/api/v1/current_user', {
-                headers: buildHeaders()
-            })
-            .then(checkStatus)
-            .then(parseJSON)
-            .then(function (data) {
-                setCurrentUser(dispatch, data);
-            })
-            .catch(function (error) {
-                console.log(error);
-                dispatch(push('/login'));
-            });
-        };
-    },
-
     setLocale: (locale) => {
         return (dispatch, getState) => {
             const { auth } = getState();

@@ -12,12 +12,12 @@ defmodule Gt.Api.V1.AuthController do
                 |> put_session(:current_user, user.id)
                 conn
                 |> put_status(:created)
-                |> render("show.json", jwt: jwt, user: user)
+                |> render(Gt.Api.V1.AuthView, "show.json", jwt: jwt, user: user)
 
             {:error, error} ->
                 conn
                 |> put_status(:unprocessable_entity)
-                |> render("error.json", error: error)
+                |> render(Gt.Api.V1.AuthView, "error.json", error: error)
         end
     end
 
@@ -30,12 +30,12 @@ defmodule Gt.Api.V1.AuthController do
 
         conn = clear_session(conn)
         conn
-        |> render("delete.json")
+        |> render(Gt.Api.V1.AuthView, "delete.json")
     end
 
     def unauthenticated(conn, _params) do
         conn
         |> put_status(:forbidden)
-        |> render(Gt.AuthView, "forbidden.json", error: "Not Authenticated")
+        |> render(Gt.Api.V1.AuthView, "forbidden.json", error: "Not Authenticated")
     end
 end
