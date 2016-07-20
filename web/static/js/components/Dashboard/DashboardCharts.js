@@ -92,6 +92,12 @@ let defaultChartOptions = {
     spacing: [0, 0, 0, 0]
 };
 
+let styles = {
+    chart: {
+        height: 40
+    }
+};
+
 export default class DashboardCharts extends React.Component {
     static propTypes = {
         stats: PropTypes.object,
@@ -113,15 +119,29 @@ export default class DashboardCharts extends React.Component {
         return defaultOptions;
     }
 
+    getMonthlyChartOptions() {
+        let defaultOptions = JSON.parse(JSON.stringify(defaultChartOptions));
+        defaultOptions.chart.type = 'column';
+        defaultOptions.tooltip.formatter = function() {
+            let points = [];
+            for (let point of this.points) {
+                points.push(`<span style="color: ${point.color};">●</span>${formatter.formatMoney(point.y)}`);
+            }
+            return `${points.join(' ')} (${this.x})`;
+        };
+
+        return defaultOptions;
+    }
+
     getDailyChart(metrics) {
         let data = this.props.id ? this.props.stats.daily[this.props.id] : this.props.stats.daily;
         if (!Object.keys(data)) {
-            return (<div>No data</div>);
+            return (<div style={styles.chart}>No data</div>);
         }
 
         let options = this.getDailyChartOptions();
-        options.tooltip.positioner = function() {
-            return { x: 75, y: -25};
+        options.tooltip.positioner = () => {
+            return {x: 75, y: -25};
         };
 
         options.series = [];
@@ -130,7 +150,7 @@ export default class DashboardCharts extends React.Component {
             for (let date in data) {
                 chartData.push({
                     x: formatter.toTimestamp(date),
-                    y: Math.abs(data[date][singleMetrics] ? data[date][singleMetrics] : 0)
+                    y: Math.abs(data[date][singleMetrics] ? data[date][singleMetrics] / 100 : 0)
                 });
             }
             options.series.push({
@@ -141,7 +161,43 @@ export default class DashboardCharts extends React.Component {
         }
 
         return (
-            <div style={{height: 40}}>
+            <div style={styles.chart}>
+                <ReactHighcharts config={options} />
+            </div>
+        );
+    }
+
+    getMonthlyChart(metrics) {
+        let data = this.props.id ? this.props.stats.monthly[this.props.id] : this.props.stats.monthly;
+        if (!Object.keys(data)) {
+            return (<div style={styles.chart}>No data</div>);
+        }
+
+        let options = this.getMonthlyChartOptions();
+        options.tooltip.positioner = () => {
+            return {x: 75, y: -65};
+        };
+
+        options.series = [];
+        for (let singleMetrics of metrics) {
+            let chartData = [];
+            for (let date of Object.keys(data).reverse()) {
+                chartData.push(Math.abs(data[date][singleMetrics] ? data[date][singleMetrics] / 100 : 0));
+            }
+            options.series.push({
+                name: translate(`dashboard.${singleMetrics}`),
+                color: colorManager.getChartColor(singleMetrics),
+                data: chartData
+            });
+        }
+        let categories = [];
+        for (let date of Object.keys(data).reverse()) {
+            categories.push(formatter.formatMonth(`${date}-01`));
+        }
+        options.xAxis.categories = categories;
+
+        return (
+            <div style={styles.chart}>
                 <ReactHighcharts config={options} />
             </div>
         );
@@ -161,6 +217,7 @@ export default class DashboardCharts extends React.Component {
                             <div key={metrics} style={{color: colorManager.getChartColor(metrics)}}>
                                 <Translate content={`dashboard.${metrics}`} />
                                 {this.getDailyChart([metrics])}
+                                {this.getMonthlyChart([metrics])}
                             </div>
                         );
                     })}

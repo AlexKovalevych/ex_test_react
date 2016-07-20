@@ -25,7 +25,6 @@ class Dashboard extends React.Component {
         const { dispatch } = props;
         if (props.ws.channel && !props.data.lastUpdated) {
             dispatch(dashboardActions.loadStats({period: this.props.user.settings.dashboardPeriod}));
-            dispatch(dashboardActions.loadCharts());
         }
     }
 
@@ -63,7 +62,11 @@ class Dashboard extends React.Component {
                             periodType={this.props.user.settings.dashboardPeriod}
                             maximumValue={maximumValue}
                         />
-                        <DashboardCharts stats={this.props.data.charts.stats} id={projectId} />
+                        {
+                            this.props.data.charts && (
+                                <DashboardCharts stats={this.props.data.charts.stats} id={projectId} />
+                            )
+                        }
                     </div>
                     <div className='col-md-8 col-xs-12'>
                         <ConsolidatedTable

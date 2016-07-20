@@ -26,19 +26,14 @@ defmodule Gt.UserChannel do
             settings["dashboardComparePeriod"],
             project_ids
         )
-        {:reply, {:ok, %{stats: data.stats, periods: data.periods, totals: data.totals, projects: projects}}, socket}
-    end
-    def handle_in("dashboard_charts", params, socket) do
-        current_user = socket.assigns.current_user
-        settings = current_user.settings
-        project_ids = Gt.Manager.Permissions.get(current_user.permissions, "dashboard_index")
-        projects = Project |> Project.ids(project_ids) |> Repo.all
-        project_ids = Enum.map(project_ids, fn id ->
-            {:ok, object_id} = Mongo.Ecto.ObjectID.dump(id)
-            object_id
-        end)
-        data = Gt.Manager.Dashboard.get_charts(String.to_atom(settings["dashboardPeriod"]), project_ids)
-        {:reply, {:ok, data}, socket}
+        charts = Gt.Manager.Dashboard.get_charts(String.to_atom(settings["dashboardPeriod"]), project_ids)
+        {:reply, {:ok, %{
+            stats: data.stats,
+            charts: charts,
+            periods: data.periods,
+            totals: data.totals,
+            projects: projects
+        }}, socket}
     end
     def handle_in("locale", locale, socket) do
         user_id = socket.assigns.current_user.id

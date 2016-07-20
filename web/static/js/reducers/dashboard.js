@@ -12,16 +12,12 @@ export default function reducer(state = initialState, action = {}) {
     case 'DASHBOARD_LOAD_DATA':
         return {
             ...state,
+            charts: action.data.charts,
             stats: action.data.stats,
             totals: action.data.totals,
             periods: action.data.periods,
             projects: action.data.projects,
             lastUpdated: action.lastUpdated
-        };
-    case 'DASHBOARD_LOAD_CHARTS':
-        return {
-            ...state,
-            charts: action.data
         };
     default:
         return state;
