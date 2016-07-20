@@ -73,7 +73,7 @@ class Dashboard extends React.Component {
                         />
                         {
                             this.props.data.charts && (
-                                <DashboardCharts stats={this.props.data.charts.stats} id={projectId} />
+                                <DashboardCharts stats={this.props.data.charts.stats} id={projectId} isPoker={project.isPoker} />
                             )
                         }
                     </div>
@@ -119,7 +119,6 @@ class Dashboard extends React.Component {
             }
         }
         let maximumValue = Math.max.apply(null, projectValues);
-
 
         return (
             <div>

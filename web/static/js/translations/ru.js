@@ -73,6 +73,10 @@ counterpart.registerTranslations('ru', {
         netgaming: 'Netgaming',
         paymentsAmount: 'Inout',
         depositsAmount: 'Депозиты',
-        cashoutsAmount: 'Выплаты'
+        cashoutsAmount: 'Выплаты',
+        netgamingAmount: 'Netgaming',
+        rakeAmount: 'Rake',
+        betsAmount: 'Ставки',
+        winsAmount: 'Выигрыши'
     }
 });

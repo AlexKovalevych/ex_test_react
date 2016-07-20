@@ -93,6 +93,7 @@ defmodule Gt.Model.ConsolidatedStatsMonthly do
             depositsAmount: cs.depositsAmount,
             cashoutsAmount: cs.cashoutsAmount,
             netgamingAmount: cs.netgamingAmount,
+            rakeAmount: cs.rakeAmount,
             betsAmount: cs.betsAmount,
             winsAmount: cs.winsAmount
         }

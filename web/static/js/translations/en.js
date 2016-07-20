@@ -73,6 +73,10 @@ counterpart.registerTranslations('en', {
         netgaming: 'Netgaming',
         paymentsAmount: 'Inout',
         depositsAmount: 'Deposits',
-        cashoutsAmount: 'Withdrawal'
+        cashoutsAmount: 'Withdrawal',
+        netgamingAmount: 'Netgaming',
+        rakeAmount: 'Rake',
+        betsAmount: 'Bets',
+        winsAmount: 'Wins'
     }
 });

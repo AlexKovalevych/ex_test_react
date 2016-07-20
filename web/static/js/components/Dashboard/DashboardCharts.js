@@ -101,6 +101,7 @@ let styles = {
 export default class DashboardCharts extends React.Component {
     static propTypes = {
         stats: PropTypes.object,
+        isPoker: PropTypes.bool,
         id: PropTypes.string
     };
 
@@ -146,6 +147,9 @@ export default class DashboardCharts extends React.Component {
 
         options.series = [];
         for (let singleMetrics of metrics) {
+            if (singleMetrics == 'rakeAmount' && !this.props.isPoker) {
+                continue;
+            }
             let chartData = [];
             for (let date in data) {
                 chartData.push({
@@ -175,11 +179,14 @@ export default class DashboardCharts extends React.Component {
 
         let options = this.getMonthlyChartOptions();
         options.tooltip.positioner = () => {
-            return {x: 75, y: -65};
+            return {x: 75, y: -65 - gtTheme.theme.spacing.desktopGutterMini};
         };
 
         options.series = [];
         for (let singleMetrics of metrics) {
+            if (singleMetrics == 'rakeAmount' && !this.props.isPoker) {
+                continue;
+            }
             let chartData = [];
             for (let date of Object.keys(data).reverse()) {
                 chartData.push(Math.abs(data[date][singleMetrics] ? data[date][singleMetrics] / 100 : 0));
@@ -196,25 +203,29 @@ export default class DashboardCharts extends React.Component {
         }
         options.xAxis.categories = categories;
 
+        let style = JSON.parse(JSON.stringify(styles.chart));
+        style.paddingTop = gtTheme.theme.spacing.desktopGutterMini;
+
         return (
-            <div style={styles.chart}>
+            <div style={style}>
                 <ReactHighcharts config={options} />
             </div>
         );
     }
 
     render() {
-        let loadingIcon;
-        if (!this.props.stats) {
-            loadingIcon = (<i className="fa fa-cog fa-spin"></i>);
-        }
-
         return (
             <Tabs>
                 <Tab label={<Translate content="dashboard.inout" />} style={gtTheme.theme.tab}>
                     {['paymentsAmount', 'depositsAmount', 'cashoutsAmount'].map((metrics) => {
                         return (
-                            <div key={metrics} style={{color: colorManager.getChartColor(metrics)}}>
+                            <div
+                                key={metrics}
+                                style={{
+                                    color: colorManager.getChartColor(metrics),
+                                    paddingTop: gtTheme.theme.spacing.desktopGutterMini
+                                }}
+                            >
                                 <Translate content={`dashboard.${metrics}`} />
                                 {this.getDailyChart([metrics])}
                                 {this.getMonthlyChart([metrics])}
@@ -223,7 +234,21 @@ export default class DashboardCharts extends React.Component {
                     })}
                 </Tab>
                 <Tab label={<Translate content="dashboard.netgaming" />} style={gtTheme.theme.tab}>
-                    {loadingIcon}
+                    {[['netgamingAmount', 'rakeAmount'], ['betsAmount'], ['winsAmount']].map((metrics) => {
+                        return (
+                            <div
+                                key={metrics}
+                                style={{
+                                    color: colorManager.getChartColor(metrics[0]),
+                                    paddingTop: gtTheme.theme.spacing.desktopGutterMini
+                                }}
+                            >
+                                <Translate content={`dashboard.${metrics[0]}`} />
+                                {this.getDailyChart(metrics)}
+                                {this.getMonthlyChart(metrics)}
+                            </div>
+                        );
+                    })}
                 </Tab>
             </Tabs>
         );
