@@ -3,6 +3,7 @@ import formatter from 'managers/Formatter';
 import gtTheme from 'themes';
 import LinearProgress from 'material-ui/LinearProgress';
 import Delta from 'components/Delta';
+import colorManager from 'managers/ColorManager';
 
 export default class DashboardProgress extends React.Component {
     static propTypes = {
@@ -31,6 +32,7 @@ export default class DashboardProgress extends React.Component {
                         </div>
                     </div>
                     <LinearProgress
+                        color={colorManager.getChartColor(this.props.sortBy)}
                         mode="determinate"
                         value={currentValue / this.props.maximumValue * 100}
                     />
@@ -49,7 +51,7 @@ export default class DashboardProgress extends React.Component {
                         </div>
                     </div>
                     <LinearProgress
-                        color={gtTheme.theme.palette.accent1Color}
+                        color={gtTheme.theme.palette.disabledColor}
                         mode="determinate"
                         value={comparisonValue / this.props.maximumValue * 100}
                     />
