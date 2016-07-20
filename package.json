@@ -22,6 +22,7 @@
     "react-router": "^2.4.0",
     "react-router-redux": "^4.0.5",
     "react-tap-event-plugin": "^1.0.0",
+    "react-tourist": "0.0.6",
     "react-translate-component": "^0.11.0",
     "redux": "^3.5.2"
   },
