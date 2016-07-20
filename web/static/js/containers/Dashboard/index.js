@@ -36,6 +36,15 @@ class Dashboard extends React.Component {
         this.loadData(newProps);
     }
 
+    getStyles() {
+        return {
+            block: {
+                marginTop: gtTheme.theme.spacing.desktopGutter,
+                padding: gtTheme.theme.spacing.desktopGutterLess
+            }
+        };
+    }
+
     renderProject(maximumValue, data) {
         let projectId = data[0];
         let project;
@@ -51,7 +60,7 @@ class Dashboard extends React.Component {
         }
 
         return (
-            <Paper key={projectId} style={{marginTop: gtTheme.theme.content.padding}}>
+            <Paper key={projectId} style={this.getStyles().block}>
                 <Subheader>{project.title}</Subheader>
                 <div className='row'>
                     <div className='col-md-4 col-xs-12'>
@@ -111,11 +120,12 @@ class Dashboard extends React.Component {
         }
         let maximumValue = Math.max.apply(null, projectValues);
 
+
         return (
             <div>
                 {title}
                 <div>
-                    <Paper style={{marginTop: gtTheme.theme.content.padding}}>
+                    <Paper style={this.getStyles().block}>
                         <Subheader>Total</Subheader>
                         <div className='row'>
                             <div className='col-md-4 col-xs-12'>

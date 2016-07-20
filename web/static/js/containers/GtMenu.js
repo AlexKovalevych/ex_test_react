@@ -13,6 +13,7 @@ import ArrowDropRight from 'material-ui/svg-icons/navigation-arrow-drop-right';
 import SettingsIcon from 'material-ui/svg-icons/action/settings';
 import gtTheme from 'themes';
 import Translate from 'react-translate-component';
+import menuActions from 'actions/menu';
 
 const styles = {
     title: {
@@ -44,6 +45,7 @@ const MENU_ORDER = [
 class GtMenu extends React.Component {
     static propTypes = {
         user: PropTypes.object,
+        menu: PropTypes.object,
         location: PropTypes.object,
         dispatch: PropTypes.func
     };
@@ -96,6 +98,7 @@ class GtMenu extends React.Component {
     changeUrl(url) {
         const {dispatch} = this.props;
         dispatch(push(url));
+        dispatch(menuActions.toggle());
     }
 
     getGroupChildren(block) {
@@ -174,7 +177,11 @@ class GtMenu extends React.Component {
         });
 
         return (
-            <Drawer open={true} docked={true}>
+            <Drawer
+                open={this.props.menu.show}
+                docked={false}
+                onRequestChange={() => this.props.dispatch(menuActions.toggle())}
+            >
                 <AppBar
                     title={<span style={styles.title}>Globotunes 3.0</span>}
                     onTitleTouchTap={this.handleTouchTap.bind(this)}
@@ -218,7 +225,10 @@ class GtMenu extends React.Component {
 }
 
 const mapStateToProps = (state) => {
-    return state.auth;
+    return {
+        user: state.auth.user,
+        menu: state.menu
+    };
 };
 
 export default connect(mapStateToProps)(GtMenu);

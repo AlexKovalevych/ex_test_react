@@ -1,12 +1,14 @@
 import React, { PropTypes } from 'react';
 import { connect } from 'react-redux';
-import authActions from '../../actions/auth';
+import authActions from 'actions/auth';
+import menuActions from 'actions/menu';
 import gtTheme from 'themes';
 import FlatButton from 'material-ui/FlatButton';
 import {Toolbar, ToolbarGroup} from 'material-ui/Toolbar';
 import DropDownMenu from 'material-ui/DropDownMenu';
 import MenuItem from 'material-ui/MenuItem';
 import ExitToAppIcon from 'material-ui/svg-icons/action/exit-to-app';
+import ViewHeadline from 'material-ui/svg-icons/action/view-headline';
 import IconButton from 'material-ui/IconButton';
 import Translate from 'react-translate-component';
 
@@ -36,61 +38,82 @@ class App extends React.Component {
         dispatch(authActions.logout());
     }
 
+    onToggleMenu(e) {
+        e.preventDefault();
+        const { dispatch } = this.props;
+        dispatch(menuActions.toggle());
+    }
+
     render() {
-        let tooltipStyles = {
-            color: gtTheme.theme.appBar.textColor
+        const styles = {
+            iconStyles: {
+                color: gtTheme.theme.palette.alternateTextColor
+            },
+            iconButtonStyle: {
+                height: gtTheme.theme.toolbar.height,
+                width: gtTheme.theme.toolbar.height
+            }
         };
 
         return (
             <div>
-                <div style={{paddingLeft: gtTheme.theme.drawer.width}}>
-                    <Toolbar style={{height: gtTheme.theme.appBar.height + 3}}>
-                        <ToolbarGroup firstChild={true}>
-                            <DropDownMenu
-                                value={this.props.user.locale}
-                                onChange={this.setLocale.bind(this)}
-                            >
-                                <MenuItem
-                                    value='ru'
-                                    primaryText={<Translate content="ru" />}
-                                    leftIcon={<img src="/images/flags/ru_2.png" width="25" />}
-                                    label={
-                                        <FlatButton
-                                            style={tooltipStyles}
-                                            label={<Translate content="ru" />}
-                                            labelPosition="after"
-                                            icon={<img src="/images/flags/ru_2.png" width="25" />}
-                                        />
-                                    }
-                                    style={gtTheme.theme.link}
-                                />
-                                <MenuItem
-                                    value='en'
-                                    primaryText={<Translate content="en" />}
-                                    leftIcon={<img src="/images/flags/en_2.png" width="25" />}
-                                    label={
-                                        <FlatButton
-                                            label={<Translate content="en" />}
-                                            labelPosition="after"
-                                            icon={<img src="/images/flags/en_2.png" width="25" />}
-                                            style={tooltipStyles}
-                                        />
-                                    }
-                                    style={gtTheme.theme.link}
-                                />
-                            </DropDownMenu>
-                        </ToolbarGroup>
-                        <ToolbarGroup>
-                            <IconButton onClick={this.onLogout.bind(this)} iconStyle={tooltipStyles}>
-                                <ExitToAppIcon />
-                            </IconButton>
-                        </ToolbarGroup>
-                    </Toolbar>
-                    <div style={gtTheme.theme.content}>
-                        {this.props.main}
-                    </div>
-                </div>
                 {this.props.menu}
+                <Toolbar>
+                    <ToolbarGroup firstChild={true}>
+                        <IconButton
+                            onClick={this.onToggleMenu.bind(this)}
+                            style={styles.iconButtonStyle}
+                            iconStyle={styles.iconStyles}
+                        >
+                            <ViewHeadline />
+                        </IconButton>
+                    </ToolbarGroup>
+                    <ToolbarGroup>
+                        <DropDownMenu
+                            value={this.props.user.locale}
+                            onChange={this.setLocale.bind(this)}
+                        >
+                            <MenuItem
+                                value='ru'
+                                primaryText={<Translate content="ru" />}
+                                leftIcon={<img src="/images/flags/ru_2.png" width="25" />}
+                                label={
+                                    <FlatButton
+                                        style={styles.iconStyles}
+                                        label={<Translate content="ru" />}
+                                        labelPosition="after"
+                                        icon={<img src="/images/flags/ru_2.png" width="25" />}
+                                    />
+                                }
+                                style={gtTheme.theme.link}
+                            />
+                            <MenuItem
+                                value='en'
+                                primaryText={<Translate content="en" />}
+                                leftIcon={<img src="/images/flags/en_2.png" width="25" />}
+                                label={
+                                    <FlatButton
+                                        label={<Translate content="en" />}
+                                        labelPosition="after"
+                                        icon={<img src="/images/flags/en_2.png" width="25" />}
+                                        style={styles.iconStyles}
+                                    />
+                                }
+                                style={gtTheme.theme.link}
+                            />
+                        </DropDownMenu>
+                        <IconButton
+                            onClick={this.onLogout.bind(this)}
+                            style={styles.iconButtonStyle}
+                            iconStyle={styles.iconStyles}
+                        >
+                            <ExitToAppIcon />
+                        </IconButton>
+                    </ToolbarGroup>
+                </Toolbar>
+                <div style={{padding: gtTheme.theme.spacing.desktopGutter}}>
+                    {this.props.main}
+                </div>
             </div>
         );
     }

@@ -16,9 +16,6 @@ class Indigo {
                 primary1Color: indigo500,
                 primary2Color: indigo700
             },
-            appBar: {
-                height: 54
-            },
             toolbar: {
                 backgroundColor: indigo500
             },
@@ -34,9 +31,6 @@ class Indigo {
             },
             link: {
                 cursor: 'pointer'
-            },
-            content: {
-                padding: spacing.desktopGutter
             },
             tableHeaderColumn: {
                 height: 48,

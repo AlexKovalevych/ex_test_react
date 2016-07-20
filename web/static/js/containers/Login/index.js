@@ -14,8 +14,6 @@ const styles = {
         padding: '0 20px'
     },
     form: {
-        width: '33%',
-        margin: '0 auto',
         textAlign: 'center'
     }
 };
@@ -41,51 +39,6 @@ class Login extends React.Component {
         this.resetError();
     }
 
-    render() {
-        let error;
-        if (this.props.error) {
-            error = (<Translate content={this.props.error} />);
-        }
-        counterpart.setLocale('ru');
-        return (
-            <div style={styles.form}>
-                <IndexLink to="/">
-                    <img src="/images/logo.png" alt="logo" />
-                </IndexLink>
-                <Paper zDepth={2} style={styles.paper}>
-                    <TextField
-                        hintText={<Translate content="form.email" />}
-                        ref="email"
-                        id="email"
-                        underlineShow={false}
-                        fullWidth={true}
-                        errorText={error}
-                    />
-                    <Divider />
-                    <TextField
-                        type="password"
-                        ref="password"
-                        id="password"
-                        hintText={<Translate content="form.password" />}
-                        underlineShow={false}
-                        fullWidth={true}
-                    />
-                    <Divider />
-                    <div>
-                        <RaisedButton
-                            label={<Translate content="form.login" />}
-                            primary={true}
-                            style={{
-                                margin: '20px'
-                            }}
-                            onMouseUp={this.onSubmit.bind(this)}
-                        />
-                    </div>
-                </Paper>
-            </div>
-        );
-    }
-
     onSubmit(e) {
         e.preventDefault();
         const { email, password } = this.refs;
@@ -93,6 +46,54 @@ class Login extends React.Component {
         const params = {email: email.input.value, password: password.input.value};
 
         dispatch(authActions.login(params));
+    }
+
+    render() {
+        let error;
+        if (this.props.error) {
+            error = (<Translate content={this.props.error} />);
+        }
+        counterpart.setLocale('ru');
+
+        return (
+            <div className="row">
+                <div className="col-xs-offset-4 col-xs-4" style={styles.form}>
+                    <IndexLink to="/">
+                        <img src="/images/logo.png" alt="logo" />
+                    </IndexLink>
+                    <Paper zDepth={2} style={styles.paper}>
+                        <TextField
+                            hintText={<Translate content="form.email" />}
+                            ref="email"
+                            id="email"
+                            underlineShow={false}
+                            fullWidth={true}
+                            errorText={error}
+                        />
+                        <Divider />
+                        <TextField
+                            type="password"
+                            ref="password"
+                            id="password"
+                            hintText={<Translate content="form.password" />}
+                            underlineShow={false}
+                            fullWidth={true}
+                        />
+                        <Divider />
+                        <div>
+                            <RaisedButton
+                                label={<Translate content="form.login" />}
+                                primary={true}
+                                style={{
+                                    margin: '20px'
+                                }}
+                                onMouseUp={this.onSubmit.bind(this)}
+                            />
+                        </div>
+                    </Paper>
+                </div>
+            </div>
+        );
     }
 }
 
