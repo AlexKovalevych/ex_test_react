@@ -7,6 +7,7 @@ import ReactHighcharts from 'react-highcharts/dist/ReactHighcharts.src';
 import formatter from 'managers/Formatter';
 import colorManager from 'managers/ColorManager';
 import translate from 'counterpart';
+import CircularProgress from 'material-ui/CircularProgress';
 
 let defaultChartOptions = {
     chart: {
@@ -95,7 +96,8 @@ let defaultChartOptions = {
 
 let styles = {
     chart: {
-        height: 40
+        height: 40,
+        textAlign: 'center'
     }
 };
 
@@ -111,7 +113,6 @@ export default class DashboardCharts extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
-            tab: 'inout',
             isVisible: false
         };
     }
@@ -240,6 +241,10 @@ export default class DashboardCharts extends React.Component {
     }
 
     getDailyChart(metrics) {
+        if (!this.state.isVisible) {
+            return (<div style={styles.chart}><CircularProgress size={0.5} /></div>);
+        }
+
         let data = this.props.id ? this.props.stats.daily[this.props.id] : this.props.stats.daily;
         if (!Object.keys(data)) {
             return (<div style={styles.chart}>No data</div>);
@@ -277,9 +282,15 @@ export default class DashboardCharts extends React.Component {
     }
 
     getMonthlyChart(metrics) {
+        let style = JSON.parse(JSON.stringify(styles.chart));
+        style.paddingTop = gtTheme.theme.spacing.desktopGutterMini;
+        if (!this.state.isVisible) {
+            return (<div style={style}><CircularProgress size={0.5} /></div>);
+        }
+
         let data = this.props.id ? this.props.stats.monthly[this.props.id] : this.props.stats.monthly;
         if (!Object.keys(data)) {
-            return (<div style={styles.chart}>No data</div>);
+            return (<div style={style}>No data</div>);
         }
 
         let options = this.getMonthlyChartOptions();
@@ -308,18 +319,11 @@ export default class DashboardCharts extends React.Component {
         }
         options.xAxis.categories = categories;
 
-        let style = JSON.parse(JSON.stringify(styles.chart));
-        style.paddingTop = gtTheme.theme.spacing.desktopGutterMini;
-
         return (
             <div style={style}>
                 <ReactHighcharts config={options} />
             </div>
         );
-    }
-
-    onChangeTab(tab) {
-        this.setState({tab});
     }
 
     render() {
@@ -328,10 +332,9 @@ export default class DashboardCharts extends React.Component {
         }
 
         return (
-            <Tabs value={this.state.tab} onChange={this.onChangeTab.bind(this)}>
-                <Tab value="inout" label={<Translate content="dashboard.inout" />} style={gtTheme.theme.tab}>
+            <Tabs>
+                <Tab label={<Translate content="dashboard.inout" />} style={gtTheme.theme.tab}>
                     {
-                        this.state.isVisible && this.state.tab == 'inout' &&
                         ['paymentsAmount', 'depositsAmount', 'cashoutsAmount'].map((metrics) => {
                             return (
                                 <div
@@ -349,9 +352,8 @@ export default class DashboardCharts extends React.Component {
                         })
                     }
                 </Tab>
-                <Tab value="netgaming" label={<Translate content="dashboard.netgaming" />} style={gtTheme.theme.tab}>
+                <Tab label={<Translate content="dashboard.netgaming" />} style={gtTheme.theme.tab}>
                     {
-                        this.state.isVisible && this.state.tab == 'netgaming' &&
                         [['netgamingAmount', 'rakeAmount'], ['betsAmount'], ['winsAmount']].map((metrics) => {
                             return (
                                 <div
