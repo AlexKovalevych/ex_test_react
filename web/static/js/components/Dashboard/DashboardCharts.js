@@ -1,4 +1,5 @@
 import React, {PropTypes} from 'react';
+import ReactDOM from 'react-dom';
 import {Tabs, Tab} from 'material-ui/Tabs';
 import Translate from 'react-translate-component';
 import gtTheme from 'themes';
@@ -98,12 +99,116 @@ let styles = {
     }
 };
 
+const RATE_LIMIT = 25;
+
 export default class DashboardCharts extends React.Component {
     static propTypes = {
         stats: PropTypes.object,
         isPoker: PropTypes.bool,
         id: PropTypes.string
     };
+
+    constructor(props) {
+        super(props);
+        this.state = {
+            tab: 'inout',
+            isVisible: false
+        };
+    }
+
+    componentDidMount() {
+        if (typeof window === 'undefined') {
+            return;
+        }
+
+        if (!this._dom_node) {
+            this._dom_node = ReactDOM.findDOMNode(this);
+        }
+        let domNode = this._dom_node;
+
+        this._rcv_fn = () => {
+            if (this._rcv_lock) {
+                this._rcv_schedule = true;
+                return;
+            }
+            this._rcv_lock = true;
+            this.checkComponentVisibility();
+            this._rcv_timeout = setTimeout(() => {
+                this._rcv_lock = false;
+                if (this._rcv_schedule) {
+                    this._rcv_schedule = false;
+                    this.checkComponentVisibility();
+                }
+            }, RATE_LIMIT);
+        };
+
+        /* Adding scroll listeners to all element's parents */
+        while (domNode.nodeName !== 'BODY' && domNode.parentElement) {
+            domNode = domNode.parentElement;
+            domNode.addEventListener('scroll', this._rcv_fn);
+        }
+        /* Adding listeners to page events */
+        document.addEventListener('visibilitychange', this._rcv_fn);
+        document.addEventListener('scroll', this._rcv_fn);
+        window.addEventListener('resize', this._rcv_fn);
+
+        this._rcv_fn();
+    }
+
+    componentWillUnmount() {
+        this.disableVisibilityHandling();
+    }
+
+    checkComponentVisibility() {
+        let domNode = this._dom_node,
+            gcs = window.getComputedStyle(domNode, false),
+            dims = domNode.getBoundingClientRect(),
+            h = window.innerHeight,
+            w = window.innerWidth,
+            // are we vertically visible?
+            topVisible = 0 < dims.top && dims.top < h,
+            bottomVisible = 0 < dims.bottom && dims.bottom < h,
+            verticallyVisible = topVisible || bottomVisible,
+            // also, are we horizontally visible?
+            leftVisible = 0 < dims.left && dims.left < w,
+            rightVisible = 0 < dims.right && dims.right < w,
+            horizontallyVisible = leftVisible || rightVisible,
+            // we're only visible if both of those are true.
+            visible = horizontallyVisible && verticallyVisible;
+
+        // but let's be fair: if we're opacity: 0 or
+        // visibility: hidden, or browser window is minimized we're not visible at all.
+        if (visible) {
+            let isDocHidden = document.hidden;
+            let isElementNotDisplayed = (gcs.getPropertyValue('display') === 'none');
+            let elementHasZeroOpacity = (gcs.getPropertyValue('opacity') === 0);
+            let isElementHidden = (gcs.getPropertyValue('visibility') === 'hidden');
+            visible = visible && !(isDocHidden || isElementNotDisplayed || elementHasZeroOpacity || isElementHidden);
+        }
+
+        // at this point, if our visibility is not what we expected,
+        // update our state so that we can trigger whatever needs to
+        // happen.
+        if (visible !== this.state.visible) {
+            this.setState({isVisible: visible});
+        }
+    }
+
+    disableVisibilityHandling() {
+        clearTimeout(this._rcv_timeout);
+        if (this._rcv_fn) {
+            let domNode = this._dom_node;
+            while (domNode.nodeName !== 'BODY' && domNode.parentElement) {
+                domNode = domNode.parentElement;
+                domNode.removeEventListener('scroll', this._rcv_fn);
+            }
+
+            document.removeEventListener('visibilitychange', this._rcv_fn);
+            document.removeEventListener('scroll', this._rcv_fn);
+            window.removeEventListener('resize', this._rcv_fn);
+            this._rcv_fn = false;
+        }
+    }
 
     getDailyChartOptions() {
         let defaultOptions = JSON.parse(JSON.stringify(defaultChartOptions));
@@ -213,42 +318,56 @@ export default class DashboardCharts extends React.Component {
         );
     }
 
+    onChangeTab(tab) {
+        this.setState({tab});
+    }
+
     render() {
+        if (this.state.isVisible) {
+            this.disableVisibilityHandling();
+        }
+
         return (
-            <Tabs>
-                <Tab label={<Translate content="dashboard.inout" />} style={gtTheme.theme.tab}>
-                    {['paymentsAmount', 'depositsAmount', 'cashoutsAmount'].map((metrics) => {
-                        return (
-                            <div
-                                key={metrics}
-                                style={{
-                                    color: colorManager.getChartColor(metrics),
-                                    paddingTop: gtTheme.theme.spacing.desktopGutterMini
-                                }}
-                            >
-                                <Translate content={`dashboard.${metrics}`} />
-                                {this.getDailyChart([metrics])}
-                                {this.getMonthlyChart([metrics])}
-                            </div>
-                        );
-                    })}
+            <Tabs value={this.state.tab} onChange={this.onChangeTab.bind(this)}>
+                <Tab value="inout" label={<Translate content="dashboard.inout" />} style={gtTheme.theme.tab}>
+                    {
+                        this.state.isVisible && this.state.tab == 'inout' &&
+                        ['paymentsAmount', 'depositsAmount', 'cashoutsAmount'].map((metrics) => {
+                            return (
+                                <div
+                                    key={metrics}
+                                    style={{
+                                        color: colorManager.getChartColor(metrics),
+                                        paddingTop: gtTheme.theme.spacing.desktopGutterMini
+                                    }}
+                                >
+                                    <Translate content={`dashboard.${metrics}`} />
+                                    {this.getDailyChart([metrics])}
+                                    {this.getMonthlyChart([metrics])}
+                                </div>
+                            );
+                        })
+                    }
                 </Tab>
-                <Tab label={<Translate content="dashboard.netgaming" />} style={gtTheme.theme.tab}>
-                    {[['netgamingAmount', 'rakeAmount'], ['betsAmount'], ['winsAmount']].map((metrics) => {
-                        return (
-                            <div
-                                key={metrics}
-                                style={{
-                                    color: colorManager.getChartColor(metrics[0]),
-                                    paddingTop: gtTheme.theme.spacing.desktopGutterMini
-                                }}
-                            >
-                                <Translate content={`dashboard.${metrics[0]}`} />
-                                {this.getDailyChart(metrics)}
-                                {this.getMonthlyChart(metrics)}
-                            </div>
-                        );
-                    })}
+                <Tab value="netgaming" label={<Translate content="dashboard.netgaming" />} style={gtTheme.theme.tab}>
+                    {
+                        this.state.isVisible && this.state.tab == 'netgaming' &&
+                        [['netgamingAmount', 'rakeAmount'], ['betsAmount'], ['winsAmount']].map((metrics) => {
+                            return (
+                                <div
+                                    key={metrics}
+                                    style={{
+                                        color: colorManager.getChartColor(metrics[0]),
+                                        paddingTop: gtTheme.theme.spacing.desktopGutterMini
+                                    }}
+                                >
+                                    <Translate content={`dashboard.${metrics[0]}`} />
+                                    {this.getDailyChart(metrics)}
+                                    {this.getMonthlyChart(metrics)}
+                                </div>
+                            );
+                        })
+                    }
                 </Tab>
             </Tabs>
         );

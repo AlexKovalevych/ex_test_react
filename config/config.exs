@@ -12,7 +12,8 @@ config :gt, Gt.Endpoint,
     secret_key_base: "A4N0BdJAieRAntLI9bKdNX/7Lv1hvBr4Pdp4QMOBdHjlVkjLAPH9NwKc5jKGYbA+",
     render_errors: [accepts: ~w(html json)],
     pubsub: [name: Gt.PubSub,
-            adapter: Phoenix.PubSub.PG2]
+            adapter: Phoenix.PubSub.PG2],
+    http: [compress: true]
 
 config :gt,
     permissions: %{
