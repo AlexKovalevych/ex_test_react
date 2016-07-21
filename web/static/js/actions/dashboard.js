@@ -15,6 +15,23 @@ const dashboardActions = {
                     console.log(msg);
                 });
         };
+    },
+
+    loadConsolidatedChart: (params) => {
+        return (dispatch, getState) => {
+            const { auth } = getState();
+            auth.channel
+                .push('consolidated_chart', params)
+                .receive('ok', (msg) => {
+                    dispatch({
+                        type: 'DASHBOARD_LOAD_CONSOLIDATED_CHART_DATA',
+                        data: msg
+                    });
+                })
+                .receive('error', (msg) => {
+                    console.log(msg);
+                });
+        };
     }
 };
 

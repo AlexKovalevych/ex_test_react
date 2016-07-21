@@ -82,6 +82,8 @@ class Dashboard extends React.Component {
                             periodType={this.props.user.settings.dashboardPeriod}
                             periods={this.props.data.periods}
                             stats={projectStats}
+                            chart={this.props.data.consolidatedChart}
+                            id={projectId}
                         />
                     </div>
                 </div>
@@ -146,6 +148,7 @@ class Dashboard extends React.Component {
                                     periodType={this.props.user.settings.dashboardPeriod}
                                     periods={this.props.data.periods}
                                     stats={this.props.data.totals}
+                                    chart={this.props.data.consolidatedChart}
                                 />
                             </div>
                         </div>

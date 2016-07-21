@@ -4,7 +4,8 @@ const initialState = {
     totals: null,
     charts: null,
     projects: [],
-    lastUpdated: null
+    lastUpdated: null,
+    consolidatedChart: null
 };
 
 export default function reducer(state = initialState, action = {}) {
@@ -18,6 +19,11 @@ export default function reducer(state = initialState, action = {}) {
             periods: action.data.periods,
             projects: action.data.projects,
             lastUpdated: action.lastUpdated
+        };
+    case 'DASHBOARD_LOAD_CONSOLIDATED_CHART_DATA':
+        return {
+            ...state,
+            consolidatedChart: action.data
         };
     default:
         return state;
