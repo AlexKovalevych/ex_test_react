@@ -1,6 +1,7 @@
 defmodule Gt.Task do
     require Logger
     use Timex
+    import ExPrintf
 
     defmacro __using__(_) do
         quote do
@@ -20,8 +21,8 @@ defmodule Gt.Task do
     end
 
     def log_time_diff(start_time, end_time) do
-        minutes = to_string(Time.diff(end_time, start_time, :minutes))
-        seconds = to_string(Time.diff(end_time, start_time, :seconds))
-        Logger.info "Completed in " <> minutes <> "m " <> seconds <> "s"
+        minutes = Time.diff(end_time, start_time, :minutes)
+        seconds = Time.diff(end_time, start_time, :seconds) - minutes * 60
+        Logger.info sprintf("Completed in %sm %ss", [to_string(minutes), to_string(seconds)])
     end
 end

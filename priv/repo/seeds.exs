@@ -26,7 +26,6 @@ use Timex
 require Logger
 
 start_time = Time.now
-Mongo.Ecto.truncate(Gt.Repo)
 Logger.configure([level: :info])
 Project.run()
 User.run()

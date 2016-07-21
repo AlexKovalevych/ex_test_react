@@ -42,12 +42,12 @@ defmodule Gt.Fixtures.Payment do
         |> Gt.Repo.all
 
         Enum.map(projects, fn project ->
-            Enum.map(users, &insert_project_user(project, &1))
+            ParallelStream.each(users, &insert_payments(project, &1)) |> Enum.to_list
         end)
         Logger.info("Loaded #{__MODULE__} fixtures")
     end
 
-    def insert_project_user(project, [user_item_id, data]) do
+    def insert_payments(project, [user_item_id, data]) do
         user_item_id = case project.title do
             "Loto 1" -> user_item_id
             "Loto 2" -> user_item_id <> "2"
@@ -82,11 +82,11 @@ defmodule Gt.Fixtures.Payment do
             cash_real = case project.title do
                 "Loto 1" -> cash_real
                 "Loto 2" -> round(cash_real * 1.05)
-                "Loto 3" -> round(cash_real * 1.15)
+                "Loto 3" -> round(cash_real * 0.85)
                 "Loto 4" -> round(cash_real * 1.2)
-                "Loto 5" -> round(cash_real * 1.25)
+                "Loto 5" -> round(cash_real * 0.8)
                 "Loto 6" -> round(cash_real * 1.1)
-                "Loto 7" -> round(cash_real * 1.22)
+                "Loto 7" -> round(cash_real * 0.95)
                 "Loto 8" -> round(cash_real * 1.07)
                 "Loto 9" -> round(cash_real * 1.11)
             end

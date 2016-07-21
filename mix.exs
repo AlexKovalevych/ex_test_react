@@ -48,7 +48,8 @@ defmodule Gt.Mixfile do
             {:timex, "~> 2.2"},
             {:tzdata, "~> 0.1.8", override: true},
             {:exprintf, "~> 0.1.6"},
-            {:progress_bar, "~> 1.5"}
+            {:progress_bar, "~> 1.5"},
+            {:parallel_stream, "~> 1.0"}
             # {:nio_google_authenticator, "~> 1.0.1"} Required newer ecto
         ]
     end

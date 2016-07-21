@@ -75,14 +75,6 @@ config :guardian, Guardian,
     secret_key: to_string(Mix.env),
     serializer: Gt.GuardianSerializer,
     hooks: Gt.GuardianDb
-    # permissions: %{
-    #     default: [
-    #         :read_profile,
-    #         :write_profile,
-    #         :read_token,
-    #         :revoke_token,
-    #     ],
-    # }
 
 config :porcelain, :driver, Porcelain.Driver.Basic
 
