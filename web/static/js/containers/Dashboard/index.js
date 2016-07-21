@@ -135,6 +135,11 @@ class Dashboard extends React.Component {
                                     periodType={this.props.user.settings.dashboardPeriod}
                                     maximumValue={maximumValue}
                                 />
+                                {
+                                    this.props.data.charts && (
+                                        <DashboardCharts stats={this.props.data.charts.totals} />
+                                    )
+                                }
                             </div>
                             <div className='col-md-8 col-xs-12'>
                                 <ConsolidatedTable
@@ -151,7 +156,6 @@ class Dashboard extends React.Component {
         );
     }
 }
-                                // <DashboardCharts stats={this.props.data.charts.totals} />
 
 const mapStateToProps = (state) => {
     return {

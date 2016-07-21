@@ -1,5 +1,6 @@
 defmodule Gt.Model.ConsolidatedStatsMonthly do
     use Gt.Web, :model
+    alias Gt.Manager.Date, as: GtDate
 
     @collection "consolidated_stats_monthly"
 
@@ -104,5 +105,39 @@ defmodule Gt.Model.ConsolidatedStatsMonthly do
             "month" => %{"$in" => months},
             "project" => %{"$in" => project_ids}
         })
+    end
+
+    def dashboard_charts_period(from, to, project_ids) do
+        Mongo.aggregate(Gt.Repo.__mongo_pool__, @collection, [
+            %{"$match" => %{
+                "month" => %{
+                    "$gte" => GtDate.format(from, :month),
+                    "$lte" => GtDate.format(to, :month)
+                },
+                "project" => %{"$in" => project_ids}
+            }},
+            %{"$group" => %{
+                "_id" => "$month",
+                "paymentsAmount" => %{"$sum" => "$paymentsAmount"},
+                "depositsAmount" => %{"$sum" => "$depositsAmount"},
+                "cashoutsAmount" => %{"$sum" => "$cashoutsAmount"},
+                "netgamingAmount" => %{"$sum" => "$netgamingAmount"},
+                "rakeAmount" => %{"$sum" => "$rakeAmount"},
+                "betsAmount" => %{"$sum" => "$betsAmount"},
+                "winsAmount" => %{"$sum" => "$winsAmount"}
+            }},
+            %{"$project" => %{
+                "_id" => 1,
+                "paymentsAmount" => 1,
+                "depositsAmount" => 1,
+                "cashoutsAmount" => 1,
+                "netgamingAmount" => %{"$add" => ["$netgamingAmount", "$rakeAmount"]},
+                "betsAmount" => 1,
+                "winsAmount" => 1
+            }},
+            %{
+                "$sort" => %{"_id" => 1}
+            }
+        ])
     end
 end

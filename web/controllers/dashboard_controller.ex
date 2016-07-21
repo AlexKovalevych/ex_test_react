@@ -8,7 +8,6 @@ defmodule Gt.DashboardController do
 
     def index(conn, _) do
         user = current_user(conn)
-        # TODO: cant render large response yet
         settings = user.settings
         project_ids = Gt.Manager.Permissions.get(user.permissions, "dashboard_index")
         projects = Project |> Project.ids(project_ids) |> Repo.all

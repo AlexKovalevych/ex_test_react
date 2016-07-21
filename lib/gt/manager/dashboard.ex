@@ -130,10 +130,20 @@ defmodule Gt.Manager.Dashboard do
             |> ConsolidatedStatsMonthly.project_id(id)
             |> ConsolidatedStatsMonthly.period(monthly_from, monthly_to)
             |> Repo.all
-            |> Enum.reduce(%{}, fn (daily_stat, acc) ->
-                Map.put(acc, daily_stat[:month], daily_stat)
+            |> Enum.reduce(%{}, fn (monthly_stat, acc) ->
+                Map.put(acc, monthly_stat[:month], monthly_stat)
             end)
             Map.put(acc, id, data)
+        end)
+
+        total_daily_charts = ConsolidatedStats.dashboard_charts_period(daily_from, daily_to, project_ids)
+        |> Enum.reduce(%{}, fn (daily_stat, acc) ->
+            Map.put(acc, daily_stat["_id"], daily_stat)
+        end)
+
+        total_monthly_charts = ConsolidatedStatsMonthly.dashboard_charts_period(monthly_from, monthly_to, project_ids)
+        |> Enum.reduce(%{}, fn (monthly_stat, acc) ->
+            Map.put(acc, monthly_stat["_id"], monthly_stat)
         end)
 
         %{
@@ -142,8 +152,8 @@ defmodule Gt.Manager.Dashboard do
                 monthly: monthly_charts
             },
             totals: %{
-                daily: nil,
-                monthly: nil
+                daily: total_daily_charts,
+                monthly: total_monthly_charts
             }
         }
     end
