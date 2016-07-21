@@ -20,11 +20,14 @@ defmodule Gt.Manager.ConsolidatedStats do
             data = unquote(term) |> Enum.to_list
             Logger.info "Updating dashboard #{message}"
             total = length(data)
-            Enum.each 1..total, fn i ->
+            ParallelStream.each(1..total, fn i ->
                 project_day = Enum.at(data, i - 1)
                 ConsolidatedStats.upsert_project_date(project_day["_id"], Map.drop(project_day, ["_id"]))
-                ProgressBar.render(i, total)
-            end
+                if i != total do
+                    ProgressBar.render(i, total)
+                end
+            end) |> Enum.to_list
+            ProgressBar.render(total, total)
         end
     end
 
@@ -56,7 +59,7 @@ defmodule Gt.Manager.ConsolidatedStats do
         Enum.map(1..total, fn i ->
             {from, to} = Enum.at(periods, i - 1)
             stats = ConsolidatedStats.monthly_by_interval(from, to)
-            Enum.map(stats, fn monthly_stats ->
+            ParallelStream.map(stats, fn monthly_stats ->
                 project_id = monthly_stats["_id"]
                 vip_levels = ProjectUser.vip_levels_by_month(from, to, project_id) |> Enum.to_list
                 vip_levels = case Enum.count(vip_levels) > 0 do
@@ -108,7 +111,7 @@ defmodule Gt.Manager.ConsolidatedStats do
                     firstDepositorsNumberToSignupsNumber: first_depositors_number_to_signups_number,
                     authorizationsNumber: stats["authorizationsNumber"]
                 }))
-            end)
+            end) |> Enum.to_list
             ProgressBar.render(i, total)
         end)
     end

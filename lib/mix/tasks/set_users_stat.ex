@@ -38,7 +38,8 @@ defmodule Mix.Tasks.Gt.SetUsersStat do
         |> Repo.all
 
         total = Enum.count(project_users)
-        Enum.reduce(project_users, 1, fn (project_user, i) ->
+        ParallelStream.map(1..total, fn i ->
+            project_user = Enum.at(project_users, i - 1)
             project_user_id = object_id(project_user.id)
             user_payments = Payment.by_user_id(
                 project_user_id,
@@ -103,10 +104,11 @@ defmodule Mix.Tasks.Gt.SetUsersStat do
                     }
                 )
             end
-
-            ProgressBar.render(i, total)
-            i + 1
-        end)
+            if i != total do
+                ProgressBar.render(i, total)
+            end
+        end) |> Enum.to_list
+        ProgressBar.render(total, total)
     end
     def do_process(_) do
         IO.puts """

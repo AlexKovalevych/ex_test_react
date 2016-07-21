@@ -66,6 +66,7 @@ defmodule Gt.Mixfile do
                 "ecto.create",
                 "ecto.migrate",
                 "run priv/repo/seeds.exs",
+                "gt.app_cache --from 2013-01-01",
                 "gt.set_users_stat",
                 "gt.set_vip_users"
             ],
