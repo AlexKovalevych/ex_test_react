@@ -26,6 +26,9 @@ class Dashboard extends React.Component {
         if (props.ws.channel && !props.data.lastUpdated) {
             dispatch(dashboardActions.loadStats({period: this.props.user.settings.dashboardPeriod}));
         }
+        // if (props.ws.channel && !props.data.charts) {
+        //     dispatch(dashboardActions.loadCharts({period: this.props.user.settings.dashboardPeriod}));
+        // }
     }
 
     componentDidMount() {
@@ -63,7 +66,7 @@ class Dashboard extends React.Component {
             <Paper key={projectId} style={this.getStyles().block}>
                 <Subheader>{project.title}</Subheader>
                 <div className='row'>
-                    <div className='col-md-4 col-xs-12'>
+                    <div className='col-lg-3 col-md-4 col-xs-12'>
                         <DashboardProgress
                             sortBy={this.props.user.settings.dashboardSort}
                             periods={this.props.data.periods}
@@ -77,7 +80,7 @@ class Dashboard extends React.Component {
                             )
                         }
                     </div>
-                    <div className='col-md-8 col-xs-12'>
+                    <div className='col-lg-9 col-md-8 col-xs-12'>
                         <ConsolidatedTable
                             periodType={this.props.user.settings.dashboardPeriod}
                             periods={this.props.data.periods}
@@ -129,7 +132,7 @@ class Dashboard extends React.Component {
                     <Paper style={this.getStyles().block}>
                         <Subheader>Total</Subheader>
                         <div className='row'>
-                            <div className='col-md-4 col-xs-12'>
+                            <div className='col-lg-3 col-md-4 col-xs-12'>
                                 <DashboardProgress
                                     sortBy={this.props.user.settings.dashboardSort}
                                     periods={this.props.data.periods}
@@ -143,7 +146,7 @@ class Dashboard extends React.Component {
                                     )
                                 }
                             </div>
-                            <div className='col-md-8 col-xs-12'>
+                            <div className='col-lg-9 col-md-8 col-xs-12'>
                                 <ConsolidatedTable
                                     periodType={this.props.user.settings.dashboardPeriod}
                                     periods={this.props.data.periods}

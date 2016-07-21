@@ -7,7 +7,6 @@ import ReactHighcharts from 'react-highcharts/dist/ReactHighcharts.src';
 import formatter from 'managers/Formatter';
 import colorManager from 'managers/ColorManager';
 import translate from 'counterpart';
-import CircularProgress from 'material-ui/CircularProgress';
 
 let defaultChartOptions = {
     chart: {
@@ -242,7 +241,7 @@ export default class DashboardCharts extends React.Component {
 
     getDailyChart(metrics) {
         if (!this.state.isVisible) {
-            return (<div style={styles.chart}><CircularProgress size={0.5} /></div>);
+            return (<div style={styles.chart}></div>);
         }
 
         let data = this.props.id ? this.props.stats.daily[this.props.id] : this.props.stats.daily;
@@ -285,7 +284,7 @@ export default class DashboardCharts extends React.Component {
         let style = JSON.parse(JSON.stringify(styles.chart));
         style.paddingTop = gtTheme.theme.spacing.desktopGutterMini;
         if (!this.state.isVisible) {
-            return (<div style={style}><CircularProgress size={0.5} /></div>);
+            return (<div style={style}></div>);
         }
 
         let data = this.props.id ? this.props.stats.monthly[this.props.id] : this.props.stats.monthly;

@@ -1,14 +1,31 @@
 const dashboardActions = {
-    loadStats: (params) => {
+    loadStats: () => {
         return (dispatch, getState) => {
             const { auth } = getState();
             auth.channel
-                .push('dashboard_stats', params)
+                .push('dashboard_stats')
                 .receive('ok', (msg) => {
                     dispatch({
                         type: 'DASHBOARD_LOAD_DATA',
                         data: msg,
                         lastUpdated: Date.now()
+                    });
+                })
+                .receive('error', (msg) => {
+                    console.log(msg);
+                });
+        };
+    },
+
+    loadCharts: () => {
+        return (dispatch, getState) => {
+            const { auth } = getState();
+            auth.channel
+                .push('dashboard_charts')
+                .receive('ok', (msg) => {
+                    dispatch({
+                        type: 'DASHBOARD_LOAD_CHART_DATA',
+                        data: msg
                     });
                 })
                 .receive('error', (msg) => {
