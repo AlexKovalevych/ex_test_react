@@ -19,6 +19,7 @@
     "react-interpolate-component": "^0.9.0",
     "react-motion": "^0.4.4",
     "react-redux": "^4.4.5",
+    "react-redux-spinner": "^0.4.0",
     "react-router": "^2.4.0",
     "react-router-redux": "^4.0.5",
     "react-tap-event-plugin": "^1.0.0",

@@ -162,6 +162,7 @@ defmodule Gt.Manager.Dashboard do
         stats = ConsolidatedStats
         |> ConsolidatedStats.project_id(project_id)
         |> ConsolidatedStats.period(from, to)
+        |> Repo.all
         |> Enum.to_list
         IO.inspect(stats)
 
