@@ -38,7 +38,7 @@ defmodule Gt.Fixtures.Payment do
         {:ok, data} = File.read Path.join(__DIR__, "payments.json")
         users = Poison.decode!(data)
         projects = Project
-        |> Project.titles(["Loto 1", "Loto 6"])
+        |> Project.titles(["Loto 1", "Loto 2", "Loto 3", "Loto 4", "Loto 5", "Loto 6", "Loto 7", "Loto 8", "Loto 9"])
         |> Gt.Repo.all
 
         Enum.map(projects, fn project ->
@@ -48,9 +48,18 @@ defmodule Gt.Fixtures.Payment do
     end
 
     def insert_project_user(project, [user_item_id, data]) do
-        if project.title == "Loto 6" do
-            user_item_id = user_item_id <> "32"
+        user_item_id = case project.title do
+            "Loto 1" -> user_item_id
+            "Loto 2" -> user_item_id <> "2"
+            "Loto 3" -> user_item_id <> "3"
+            "Loto 4" -> user_item_id <> "4"
+            "Loto 5" -> user_item_id <> "5"
+            "Loto 6" -> user_item_id <> "32"
+            "Loto 7" -> user_item_id <> "7"
+            "Loto 8" -> user_item_id <> "8"
+            "Loto 9" -> user_item_id <> "9"
         end
+
         user = ProjectUser
         |> ProjectUser.projects(project.id)
         |> ProjectUser.by_item_id(user_item_id)
@@ -70,8 +79,16 @@ defmodule Gt.Fixtures.Payment do
             ] = payment
             date = @now |> Timex.shift(days: -date_past_days)
             time = DateTime.set(date, [{:time, {hours, minutes, seconds}}])
-            if project.title == "Loto 6" do
-                cash_real = round(cash_real * 1.1)
+            cash_real = case project.title do
+                "Loto 1" -> cash_real
+                "Loto 2" -> round(cash_real * 1.05)
+                "Loto 3" -> round(cash_real * 1.15)
+                "Loto 4" -> round(cash_real * 1.2)
+                "Loto 5" -> round(cash_real * 1.25)
+                "Loto 6" -> round(cash_real * 1.1)
+                "Loto 7" -> round(cash_real * 1.22)
+                "Loto 8" -> round(cash_real * 1.07)
+                "Loto 9" -> round(cash_real * 1.11)
             end
             %{
                 item_id: item_id,

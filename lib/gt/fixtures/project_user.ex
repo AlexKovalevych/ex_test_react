@@ -1013,7 +1013,7 @@ defmodule Gt.Fixtures.ProjectUser do
     def run do
         Logger.info("Loading #{__MODULE__} fixtures")
         projects = Project
-        |> Project.titles(["Loto 1", "Loto 6"])
+        |> Project.titles(["Loto 1", "Loto 2", "Loto 3", "Loto 4", "Loto 5", "Loto 6", "Loto 7", "Loto 8", "Loto 9"])
         |> Gt.Repo.all
 
         project_users = Enum.reduce(projects, [], fn (project, acc) ->
@@ -1052,8 +1052,16 @@ defmodule Gt.Fixtures.ProjectUser do
         reg_date = @now |> Timex.shift(days: -reg_past_days)
         last_date = @now |> Timex.shift(days: -last_past_days)
         first_dep_date = @now |> Timex.shift(days: -first_dep_past_days)
-        if project.title == "Loto 6" do
-            item_id = item_id <> "32"
+        item_id = case project.title do
+            "Loto 1" -> item_id
+            "Loto 2" -> item_id <> "2"
+            "Loto 3" -> item_id <> "3"
+            "Loto 4" -> item_id <> "4"
+            "Loto 5" -> item_id <> "5"
+            "Loto 6" -> item_id <> "32"
+            "Loto 7" -> item_id <> "7"
+            "Loto 8" -> item_id <> "8"
+            "Loto 9" -> item_id <> "9"
         end
         %{
             item_id: item_id,
