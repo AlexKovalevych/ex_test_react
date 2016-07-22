@@ -4,9 +4,10 @@ import Delta from 'components/Delta';
 import Translate from 'react-translate-component';
 import dashboardActions from 'actions/dashboard';
 import FontIcon from 'material-ui/FontIcon';
-import IconButton from 'material-ui/IconButton';
+// import IconButton from 'material-ui/IconButton';
 import { connect } from 'react-redux';
 import {Table, TableBody, TableHeader, TableHeaderColumn, TableRow, TableRowColumn} from 'material-ui/Table';
+import FlatButton from 'material-ui/FlatButton';
 
 let styles = {
     cell: {
@@ -15,12 +16,9 @@ let styles = {
     },
     smallIcon: {
         width: 36,
-        height: 36
-    },
-    small: {
-        width: 36,
         height: 36,
-        padding: 5
+        maxWidth: 36,
+        minWidth: 36
     }
 };
 
@@ -58,12 +56,16 @@ class ConsolidatedTable extends React.Component {
     renderChartButtons(metrics) {
         return (
             <TableRowColumn style={{width: '13%'}}>
-                <IconButton iconStyle={styles.smallIcon} style={styles.small} onClick={this.showDailyChart.bind(this, metrics)}>
-                    <FontIcon className="material-icons">show_chart</FontIcon>
-                </IconButton>
-                <IconButton iconStyle={styles.smallIcon} style={styles.small} onClick={this.showMonthlyChart.bind(this, metrics)}>
-                    <FontIcon className="material-icons">equalizer</FontIcon>
-                </IconButton>
+                <FlatButton
+                    icon={<FontIcon className="material-icons">show_chart</FontIcon>}
+                    style={styles.smallIcon}
+                    onClick={this.showDailyChart.bind(this, metrics)}
+                />
+                <FlatButton
+                    icon={<FontIcon className="material-icons">equalizer</FontIcon>}
+                    style={styles.smallIcon}
+                    onClick={this.showMonthlyChart.bind(this, metrics)}
+                />
             </TableRowColumn>
         );
     }
