@@ -15,6 +15,7 @@ export default function reducer(state = initialState, action = {}) {
             ...state,
             stats: action.data.stats,
             totals: action.data.totals,
+            charts: action.data.charts,
             periods: action.data.periods,
             projects: action.data.projects,
             lastUpdated: action.lastUpdated

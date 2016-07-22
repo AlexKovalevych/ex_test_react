@@ -80,7 +80,7 @@ class Dashboard extends React.Component {
                             )
                         }
                     </div>
-                    <div className='col-lg-9 col-md-8 col-xs-12'>
+                    <div className='col-lg-8 col-md-8 col-xs-12'>
                         <ConsolidatedTable
                             periodType={this.props.user.settings.dashboardPeriod}
                             periods={this.props.data.periods}
@@ -146,7 +146,7 @@ class Dashboard extends React.Component {
                                     )
                                 }
                             </div>
-                            <div className='col-lg-9 col-md-8 col-xs-12'>
+                            <div className='col-lg-8 col-md-8 col-xs-12'>
                                 <ConsolidatedTable
                                     periodType={this.props.user.settings.dashboardPeriod}
                                     periods={this.props.data.periods}
