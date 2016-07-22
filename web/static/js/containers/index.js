@@ -9,6 +9,7 @@ import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider';
 import 'translations';
 import indigo from 'themes/indigo';
 import gtTheme from 'themes';
+import spinnerActions from 'actions/spinner';
 
 export default class Index extends React.Component {
     static propTypes = {
@@ -40,6 +41,11 @@ export default class Index extends React.Component {
             indigo.create(initialState.user_agent);
             store = configureStore(initialState.initial_state, browserHistory);
             const history = syncHistoryWithStore(browserHistory, store);
+            history.listen((location) => {
+                if (location.pathname != '/login') {
+                    store.dispatch(spinnerActions.start());
+                }
+            });
 
             router = (
                 <Router history={history}>

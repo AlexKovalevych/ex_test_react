@@ -52,12 +52,15 @@ class Formatter {
         if (metrics == 'cashoutsAmount') {
             formattedValue = Math.abs(formattedValue);
         }
-        return formattedValue;
+        return formattedValue ? formattedValue : 0;
     }
 
-    formatValue(value, metrics) {
+    formatValue(value, metrics, hundreds=true) {
         if (Formatter.cashableMetrics.indexOf(metrics) > -1) {
-            return accounting.formatMoney(Math.round(value / 100), '$', 0);
+            return hundreds
+                ? accounting.formatMoney(Math.round(value / 100), '$', 0)
+                : accounting.formatMoney(value, '$', 0)
+            ;
         }
 
         if (Formatter.numberMetrics.indexOf(metrics) > -1) {

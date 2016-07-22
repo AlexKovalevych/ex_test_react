@@ -5,9 +5,11 @@ import dashboard from './dashboard';
 import ws from './ws';
 import menu from './menu';
 import modal from './modal';
+import { pendingTasksReducer as pendingTasks } from './spinner';
 
 export default combineReducers({
     routing: routerReducer,
+    pendingTasks,
     menu,
     auth,
     modal,

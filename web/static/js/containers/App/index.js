@@ -11,6 +11,7 @@ import FontIcon from 'material-ui/FontIcon';
 import IconButton from 'material-ui/IconButton';
 import Translate from 'react-translate-component';
 import Modal from 'containers/Modal';
+import Spinner from 'components/Spinner';
 
 class App extends React.Component {
     static propTypes = {
@@ -115,6 +116,7 @@ class App extends React.Component {
                     {this.props.main}
                 </div>
                 <Modal />
+                <Spinner />
             </div>
         );
     }

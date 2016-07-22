@@ -6,6 +6,7 @@ import dashboardActions from 'actions/dashboard';
 import FontIcon from 'material-ui/FontIcon';
 import IconButton from 'material-ui/IconButton';
 import { connect } from 'react-redux';
+import {Table, TableBody, TableHeader, TableHeaderColumn, TableRow, TableRowColumn} from 'material-ui/Table';
 
 let styles = {
     cell: {
@@ -13,8 +14,13 @@ let styles = {
         whiteSpace: 'normal'
     },
     smallIcon: {
-        width: 20,
-        height: 20
+        width: 36,
+        height: 36
+    },
+    small: {
+        width: 36,
+        height: 36,
+        padding: 5
     }
 };
 
@@ -51,14 +57,14 @@ class ConsolidatedTable extends React.Component {
 
     renderChartButtons(metrics) {
         return (
-            <td style={{width: '13%'}}>
-                <IconButton iconStyle={styles.smallIcon} onClick={this.showDailyChart.bind(this, metrics)}>
+            <TableRowColumn style={{width: '13%'}}>
+                <IconButton iconStyle={styles.smallIcon} style={styles.small} onClick={this.showDailyChart.bind(this, metrics)}>
                     <FontIcon className="material-icons">show_chart</FontIcon>
                 </IconButton>
-                <IconButton iconStyle={styles.smallIcon} onClick={this.showMonthlyChart.bind(this, metrics)}>
+                <IconButton iconStyle={styles.smallIcon} style={styles.small} onClick={this.showMonthlyChart.bind(this, metrics)}>
                     <FontIcon className="material-icons">equalizer</FontIcon>
                 </IconButton>
-            </td>
+            </TableRowColumn>
         );
     }
 
@@ -67,106 +73,102 @@ class ConsolidatedTable extends React.Component {
         let comparisonStats = this.props.stats.comparison;
 
         return (
-            <table>
-                <thead>
-                    <tr>
-                        <th style={styles.cell}></th>
-                        <th>{formatter.formatDashboardPeriod(this.props.periodType, this.props.periods.current[0])}</th>
-                        <th>{formatter.formatDashboardPeriod(this.props.periodType, this.props.periods.comparison[0])}</th>
-                        <th style={{width: '20%'}}><Translate content="difference" /></th>
-                        <th style={{width: '13%'}}><Translate content="charts" /></th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr>
-                        <td style={styles.cell}><Translate content='dashboard.average_deposit' /></td>
-                        <td>{formatter.formatValue(currentStats.averageDeposit, 'averageDeposit')}</td>
-                        <td>{formatter.formatValue(comparisonStats.averageDeposit, 'averageDeposit')}</td>
-                        <td style={{width: '20%'}}>
+            <Table selectable={false}>
+                <TableHeader displaySelectAll={false} adjustForCheckbox={false} style={{tableLayout: 'auto'}}>
+                    <TableRow>
+                        <TableHeaderColumn style={styles.cell}></TableHeaderColumn>
+                        <TableHeaderColumn>{formatter.formatDashboardPeriod(this.props.periodType, this.props.periods.current[0])}</TableHeaderColumn>
+                        <TableHeaderColumn>{formatter.formatDashboardPeriod(this.props.periodType, this.props.periods.comparison[0])}</TableHeaderColumn>
+                        <TableHeaderColumn style={{width: '20%'}}><Translate content="difference" /></TableHeaderColumn>
+                        <TableHeaderColumn style={{width: '13%'}}><Translate content="charts" /></TableHeaderColumn>
+                    </TableRow>
+                </TableHeader>
+                <TableBody displayRowCheckbox={false} style={{tableLayout: 'auto'}}>
+                    <TableRow>
+                        <TableRowColumn style={styles.cell}><Translate content='dashboard.average_deposit' /></TableRowColumn>
+                        <TableRowColumn>{formatter.formatValue(currentStats.averageDeposit, 'averageDeposit')}</TableRowColumn>
+                        <TableRowColumn>{formatter.formatValue(comparisonStats.averageDeposit, 'averageDeposit')}</TableRowColumn>
+                        <TableRowColumn style={{width: '20%'}}>
                             <Delta value={formatter.formatValue(currentStats.averageDeposit - comparisonStats.averageDeposit, 'averageDeposit')} />
-                        </td>
+                        </TableRowColumn>
                         {this.renderChartButtons('averageDeposit')}
-                    </tr>
-                    <tr>
-                        <td style={styles.cell}><Translate content='dashboard.arpu' /></td>
-                        <td>{formatter.formatValue(currentStats.averageArpu, 'averageArpu')}</td>
-                        <td>{formatter.formatValue(comparisonStats.averageArpu, 'averageArpu')}</td>
-                        <td>
+                    </TableRow>
+                    <TableRow>
+                        <TableRowColumn style={styles.cell}><Translate content='dashboard.arpu' /></TableRowColumn>
+                        <TableRowColumn>{formatter.formatValue(currentStats.averageArpu, 'averageArpu')}</TableRowColumn>
+                        <TableRowColumn>{formatter.formatValue(comparisonStats.averageArpu, 'averageArpu')}</TableRowColumn>
+                        <TableRowColumn>
                             <Delta value={formatter.formatValue(currentStats.averageArpu - comparisonStats.averageArpu, 'averageArpu')} />
-                        </td>
+                        </TableRowColumn>
                         {this.renderChartButtons('averageArpu')}
-                    </tr>
-                    <tr>
-                        <td style={styles.cell}><Translate content='dashboard.average_first_deposit' /></td>
-                        <td>{formatter.formatValue(currentStats.averageFirstDeposit, 'averageFirstDeposit')}</td>
-                        <td>{formatter.formatValue(comparisonStats.averageFirstDeposit, 'averageFirstDeposit')}</td>
-                        <td>
+                    </TableRow>
+                    <TableRow>
+                        <TableRowColumn style={styles.cell}><Translate content='dashboard.average_first_deposit' /></TableRowColumn>
+                        <TableRowColumn>{formatter.formatValue(currentStats.averageFirstDeposit, 'averageFirstDeposit')}</TableRowColumn>
+                        <TableRowColumn>{formatter.formatValue(comparisonStats.averageFirstDeposit, 'averageFirstDeposit')}</TableRowColumn>
+                        <TableRowColumn>
                             <Delta value={formatter.formatValue(currentStats.averageFirstDeposit - comparisonStats.averageFirstDeposit, 'averageFirstDeposit')} />
-                        </td>
+                        </TableRowColumn>
                         {this.renderChartButtons('averageFirstDeposit')}
-                    </tr>
-                    <tr>
-                        <td style={styles.cell}><Translate content='dashboard.deposits_number' /></td>
-                        <td>{formatter.formatValue(currentStats.depositsNumber, 'depositsNumber')}</td>
-                        <td>{formatter.formatValue(comparisonStats.depositsNumber, 'depositsNumber')}</td>
-                        <td>
+                    </TableRow>
+                    <TableRow>
+                        <TableRowColumn style={styles.cell}><Translate content='dashboard.deposits_number' /></TableRowColumn>
+                        <TableRowColumn>{formatter.formatValue(currentStats.depositsNumber, 'depositsNumber')}</TableRowColumn>
+                        <TableRowColumn>{formatter.formatValue(comparisonStats.depositsNumber, 'depositsNumber')}</TableRowColumn>
+                        <TableRowColumn>
                             <Delta value={formatter.formatValue(currentStats.depositsNumber - comparisonStats.depositsNumber, 'depositsNumber')} />
-                        </td>
+                        </TableRowColumn>
                         {this.renderChartButtons('depositsNumber')}
-                    </tr>
-                    <tr>
-                        <td style={styles.cell}><Translate content='dashboard.depositors_number' /></td>
-                        <td>{formatter.formatValue(currentStats.depositorsNumber, 'depositorsNumber')}</td>
-                        <td>{formatter.formatValue(comparisonStats.depositorsNumber, 'depositorsNumber')}</td>
-                        <td>
+                    </TableRow>
+                    <TableRow>
+                        <TableRowColumn style={styles.cell}><Translate content='dashboard.depositors_number' /></TableRowColumn>
+                        <TableRowColumn>{formatter.formatValue(currentStats.depositorsNumber, 'depositorsNumber')}</TableRowColumn>
+                        <TableRowColumn>{formatter.formatValue(comparisonStats.depositorsNumber, 'depositorsNumber')}</TableRowColumn>
+                        <TableRowColumn>
                             <Delta value={formatter.formatValue(currentStats.depositorsNumber - comparisonStats.depositorsNumber, 'depositorsNumber')} />
-                        </td>
+                        </TableRowColumn>
                         {this.renderChartButtons('depositorsNumber')}
-                    </tr>
-                    <tr>
-                        <td style={styles.cell}><Translate content='dashboard.first_depositors_number' /></td>
-                        <td>{formatter.formatValue(currentStats.firstDepositorsNumber, 'firstDepositorsNumber')}</td>
-                        <td>{formatter.formatValue(comparisonStats.firstDepositorsNumber, 'firstDepositorsNumber')}</td>
-                        <td>
+                    </TableRow>
+                    <TableRow>
+                        <TableRowColumn style={styles.cell}><Translate content='dashboard.first_depositors_number' /></TableRowColumn>
+                        <TableRowColumn>{formatter.formatValue(currentStats.firstDepositorsNumber, 'firstDepositorsNumber')}</TableRowColumn>
+                        <TableRowColumn>{formatter.formatValue(comparisonStats.firstDepositorsNumber, 'firstDepositorsNumber')}</TableRowColumn>
+                        <TableRowColumn>
                             <Delta value={formatter.formatValue(currentStats.firstDepositorsNumber - comparisonStats.firstDepositorsNumber, 'firstDepositorsNumber')} />
-                        </td>
+                        </TableRowColumn>
                         {this.renderChartButtons('firstDepositorsNumber')}
-                    </tr>
-                    <tr>
-                        <td style={styles.cell}><Translate content='dashboard.signups_number' /></td>
-                        <td>{formatter.formatValue(currentStats.signupsNumber, 'signupsNumber')}</td>
-                        <td>{formatter.formatValue(comparisonStats.signupsNumber, 'signupsNumber')}</td>
-                        <td>
+                    </TableRow>
+                    <TableRow>
+                        <TableRowColumn style={styles.cell}><Translate content='dashboard.signups_number' /></TableRowColumn>
+                        <TableRowColumn>{formatter.formatValue(currentStats.signupsNumber, 'signupsNumber')}</TableRowColumn>
+                        <TableRowColumn>{formatter.formatValue(comparisonStats.signupsNumber, 'signupsNumber')}</TableRowColumn>
+                        <TableRowColumn>
                             <Delta value={formatter.formatValue(currentStats.signupsNumber - comparisonStats.signupsNumber, 'signupsNumber')} />
-                        </td>
+                        </TableRowColumn>
                         {this.renderChartButtons('signupsNumber')}
-                    </tr>
-                    <tr>
-                        <td style={styles.cell}><Translate content='dashboard.first_deposits_amount' /></td>
-                        <td>{formatter.formatValue(currentStats.firstDepositsAmount, 'firstDepositsAmount')}</td>
-                        <td>{formatter.formatValue(comparisonStats.firstDepositsAmount, 'firstDepositsAmount')}</td>
-                        <td>
+                    </TableRow>
+                    <TableRow>
+                        <TableRowColumn style={styles.cell}><Translate content='dashboard.first_deposits_amount' /></TableRowColumn>
+                        <TableRowColumn>{formatter.formatValue(currentStats.firstDepositsAmount, 'firstDepositsAmount')}</TableRowColumn>
+                        <TableRowColumn>{formatter.formatValue(comparisonStats.firstDepositsAmount, 'firstDepositsAmount')}</TableRowColumn>
+                        <TableRowColumn>
                             <Delta value={formatter.formatValue(currentStats.firstDepositsAmount - comparisonStats.firstDepositsAmount, 'firstDepositsAmount')} />
-                        </td>
+                        </TableRowColumn>
                         {this.renderChartButtons('firstDepositsAmount')}
-                    </tr>
-                    <tr>
-                        <td style={styles.cell}><Translate content='dashboard.authorizations_number' /></td>
-                        <td>{formatter.formatValue(currentStats.authorizationsNumber, 'authorizationsNumber')}</td>
-                        <td>{formatter.formatValue(comparisonStats.authorizationsNumber, 'authorizationsNumber')}</td>
-                        <td>
+                    </TableRow>
+                    <TableRow>
+                        <TableRowColumn style={styles.cell}><Translate content='dashboard.authorizations_number' /></TableRowColumn>
+                        <TableRowColumn>{formatter.formatValue(currentStats.authorizationsNumber, 'authorizationsNumber')}</TableRowColumn>
+                        <TableRowColumn>{formatter.formatValue(comparisonStats.authorizationsNumber, 'authorizationsNumber')}</TableRowColumn>
+                        <TableRowColumn>
                             <Delta value={formatter.formatValue(currentStats.authorizationsNumber - comparisonStats.authorizationsNumber, 'authorizationsNumber')} />
-                        </td>
+                        </TableRowColumn>
                         {this.renderChartButtons('authorizationsNumber')}
-                    </tr>
-                </tbody>
-            </table>
+                    </TableRow>
+                </TableBody>
+            </Table>
         );
     }
 }
-
-// const mapStateToProps = () => {
-//     return {};
-// };
 
 export default connect()(ConsolidatedTable);

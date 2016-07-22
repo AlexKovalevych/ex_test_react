@@ -9,6 +9,7 @@ import gtTheme from 'themes';
 import Subheader from 'material-ui/Subheader';
 import Paper from 'material-ui/Paper';
 import Title from 'components/Title';
+import spinnerActions from 'actions/spinner';
 
 class Dashboard extends React.Component {
     static propTypes = {
@@ -25,6 +26,8 @@ class Dashboard extends React.Component {
         const { dispatch } = props;
         if (props.ws.channel && !props.data.lastUpdated) {
             dispatch(dashboardActions.loadStats({period: this.props.user.settings.dashboardPeriod}));
+        } else {
+            dispatch(spinnerActions.stop());
         }
         // if (props.ws.channel && !props.data.charts) {
         //     dispatch(dashboardActions.loadCharts({period: this.props.user.settings.dashboardPeriod}));

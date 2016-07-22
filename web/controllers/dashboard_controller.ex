@@ -22,6 +22,7 @@ defmodule Gt.DashboardController do
         )
         charts = Gt.Manager.Dashboard.get_charts(String.to_atom(settings["dashboardPeriod"]), project_ids)
         initial_state = %{
+            "pendingTasks" => 1,
             "auth" => %{"user" => user},
             "dashboard" => %{
                 "stats" => data.stats,

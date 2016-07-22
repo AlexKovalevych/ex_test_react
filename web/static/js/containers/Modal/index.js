@@ -161,7 +161,7 @@ class Modal extends React.Component {
             let result = `${formatter.formatDate(this.x)} `;
             let points = [];
             for (let point of this.points) {
-                points.push(`<span style="color: ${point.color};">●</span>${formatter.formatValue(point.y, metrics)}`);
+                points.push(`<span style="color: ${point.color};">●</span>${formatter.formatValue(point.y, metrics, false)}`);
             }
             return `${points.join(' ')} (${result})`;
         };
@@ -169,10 +169,9 @@ class Modal extends React.Component {
         let data = this.props.consolidatedChart;
         let chartData = [];
         for (let date of Object.keys(data).reverse()) {
-            let value = metrics == 'cashoutsAmount' ? Math.abs(data[date][metrics]) : data[date][metrics];
             chartData.push({
                 x: formatter.toTimestamp(date),
-                y: value ? value : 0
+                y: formatter.formatChartValue(data[date][metrics], metrics)
             });
         }
         options.series = [{

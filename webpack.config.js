@@ -31,7 +31,6 @@ module.exports = {
     devtool: devtool,
     entry: [
         './web/static/js/index.js',
-        'font-awesome/css/font-awesome.css',
         'flexboxgrid/dist/flexboxgrid.css',
         './web/static/css/app.css'
     ],
