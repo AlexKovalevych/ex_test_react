@@ -4,13 +4,7 @@ import AppBar from 'material-ui/AppBar';
 import Drawer from 'material-ui/Drawer';
 import MenuItem from 'material-ui/MenuItem';
 import { push } from 'react-router-redux';
-import AccountBalanceIcon from 'material-ui/svg-icons/action/account-balance';
-import DashboardIcon from 'material-ui/svg-icons/action/dashboard';
-import EventIcon from 'material-ui/svg-icons/action/event';
-import AccountBoxIcon from 'material-ui/svg-icons/action/account-box';
-import ShowChartIcon from 'material-ui/svg-icons/editor/show-chart';
-import ArrowDropRight from 'material-ui/svg-icons/navigation-arrow-drop-right';
-import SettingsIcon from 'material-ui/svg-icons/action/settings';
+import FontIcon from 'material-ui/FontIcon';
 import gtTheme from 'themes';
 import Translate from 'react-translate-component';
 import menuActions from 'actions/menu';
@@ -25,12 +19,12 @@ const styles = {
 };
 
 const ICONS = {
-    dashboard: DashboardIcon,
-    finance: AccountBalanceIcon,
-    statistics: ShowChartIcon,
-    calendar_events: EventIcon,
-    players: AccountBoxIcon,
-    settings: SettingsIcon
+    dashboard: 'dashboard',
+    finance: 'account_balance',
+    statistics: 'show_chart',
+    calendar_events: 'event',
+    players: 'account_box',
+    settings: 'settings'
 };
 
 const MENU_ORDER = [
@@ -194,7 +188,7 @@ class GtMenu extends React.Component {
                         primaryText: <Translate content={`menu.${group.text}`} />
                     };
                     if (group.navlist.length > 0) {
-                        props.rightIcon = (<ArrowDropRight />);
+                        props.rightIcon = (<FontIcon className="material-icons">keyboard_arrow_right</FontIcon>);
                         props.menuItems = [];
                         group.navlist.map((child) => {
                             props.menuItems.push(
@@ -211,9 +205,9 @@ class GtMenu extends React.Component {
                     if (this.isSelectedItem(group.id)) {
                         props.style.backgroundColor = gtTheme.theme.drawer.selectedColor;
                         props.style.color = gtTheme.theme.appBar.textColor;
-                        props.leftIcon = React.createElement(group.icon, {style: {fill: gtTheme.theme.drawer.selectedIcon}});
+                        props.leftIcon = (<FontIcon className="material-icons" color={gtTheme.theme.drawer.selectedIcon}>{group.icon}</FontIcon>);
                     } else {
-                        props.leftIcon = React.createElement(group.icon);
+                        props.leftIcon = (<FontIcon className="material-icons">{group.icon}</FontIcon>);
                     }
                     return (
                         <MenuItem {...props} />

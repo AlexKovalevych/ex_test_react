@@ -34,7 +34,7 @@ const dashboardActions = {
         };
     },
 
-    loadConsolidatedChart: (params) => {
+    loadConsolidatedChart: (params, options) => {
         return (dispatch, getState) => {
             const { auth } = getState();
             auth.channel
@@ -42,7 +42,8 @@ const dashboardActions = {
                 .receive('ok', (msg) => {
                     dispatch({
                         type: 'DASHBOARD_LOAD_CONSOLIDATED_CHART_DATA',
-                        data: msg
+                        data: msg,
+                        options: options
                     });
                 })
                 .receive('error', (msg) => {

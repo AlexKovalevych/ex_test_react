@@ -7,10 +7,10 @@ import FlatButton from 'material-ui/FlatButton';
 import {Toolbar, ToolbarGroup} from 'material-ui/Toolbar';
 import DropDownMenu from 'material-ui/DropDownMenu';
 import MenuItem from 'material-ui/MenuItem';
-import ExitToAppIcon from 'material-ui/svg-icons/action/exit-to-app';
-import ViewHeadline from 'material-ui/svg-icons/action/view-headline';
+import FontIcon from 'material-ui/FontIcon';
 import IconButton from 'material-ui/IconButton';
 import Translate from 'react-translate-component';
+import Modal from 'containers/Modal';
 
 class App extends React.Component {
     static propTypes = {
@@ -65,7 +65,7 @@ class App extends React.Component {
                             style={styles.iconButtonStyle}
                             iconStyle={styles.iconStyles}
                         >
-                            <ViewHeadline />
+                            <FontIcon className="material-icons">view_headline</FontIcon>
                         </IconButton>
                     </ToolbarGroup>
                     <ToolbarGroup>
@@ -107,13 +107,14 @@ class App extends React.Component {
                             style={styles.iconButtonStyle}
                             iconStyle={styles.iconStyles}
                         >
-                            <ExitToAppIcon />
+                            <FontIcon className="material-icons">exit_to_app</FontIcon>
                         </IconButton>
                     </ToolbarGroup>
                 </Toolbar>
                 <div style={{padding: gtTheme.theme.spacing.desktopGutter}}>
                     {this.props.main}
                 </div>
+                <Modal />
             </div>
         );
     }

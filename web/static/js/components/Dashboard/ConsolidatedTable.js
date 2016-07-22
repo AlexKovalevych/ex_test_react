@@ -1,13 +1,10 @@
 import React, {PropTypes} from 'react';
 import formatter from 'managers/Formatter';
 import Delta from 'components/Delta';
-// import {Table, TableBody, TableHeader, TableHeaderColumn, TableRow, TableRowColumn} from 'material-ui/Table';
 import Translate from 'react-translate-component';
 import dashboardActions from 'actions/dashboard';
-import ShowChartIcon from 'material-ui/svg-icons/editor/show-chart';
-import EqualizerIcon from 'material-ui/svg-icons/av/equalizer';
+import FontIcon from 'material-ui/FontIcon';
 import IconButton from 'material-ui/IconButton';
-import Dialog from 'material-ui/Dialog';
 import { connect } from 'react-redux';
 import ReactHighstock from 'react-highcharts/dist/ReactHighstock.src';
 import translate from 'counterpart';
@@ -21,17 +18,12 @@ let styles = {
     smallIcon: {
         width: 20,
         height: 20
-    },
-    dialog: {
-        width: '75%',
-        maxWidth: 'none'
     }
 };
 
 class ConsolidatedTable extends React.Component {
     static propTypes = {
         dispatch: PropTypes.func,
-        consolidatedChart: PropTypes.object,
         periods: PropTypes.object,
         stats: PropTypes.object,
         periodType: PropTypes.string,
@@ -166,92 +158,63 @@ class ConsolidatedTable extends React.Component {
         };
     }
 
-    shouldComponentUpdate(nextProps, nextState) {
-        return nextState.openedDialog != this.state.openedDialog;
-    }
-
     showDailyChart(metrics) {
         const {dispatch} = this.props;
         let params = ['daily'];
         if (this.props.id) {
             params.push(this.props.id);
         }
-        dispatch(dashboardActions.loadConsolidatedChart(params));
-        this.setState({openedDialog: `daily_${metrics}`});
+        let title = `Consolidated chart ${metrics} ${this.props.id}`;
+        dispatch(dashboardActions.loadConsolidatedChart(params, {metrics, title}));
     }
 
     showMonthlyChart(metrics) {
-        this.setState({openedDialog: `monthly_${metrics}`});
+    //     this.setState({openedDialog: `monthly_${metrics}`});
     }
 
-    closeDialog() {
-        this.setState({openedDialog: null});
-    }
+    // getDailyChart(metrics) {
+    //     let options = JSON.parse(JSON.stringify(this.defaultZoomChartOptions));
+    //     options.chart.type = 'area';
+    //     options.rangeSelector.inputEnabled = true;
+    //     options.tooltip.formatter = function() {
+    //         let result = `${formatter.formatDate(this.x)} `;
+    //         let points = [];
+    //         for (let point of this.points) {
+    //             points.push(`<span style="color: ${point.color};">●</span>${formatter.formatValue(point.y, metrics)}`);
+    //         }
+    //         return `${points.join(' ')} (${result})`;
+    //     };
 
-    getDailyChart(metrics) {
-        let options = JSON.parse(JSON.stringify(this.defaultZoomChartOptions));
-        options.chart.type = 'area';
-        options.rangeSelector.inputEnabled = true;
-        options.tooltip.formatter = function() {
-            let result = `${formatter.formatDate(this.x)} `;
-            let points = [];
-            for (let point of this.points) {
-                points.push(`<span style="color: ${point.color};">●</span>${formatter.formatValue(point.y, metrics)}`);
-            }
-            return `${points.join(' ')} (${result})`;
-        };
+    //     let data = this.props.consolidatedChart;
+    //     let chartData = [];
+    //     for (let date of Object.keys(data).reverse()) {
+    //         chartData.push({
+    //             x: formatter.toTimestamp(date),
+    //             y: metrics == 'cashoutsAmount' ? Math.abs(data[date][metrics]) : data[date][metrics]
+    //         });
+    //     }
+    //     options.series = [{
+    //         name: translate(`dashboard.${metrics}`),
+    //         color: colorManager.getChartColor(metrics),
+    //         data: chartData
+    //     }];
 
-        let data = this.props.consolidatedChart;
-        let chartData = [];
-        for (let date of Object.keys(data).reverse()) {
-            chartData.push({
-                x: formatter.toTimestamp(date),
-                y: metrics == 'cashoutsAmount' ? Math.abs(data[date][metrics]) : data[date][metrics]
-            });
-        }
-        options.series = [{
-            name: translate(`dashboard.${metrics}`),
-            color: colorManager.getChartColor(metrics),
-            data: chartData
-        }];
+    //     return (<ReactHighstock config={options} />);
+    // }
 
-        return (<ReactHighstock config={options} />);
-    }
+    // getMonthlyChart(metrics) {
 
-    getMonthlyChart(metrics) {
-
-    }
+    // }
 
     renderChartButtons(metrics) {
         return (
             <td style={{width: '13%'}}>
-                <IconButton iconStyle={styles.smallIcon} style={styles.smallIcon} onClick={this.showDailyChart.bind(this, metrics)}>
-                    <ShowChartIcon />
+                <IconButton iconStyle={styles.smallIcon} onClick={this.showDailyChart.bind(this, metrics)}>
+                    <FontIcon className="material-icons">show_chart</FontIcon>
                 </IconButton>
-                {
-                    this.props.consolidatedChart && this.state.openedDialog == `daily_${metrics}` && (
-                        <Dialog
-                            title={metrics}
-                            modal={false}
-                            open={this.state.openedDialog == `daily_${metrics}`}
-                            onRequestClose={this.closeDialog.bind(this)}
-                            contentStyle={styles.dialog}
-                        >{this.getDailyChart(metrics)}</Dialog>
-                    )
-                }
-                <IconButton iconStyle={styles.smallIcon} style={styles.smallIcon} onClick={this.showMonthlyChart.bind(this, metrics)}>
-                    <EqualizerIcon />
+                <IconButton iconStyle={styles.smallIcon} onClick={this.showMonthlyChart.bind(this, metrics)}>
+                    <FontIcon className="material-icons">equalizer</FontIcon>
                 </IconButton>
-                {
-                    this.props.consolidatedChart && this.state.openedDialog == `monthly_${metrics}` && (
-                        <Dialog
-                            title={metrics}
-                            modal={false}
-                            open={this.state.openedDialog == `monthly_${metrics}`}
-                            onRequestClose={this.closeDialog.bind(this)}
-                        >{this.getMonthlyChart(metrics)}</Dialog>
-                    )
-                }
             </td>
         );
     }
@@ -359,9 +322,9 @@ class ConsolidatedTable extends React.Component {
     }
 }
 
-const mapStateToProps = (state) => {
+const mapStateToProps = () => {
     return {
-        consolidatedChart: state.dashboard.consolidatedChart
+//         consolidatedChart: state.dashboard.consolidatedChart
     };
 };
 
