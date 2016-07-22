@@ -159,16 +159,26 @@ defmodule Gt.Manager.Dashboard do
     end
 
     def consolidated_chart(:daily, from, to, project_id) do
-        stats = ConsolidatedStats
+        ConsolidatedStats
         |> ConsolidatedStats.project_id(project_id)
         |> ConsolidatedStats.period(from, to)
+        |> ConsolidatedStats.consolidated_chart
         |> Repo.all
-        |> Enum.to_list
-        IO.inspect(stats)
-
-        stats = Payment.depositors_number_by_period(from, to, project_id) |> Enum.to_list
-
-        IO.inspect(stats)
+        |> Enum.chunk(1)
+        |> Enum.into(%{}, fn [consolidated_stats] ->
+            {consolidated_stats.date, consolidated_stats}
+        end)
+    end
+    def consolidated_chart(:monthly, from, to, project_id) do
+        ConsolidatedStatsMonthly
+        |> ConsolidatedStatsMonthly.project_id(project_id)
+        |> ConsolidatedStatsMonthly.period(from, to)
+        |> ConsolidatedStatsMonthly.consolidated_chart
+        |> Repo.all
+        |> Enum.chunk(1)
+        |> Enum.into(%{}, fn [consolidated_stats] ->
+            {consolidated_stats.month, consolidated_stats}
+        end)
     end
 
     defp set_depositors(data, stats, key) do

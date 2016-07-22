@@ -78,5 +78,13 @@ counterpart.registerTranslations('en', {
         rakeAmount: 'Rake',
         betsAmount: 'Bets',
         winsAmount: 'Wins'
+    },
+    highstock: {
+        '1m': '1 month',
+        '3m': '3 months',
+        '6m': '6 months',
+        '1y': '1 year',
+        'ytd': 'YTD',
+        'all': 'All'
     }
 });

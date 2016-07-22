@@ -78,5 +78,13 @@ counterpart.registerTranslations('ru', {
         rakeAmount: 'Rake',
         betsAmount: 'Ставки',
         winsAmount: 'Выигрыши'
+    },
+    highstock: {
+        '1m': '1 месяц',
+        '3m': '3 месяца',
+        '6m': '6 месяцев',
+        '1y': '1 год',
+        'ytd': 'Этот год',
+        'all': 'Весь период'
     }
 });

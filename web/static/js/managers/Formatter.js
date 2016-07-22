@@ -23,7 +23,7 @@ class Formatter {
         'averageCashout',
         'averageArpu',
         'averageArppu',
-        'arpu',
+        'averageArpu',
         'ltv',
         'averageFirstDeposit'
     ];
@@ -41,6 +41,18 @@ class Formatter {
 
     get cashableMetrics() {
         return Formatter.cashableMetrics;
+    }
+
+    formatChartValue(value, metrics) {
+        let formattedValue = value;
+        if (Formatter.cashableMetrics.indexOf(metrics) > -1) {
+            formattedValue = Math.round(value / 100);
+        }
+
+        if (metrics == 'cashoutsAmount') {
+            formattedValue = Math.abs(formattedValue);
+        }
+        return formattedValue;
     }
 
     formatValue(value, metrics) {

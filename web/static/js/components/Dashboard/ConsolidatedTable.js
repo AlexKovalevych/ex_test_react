@@ -9,6 +9,9 @@ import EqualizerIcon from 'material-ui/svg-icons/av/equalizer';
 import IconButton from 'material-ui/IconButton';
 import Dialog from 'material-ui/Dialog';
 import { connect } from 'react-redux';
+import ReactHighstock from 'react-highcharts/dist/ReactHighstock.src';
+import translate from 'counterpart';
+import colorManager from 'managers/ColorManager';
 
 let styles = {
     cell: {
@@ -18,21 +21,14 @@ let styles = {
     smallIcon: {
         width: 20,
         height: 20
+    },
+    dialog: {
+        width: '75%',
+        maxWidth: 'none'
     }
 };
 
 class ConsolidatedTable extends React.Component {
-
-
-    // static propTypes = {
-    //     user: PropTypes.object
-    //     data: PropTypes.object,
-    // };
-
-    // static contextTypes = {
-    //     store: React.PropTypes.object.isRequired
-    // };
-
     static propTypes = {
         dispatch: PropTypes.func,
         consolidatedChart: PropTypes.object,
@@ -44,6 +40,127 @@ class ConsolidatedTable extends React.Component {
 
     constructor(props) {
         super(props);
+        this.defaultZoomChartOptions = {
+            credits: {
+                enabled: false
+            },
+            chart: {},
+            title: {
+                text: null
+            },
+            legend: {
+                enabled: false
+            },
+            xAxis: {
+                labels: {},
+                title: {
+                    text: null
+                }
+            },
+            yAxis: {
+                title: {
+                    text: null
+                }
+            },
+            tooltip: {},
+            rangeSelector: {
+                inputDateFormat: '%Y-%m-%d',
+                inputEditDateFormat: '%Y-%m-%d',
+                inputStyle: {
+                    color: '#9a9fa3',
+                    fontWeight: 100
+                },
+                inputBoxBorderColor: '#9a9fa3',
+                buttons: [
+                    {
+                        type: 'month',
+                        count: 1,
+                        text: translate('highstock.1m')
+                    },
+                    {
+                        type: 'month',
+                        count: 3,
+                        text: translate('highstock.3m')
+                    },
+                    {
+                        type: 'month',
+                        count: 6,
+                        text: translate('highstock.6m')
+                    },
+                    {
+                        type: 'ytd',
+                        text: translate('highstock.ytd')
+                    },
+                    {
+                        type: 'year',
+                        count: 1,
+                        text: translate('highstock.1y')
+                    },
+                    {
+                        type: 'all',
+                        text: translate('highstock.all')
+                    }
+                ],
+                buttonTheme: {
+                    fill: '#e7ebee',
+                    stroke: '#9a9fa3',
+                    'stroke-width': 1,
+                    style: {
+                        color: '#9a9fa3'
+                    },
+                    states: {
+                        hover: {
+                            fill: '#31404e',
+                            style: {color: 'white'},
+                            stroke: '#9a9fa3',
+                            'stroke-width': 1
+                        },
+                        select: {
+                            fill: '#9a9fa3',
+                            stroke: '#9a9fa3',
+                            style: {
+                                color: 'white'
+                            }
+                        }
+                    },
+                    width: null,
+                    padding: 5
+                },
+                buttonSpacing: 0,
+                labelStyle: {
+                    display: 'none'
+                }
+            },
+            plotOptions: {
+                series: {
+                    animation: false,
+                    lineWidth: 1,
+                    pointPadding: 0,
+                    groupPadding: 0,
+                    borderWidth: 0,
+                    shadow: false,
+                    states: {
+                        hover: {
+                            lineWidth: 1
+                        }
+                    },
+                    marker: {
+                        enabled: false
+                    },
+                    fillOpacity: 0.25
+                },
+                area: {
+                    marker: {
+                        lineWidth: 1,
+                        radius: 1
+                    }
+                },
+                column: {
+                    stacking: 'normal'
+                }
+            }
+        };
+
         this.state = {
             openedDialog: null
         };
@@ -67,6 +184,40 @@ class ConsolidatedTable extends React.Component {
         this.setState({openedDialog: null});
     }
 
+    getDailyChart(metrics) {
+        let options = JSON.parse(JSON.stringify(this.defaultZoomChartOptions));
+        options.chart.type = 'area';
+        options.rangeSelector.inputEnabled = true;
+        options.tooltip.formatter = function() {
+            let result = `${formatter.formatDate(this.x)} `;
+            let points = [];
+            for (let point of this.points) {
+                points.push(`<span style="color: ${point.color};">●</span>${formatter.formatValue(point.y, metrics)}`);
+            }
+            return `${points.join(' ')} (${result})`;
+        };
+
+        let data = this.props.consolidatedChart;
+        let chartData = [];
+        for (let date of Object.keys(data).reverse()) {
+            chartData.push({
+                x: formatter.toTimestamp(date),
+                y: metrics == 'cashoutsAmount' ? Math.abs(data[date][metrics]) : data[date][metrics]
+            });
+        }
+        options.series = [{
+            name: translate(`dashboard.${metrics}`),
+            color: colorManager.getChartColor(metrics),
+            data: chartData
+        }];
+
+        return (<ReactHighstock config={options} />);
+    }
+
+    getMonthlyChart(metrics) {
+
+    }
+
     renderChartButtons(metrics) {
         return (
             <TableRowColumn style={{width: '13%'}}>
@@ -78,8 +229,11 @@ class ConsolidatedTable extends React.Component {
                     modal={false}
                     open={this.state.openedDialog == `daily_${metrics}`}
                     onRequestClose={this.closeDialog.bind(this)}
+                    contentStyle={styles.dialog}
                 >
-                    The actions in this window were passed in as an array of React objects.
+                    {
+                        this.props.consolidatedChart && this.state.openedDialog == `daily_${metrics}` && this.getDailyChart(metrics)
+                    }
                 </Dialog>
                 <IconButton iconStyle={styles.smallIcon} style={styles.smallIcon} onClick={this.showMonthlyChart.bind(this, metrics)}>
                     <EqualizerIcon />
@@ -90,7 +244,9 @@ class ConsolidatedTable extends React.Component {
                     open={this.state.openedDialog == `monthly_${metrics}`}
                     onRequestClose={this.closeDialog.bind(this)}
                 >
-                    The actions in this window were passed in as an array of React objects.
+                    {
+                        this.props.consolidatedChart && this.state.openedDialog == `monthly_${metrics}` && this.getMonthlyChart(metrics)
+                    }
                 </Dialog>
             </TableRowColumn>
         );
@@ -123,12 +279,12 @@ class ConsolidatedTable extends React.Component {
                     </TableRow>
                     <TableRow>
                         <TableRowColumn style={styles.cell}><Translate content='dashboard.arpu' /></TableRowColumn>
-                        <TableRowColumn>{formatter.formatValue(currentStats.arpu, 'arpu')}</TableRowColumn>
-                        <TableRowColumn>{formatter.formatValue(comparisonStats.arpu, 'arpu')}</TableRowColumn>
+                        <TableRowColumn>{formatter.formatValue(currentStats.averageArpu, 'averageArpu')}</TableRowColumn>
+                        <TableRowColumn>{formatter.formatValue(comparisonStats.averageArpu, 'averageArpu')}</TableRowColumn>
                         <TableRowColumn>
-                            <Delta value={formatter.formatValue(currentStats.arpu - comparisonStats.arpu, 'arpu')} />
+                            <Delta value={formatter.formatValue(currentStats.averageArpu - comparisonStats.averageArpu, 'averageArpu')} />
                         </TableRowColumn>
-                        {this.renderChartButtons('arpu')}
+                        {this.renderChartButtons('averageArpu')}
                     </TableRow>
                     <TableRow>
                         <TableRowColumn style={styles.cell}><Translate content='dashboard.average_first_deposit' /></TableRowColumn>

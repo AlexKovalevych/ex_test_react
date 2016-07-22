@@ -206,7 +206,7 @@ defmodule Gt.Model.ConsolidatedStats do
                         %{"$divide" => ["$firstDepositsAmount", "$firstDepositorsNumber"]}
                     ]
                 },
-                "arpu" => %{
+                "averageArpu" => %{
                     "$cond" => [
                         %{"$eq" => ["$transactorsNumber", 0]},
                         0,
@@ -248,6 +248,22 @@ defmodule Gt.Model.ConsolidatedStats do
             rakeAmount: cs.rakeAmount,
             betsAmount: cs.betsAmount,
             winsAmount: cs.winsAmount
+        }
+    end
+
+    def consolidated_chart(query) do
+        from cs in query,
+        select: %{
+            date: cs.date,
+            averageDeposit: cs.averageDeposit,
+            averageArpu: cs.averageArpu,
+            averageFirstDeposit: cs.averageFirstDeposit,
+            depositsNumber: cs.depositsNumber,
+            depositorsNumber: cs.depositorsNumber,
+            firstDepositorsNumber: cs.firstDepositorsNumber,
+            signupsNumber: cs.signupsNumber,
+            firstDepositsAmount: cs.firstDepositsAmount,
+            authorizationsNumber: cs.authorizationsNumber
         }
     end
 

@@ -100,6 +100,22 @@ defmodule Gt.Model.ConsolidatedStatsMonthly do
         }
     end
 
+    def consolidated_chart(query) do
+        from cs in query,
+        select: %{
+            date: cs.month,
+            averageDeposit: cs.averageDeposit,
+            averageArpu: cs.averageArpu,
+            averageFirstDeposit: cs.averageFirstDeposit,
+            depositsNumber: cs.depositsNumber,
+            depositorsNumber: cs.depositorsNumber,
+            firstDepositorsNumber: cs.firstDepositorsNumber,
+            signupsNumber: cs.signupsNumber,
+            firstDepositsAmount: cs.firstDepositsAmount,
+            authorizationsNumber: cs.authorizationsNumber
+        }
+    end
+
     def delete_months_project_ids(months, project_ids) do
         Mongo.delete_many(Gt.Repo.__mongo_pool__, @collection, %{
             "month" => %{"$in" => months},

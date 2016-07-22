@@ -61,23 +61,26 @@ defmodule Gt.UserChannel do
     def handle_in("consolidated_chart", params, socket) do
         current_user = socket.assigns.current_user
         [from, to] = Dashboard.get_period(String.to_atom(current_user.settings["dashboardPeriod"]))
-        IO.inspect(params)
 
-        case params do
+        result = case params do
             ["daily"] -> Dashboard.consolidated_chart(:daily, from, to)
             ["monthly"] -> Dashboard.consolidated_chart(:monthly, from, to)
             ["daily", project_id] ->
                 if !Permissions.has(current_user.permissions, "dashboard_index", project_id) do
-                    {:error, %{reason: "No permission"}}
+                    {:error, "No permission"}
                 else
                     Dashboard.consolidated_chart(:daily, from, to, project_id)
                 end
             ["monthly", project_id] ->
                 if !Permissions.has(current_user.permissions, "dashboard_index", project_id) do
-                    {:error, %{reason: "No permission"}}
+                    {:error, "No permission"}
                 else
                     Dashboard.consolidated_chart(:monthly, from, to, project_id)
                 end
+        end
+        case result do
+            {:error, reason} -> {:error, %{reason: reason}}
+            _ -> {:reply, {:ok, result}, socket}
         end
     end
 end

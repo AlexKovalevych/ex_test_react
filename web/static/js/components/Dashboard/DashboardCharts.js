@@ -8,7 +8,7 @@ import formatter from 'managers/Formatter';
 import colorManager from 'managers/ColorManager';
 import translate from 'counterpart';
 
-let defaultChartOptions = {
+const defaultChartOptions = {
     chart: {
         backgroundColor: null,
         borderWidth: 0,
@@ -260,10 +260,10 @@ export default class DashboardCharts extends React.Component {
                 continue;
             }
             let chartData = [];
-            for (let date in data) {
+            for (let date of Object.keys(data).reverse()) {
                 chartData.push({
                     x: formatter.toTimestamp(date),
-                    y: Math.abs(data[date][singleMetrics] ? data[date][singleMetrics] / 100 : 0)
+                    y: metrics == 'cashoutsAmount' ? Math.abs(data[date][singleMetrics]) : data[date][singleMetrics]
                 });
             }
             options.series.push({
