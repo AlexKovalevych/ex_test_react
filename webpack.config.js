@@ -7,6 +7,7 @@ const Autoprefixer = require('autoprefixer');
 const plugins = {
     production: [
         new Webpack.optimize.UglifyJsPlugin({
+            exclude: /.*phoenix\.js/i,
             compress: {warnings: false}
         })
     ],

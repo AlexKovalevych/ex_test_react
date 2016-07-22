@@ -73,6 +73,10 @@ defmodule Gt.Mixfile do
             "ecto.reset": [
                 "ecto.drop",
                 "ecto.setup"
+            ],
+            "prod": [
+                "compile --only PROD",
+                "phoenix.digest"
             ]
         ]
     end
