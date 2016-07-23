@@ -1,3 +1,5 @@
+import setHighchartsLocale from 'managers/HighchartsManager';
+
 const initialState = {
     user: null,
     socket: null,
@@ -8,6 +10,7 @@ const initialState = {
 export default function reducer(state = initialState, action = {}) {
     switch (action.type) {
     case 'CURRENT_USER':
+        setHighchartsLocale();
         return {
             ...state,
             user: action.currentUser,

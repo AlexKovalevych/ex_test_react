@@ -4,7 +4,6 @@ import Delta from 'components/Delta';
 import Translate from 'react-translate-component';
 import dashboardActions from 'actions/dashboard';
 import FontIcon from 'material-ui/FontIcon';
-// import IconButton from 'material-ui/IconButton';
 import { connect } from 'react-redux';
 import {Table, TableBody, TableHeader, TableHeaderColumn, TableRow, TableRowColumn} from 'material-ui/Table';
 import FlatButton from 'material-ui/FlatButton';
@@ -38,8 +37,7 @@ class ConsolidatedTable extends React.Component {
         if (this.props.id) {
             params.push(this.props.id);
         }
-        let title = `Consolidated daily chart ${metrics} ${this.props.id}`;
-        dispatch(dashboardActions.loadConsolidatedChart(params, {metrics, title, type}));
+        dispatch(dashboardActions.loadConsolidatedChart(params, {metrics, type}));
     }
 
     showMonthlyChart(metrics) {
@@ -49,8 +47,7 @@ class ConsolidatedTable extends React.Component {
         if (this.props.id) {
             params.push(this.props.id);
         }
-        let title = `Consolidated monthly chart ${metrics} ${this.props.id}`;
-        dispatch(dashboardActions.loadConsolidatedChart(params, {metrics, title, type}));
+        dispatch(dashboardActions.loadConsolidatedChart(params, {metrics, type}));
     }
 
     renderChartButtons(metrics) {

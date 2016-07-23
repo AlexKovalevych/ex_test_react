@@ -15,7 +15,7 @@ defmodule Gt.Manager.Dashboard do
     def get_period(:year_period) do
         current_end = GtDate.today |> Date.set([day: 1])
         current_start = current_end |> Timex.shift(months: -11)
-        [GtDate.format(current_start, :date), GtDate.format(current_end, :date)]
+        [GtDate.format(current_start, :month), GtDate.format(current_end, :month)]
     end
     def get_period(:month, previous_period) do
         now = GtDate.today
@@ -169,10 +169,11 @@ defmodule Gt.Manager.Dashboard do
             {consolidated_stats.date, consolidated_stats}
         end)
     end
-    def consolidated_chart(:monthly, from, to, project_id) do
+    def consolidated_chart(:monthly, project_id) do
+        [monthly_from, monthly_to] = get_period(:year_period)
         ConsolidatedStatsMonthly
         |> ConsolidatedStatsMonthly.project_id(project_id)
-        |> ConsolidatedStatsMonthly.period(from, to)
+        |> ConsolidatedStatsMonthly.period(monthly_from, monthly_to)
         |> ConsolidatedStatsMonthly.consolidated_chart
         |> Repo.all
         |> Enum.chunk(1)

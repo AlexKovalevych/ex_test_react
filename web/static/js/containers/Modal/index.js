@@ -26,7 +26,22 @@ class Modal extends React.Component {
     }
 
     getTitle() {
-        return this.props.options ? this.props.options.title : '';
+        if (this.props.options) {
+            let dates = Object.keys(this.props.consolidatedChart).reverse();
+            switch (this.props.options.type) {
+            case 'daily':
+                return translate(`dashboard.${this.props.options.metrics}_daily`, {
+                    from: formatter.formatDate(dates[0]),
+                    to: formatter.formatDate(dates[dates.length - 1])
+                });
+            case 'monthly':
+                return translate(`dashboard.${this.props.options.metrics}_monthly`, {
+                    from: formatter.formatMonth(dates[0]),
+                    to: formatter.formatMonth(dates[dates.length - 1])
+                });
+            }
+        }
+        return '';
     }
 
     get defaultZoomChartOptions() {
@@ -174,6 +189,47 @@ class Modal extends React.Component {
                 y: formatter.formatChartValue(data[date][metrics], metrics)
             });
         }
+        options.series = [{
+            name: translate(`dashboard.${metrics}`),
+            color: colorManager.getChartColor(metrics),
+            data: chartData
+        }];
+
+        return (<ReactHighstock config={options} />);
+    }
+
+    getMonthlyConsolidatedChart() {
+        let options = this.defaultZoomChartOptions;
+        let metrics = this.props.options.metrics;
+        options.chart.type = 'column';
+        options.rangeSelector.inputEnabled = false;
+
+        //     if (projectId == 'total') {
+        //         options.series[0].data = Object.values(this.stats.total[metrics].monthlyValues);
+        //     } else {
+        //         options.series[0].data = Object.values(this.stats.projectStats[projectId][metrics].monthlyValues);
+        //     }
+        options.tooltip.formatter = function() {
+            let result = `${formatter.formatMonth(this.x)} `;
+            let points = [];
+            for (let point of this.points) {
+                points.push(`<span style="color: ${point.color};">●</span>${formatter.formatValue(point.y, metrics, false)}`);
+            }
+
+            return `${points.join(' ')} (${result})`;
+        };
+
+        let data = this.props.consolidatedChart;
+        let chartData = [];
+        let categories = [];
+        for (let date of Object.keys(data).reverse()) {
+            chartData.push({
+                x: formatter.toTimestamp(`${date}-01`),
+                y: formatter.formatChartValue(data[date][metrics], metrics)
+            });
+            categories.push(formatter.formatMonth(`${date}-01`));
+        }
+        options.xAxis.categories = categories;
         options.series = [{
             name: translate(`dashboard.${metrics}`),
             color: colorManager.getChartColor(metrics),

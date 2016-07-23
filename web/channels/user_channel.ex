@@ -64,7 +64,7 @@ defmodule Gt.UserChannel do
 
         result = case params do
             ["daily"] -> Dashboard.consolidated_chart(:daily, from, to)
-            ["monthly"] -> Dashboard.consolidated_chart(:monthly, from, to)
+            ["monthly"] -> Dashboard.consolidated_chart(:monthly)
             ["daily", project_id] ->
                 if !Permissions.has(current_user.permissions, "dashboard_index", project_id) do
                     {:error, "No permission"}
@@ -75,7 +75,7 @@ defmodule Gt.UserChannel do
                 if !Permissions.has(current_user.permissions, "dashboard_index", project_id) do
                     {:error, "No permission"}
                 else
-                    Dashboard.consolidated_chart(:monthly, from, to, project_id)
+                    Dashboard.consolidated_chart(:monthly, project_id)
                 end
         end
         case result do

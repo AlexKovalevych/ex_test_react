@@ -103,7 +103,7 @@ defmodule Gt.Model.ConsolidatedStatsMonthly do
     def consolidated_chart(query) do
         from cs in query,
         select: %{
-            date: cs.month,
+            month: cs.month,
             averageDeposit: cs.averageDeposit,
             averageArpu: cs.averageArpu,
             averageFirstDeposit: cs.averageFirstDeposit,
