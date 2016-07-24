@@ -115,6 +115,60 @@ defmodule Gt.Model.ConsolidatedStatsMonthly do
             authorizationsNumber: cs.authorizationsNumber
         }
     end
+    def consolidated_chart(from, to, project_ids) do
+        Mongo.aggregate(Gt.Repo.__mongo_pool__, @collection, [
+            %{"$match" => %{
+                "month" => %{
+                    "$gte" => GtDate.format(from, :month),
+                    "$lte" => GtDate.format(to, :month)
+                },
+                "project" => %{"$in" => project_ids}
+            }},
+            %{"$group" => %{
+                "_id" => "$month",
+                "paymentsAmount" => %{"$sum" => "$paymentsAmount"},
+                "transactorsNumber" => %{"$sum" => "$transactorsNumber"},
+                "depositsAmount" => %{"$sum" => "$depositsAmount"},
+                "depositsNumber" => %{"$sum" => "$depositsNumber"},
+                "firstDepositsAmount" => %{"$sum" => "$firstDepositsAmount"},
+                "firstDepositorsNumber" => %{"$sum" => "$firstDepositorsNumber"},
+                "depositorsNumber" => %{"$sum" => "$depositorsNumber"},
+                "signupsNumber" => %{"$sum" => "$signupsNumber"},
+                "authorizationsNumber" => %{"$sum" => "$authorizationsNumber"},
+                "transactorsNumber" => %{"$sum" => "$transactorsNumber"}
+            }},
+            %{"$project" => %{
+                "month" => "$_id",
+                "averageDeposit" => %{
+                    "$cond" => [
+                        %{"$eq" => ["$depositsNumber", 0]},
+                        0,
+                        %{"$divide" => ["$depositsAmount", "$depositsNumber"]}
+                    ]
+                },
+                "averageArpu" => %{
+                    "$cond" => [
+                        %{"$eq" => ["$transactorsNumber", 0]},
+                        0,
+                        %{"$divide" => ["$paymentsAmount", "$transactorsNumber"]}
+                    ]
+                },
+                "averageFirstDeposit" => %{
+                    "$cond" => [
+                        %{"$eq" => ["$firstDepositorsNumber", 0]},
+                        0,
+                        %{"$divide" => ["$firstDepositsAmount", "$firstDepositorsNumber"]}
+                    ]
+                },
+                "depositsNumber" => 1,
+                "depositorsNumber" => 1,
+                "firstDepositorsNumber" => 1,
+                "signupsNumber" => 1,
+                "firstDepositsAmount" => 1,
+                "authorizationsNumber" => 1
+            }}
+        ])
+    end
 
     def delete_months_project_ids(months, project_ids) do
         Mongo.delete_many(Gt.Repo.__mongo_pool__, @collection, %{

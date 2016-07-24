@@ -61,10 +61,15 @@ defmodule Gt.UserChannel do
     def handle_in("consolidated_chart", params, socket) do
         current_user = socket.assigns.current_user
         [from, to] = Dashboard.get_period(String.to_atom(current_user.settings["dashboardPeriod"]))
+        project_ids = Permissions.get(current_user.permissions, "dashboard_index")
+        project_ids = Enum.map(project_ids, fn id ->
+            {:ok, object_id} = Mongo.Ecto.ObjectID.dump(id)
+            object_id
+        end)
 
         result = case params do
-            ["daily"] -> Dashboard.consolidated_chart(:daily, from, to)
-            ["monthly"] -> Dashboard.consolidated_chart(:monthly)
+            ["daily"] -> Dashboard.consolidated_chart(:daily, from, to, project_ids)
+            ["monthly"] -> Dashboard.consolidated_chart(:monthly, project_ids)
             ["daily", project_id] ->
                 if !Permissions.has(current_user.permissions, "dashboard_index", project_id) do
                     {:error, "No permission"}

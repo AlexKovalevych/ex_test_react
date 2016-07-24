@@ -158,6 +158,14 @@ defmodule Gt.Manager.Dashboard do
         }
     end
 
+    def consolidated_chart(:daily, from, to, project_ids) when is_list(project_ids) do
+        ConsolidatedStats.consolidated_chart(from, to, project_ids)
+        |> Enum.to_list
+        |> Enum.chunk(1)
+        |> Enum.into(%{}, fn [consolidated_stats] ->
+            {Map.get(consolidated_stats, "date"), consolidated_stats}
+        end)
+    end
     def consolidated_chart(:daily, from, to, project_id) do
         ConsolidatedStats
         |> ConsolidatedStats.project_id(project_id)
@@ -169,11 +177,20 @@ defmodule Gt.Manager.Dashboard do
             {consolidated_stats.date, consolidated_stats}
         end)
     end
+    def consolidated_chart(:monthly, project_ids) when is_list(project_ids) do
+        [from, to] = get_period(:year_period)
+        ConsolidatedStatsMonthly.consolidated_chart(from, to, project_ids)
+        |> Enum.to_list
+        |> Enum.chunk(1)
+        |> Enum.into(%{}, fn [consolidated_stats] ->
+            {Map.get(consolidated_stats, "month"), consolidated_stats}
+        end)
+    end
     def consolidated_chart(:monthly, project_id) do
-        [monthly_from, monthly_to] = get_period(:year_period)
+        [from, to] = get_period(:year_period)
         ConsolidatedStatsMonthly
         |> ConsolidatedStatsMonthly.project_id(project_id)
-        |> ConsolidatedStatsMonthly.period(monthly_from, monthly_to)
+        |> ConsolidatedStatsMonthly.period(from, to)
         |> ConsolidatedStatsMonthly.consolidated_chart
         |> Repo.all
         |> Enum.chunk(1)

@@ -266,6 +266,60 @@ defmodule Gt.Model.ConsolidatedStats do
             authorizationsNumber: cs.authorizationsNumber
         }
     end
+    def consolidated_chart(from, to, project_ids) do
+        Mongo.aggregate(Gt.Repo.__mongo_pool__, @collection, [
+            %{"$match" => %{
+                "date" => %{
+                    "$gte" => GtDate.format(from, :date),
+                    "$lte" => GtDate.format(to, :date)
+                },
+                "project" => %{"$in" => project_ids}
+            }},
+            %{"$group" => %{
+                "_id" => "$date",
+                "paymentsAmount" => %{"$sum" => "$paymentsAmount"},
+                "transactorsNumber" => %{"$sum" => "$transactorsNumber"},
+                "depositsAmount" => %{"$sum" => "$depositsAmount"},
+                "depositsNumber" => %{"$sum" => "$depositsNumber"},
+                "firstDepositsAmount" => %{"$sum" => "$firstDepositsAmount"},
+                "firstDepositorsNumber" => %{"$sum" => "$firstDepositorsNumber"},
+                "depositorsNumber" => %{"$sum" => "$depositorsNumber"},
+                "signupsNumber" => %{"$sum" => "$signupsNumber"},
+                "authorizationsNumber" => %{"$sum" => "$authorizationsNumber"},
+                "transactorsNumber" => %{"$sum" => "$transactorsNumber"}
+            }},
+            %{"$project" => %{
+                "date" => "$_id",
+                "averageDeposit" => %{
+                    "$cond" => [
+                        %{"$eq" => ["$depositsNumber", 0]},
+                        0,
+                        %{"$divide" => ["$depositsAmount", "$depositsNumber"]}
+                    ]
+                },
+                "averageArpu" => %{
+                    "$cond" => [
+                        %{"$eq" => ["$transactorsNumber", 0]},
+                        0,
+                        %{"$divide" => ["$paymentsAmount", "$transactorsNumber"]}
+                    ]
+                },
+                "averageFirstDeposit" => %{
+                    "$cond" => [
+                        %{"$eq" => ["$firstDepositorsNumber", 0]},
+                        0,
+                        %{"$divide" => ["$firstDepositsAmount", "$firstDepositorsNumber"]}
+                    ]
+                },
+                "depositsNumber" => 1,
+                "depositorsNumber" => 1,
+                "firstDepositorsNumber" => 1,
+                "signupsNumber" => 1,
+                "firstDepositsAmount" => 1,
+                "authorizationsNumber" => 1
+            }}
+        ])
+    end
 
     def dashboard_charts_period(from, to, project_ids) do
         Mongo.aggregate(Gt.Repo.__mongo_pool__, @collection, [
