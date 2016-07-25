@@ -30,14 +30,18 @@ class Modal extends React.Component {
         if (this.props.consolidatedChart || this.props.zoomChart) {
             let data = this.props.consolidatedChart || this.props.zoomChart;
             let dates = Object.keys(data).reverse();
+            let metrics = this.props.options.metrics;
+            if (Array.isArray(metrics)) {
+                metrics = metrics[0];
+            }
             switch (this.props.options.type) {
             case 'daily':
-                return translate(`dashboard.${this.props.options.metrics}_daily`, {
+                return translate(`dashboard.${metrics}_daily`, {
                     from: formatter.formatDate(dates[0]),
                     to: formatter.formatDate(dates[dates.length - 1])
                 });
             case 'monthly':
-                return translate(`dashboard.${this.props.options.metrics}_monthly`, {
+                return translate(`dashboard.${metrics}_monthly`, {
                     from: formatter.formatMonth(dates[0]),
                     to: formatter.formatMonth(dates[dates.length - 1])
                 });
