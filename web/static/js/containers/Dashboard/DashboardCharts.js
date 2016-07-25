@@ -7,6 +7,8 @@ import ReactHighcharts from 'react-highcharts/dist/ReactHighcharts.src';
 import formatter from 'managers/Formatter';
 import colorManager from 'managers/ColorManager';
 import translate from 'counterpart';
+import dashboardActions from 'actions/dashboard';
+import { connect } from 'react-redux';
 
 const defaultChartOptions = {
     chart: {
@@ -96,14 +98,16 @@ const defaultChartOptions = {
 let styles = {
     chart: {
         height: 40,
-        textAlign: 'center'
+        textAlign: 'center',
+        cursor: 'pointer'
     }
 };
 
 const RATE_LIMIT = 25;
 
-export default class DashboardCharts extends React.Component {
+class DashboardCharts extends React.Component {
     static propTypes = {
+        dispatch: PropTypes.func,
         stats: PropTypes.object,
         isPoker: PropTypes.bool,
         id: PropTypes.string
@@ -210,10 +214,10 @@ export default class DashboardCharts extends React.Component {
         }
     }
 
-    getDailyChartOptions() {
-        let defaultOptions = JSON.parse(JSON.stringify(defaultChartOptions));
-        defaultOptions.chart.type = 'area';
-        defaultOptions.tooltip.formatter = function() {
+    getDailyChartOptions(data, metrics) {
+        let options = JSON.parse(JSON.stringify(defaultChartOptions));
+        options.chart.type = 'area';
+        options.tooltip.formatter = function() {
             let result = `${formatter.formatDate(this.x)}`;
             let points = [];
             for (let point of this.points) {
@@ -222,34 +226,6 @@ export default class DashboardCharts extends React.Component {
             return `${points.join(' ')} (${result})`;
         };
 
-        return defaultOptions;
-    }
-
-    getMonthlyChartOptions() {
-        let defaultOptions = JSON.parse(JSON.stringify(defaultChartOptions));
-        defaultOptions.chart.type = 'column';
-        defaultOptions.tooltip.formatter = function() {
-            let points = [];
-            for (let point of this.points) {
-                points.push(`<span style="color: ${point.color};">●</span>${formatter.formatMoney(point.y)}`);
-            }
-            return `${points.join(' ')} (${this.x})`;
-        };
-
-        return defaultOptions;
-    }
-
-    getDailyChart(metrics) {
-        if (!this.state.isVisible) {
-            return (<div style={styles.chart}></div>);
-        }
-
-        let data = this.props.id ? this.props.stats.daily[this.props.id] : this.props.stats.daily;
-        if (!Object.keys(data)) {
-            return (<div style={styles.chart}>No data</div>);
-        }
-
-        let options = this.getDailyChartOptions();
         options.tooltip.positioner = () => {
             return {x: 75, y: -25};
         };
@@ -263,7 +239,7 @@ export default class DashboardCharts extends React.Component {
             for (let date of Object.keys(data).reverse()) {
                 chartData.push({
                     x: formatter.toTimestamp(date),
-                    y: metrics == 'cashoutsAmount' ? Math.abs(data[date][singleMetrics]) : data[date][singleMetrics]
+                    y: singleMetrics == 'cashoutsAmount' ? Math.abs(data[date][singleMetrics]) : data[date][singleMetrics]
                 });
             }
             options.series.push({
@@ -272,31 +248,20 @@ export default class DashboardCharts extends React.Component {
                 data: chartData
             });
         }
-
-        return (
-            <div style={styles.chart}>
-                <ReactHighcharts config={options} onClick={this.zoomDailyChart.bind(this, metrics)} />
-            </div>
-        );
+        return options;
     }
 
-    zoomDailyChart(metrics) {
-        console.log(metrics);
-    }
+    getMonthlyChartOptions(data, metrics) {
+        let options = JSON.parse(JSON.stringify(defaultChartOptions));
+        options.chart.type = 'column';
+        options.tooltip.formatter = function() {
+            let points = [];
+            for (let point of this.points) {
+                points.push(`<span style="color: ${point.color};">●</span>${formatter.formatMoney(point.y)}`);
+            }
+            return `${points.join(' ')} (${this.x})`;
+        };
 
-    getMonthlyChart(metrics) {
-        let style = JSON.parse(JSON.stringify(styles.chart));
-        style.paddingTop = gtTheme.theme.spacing.desktopGutterMini;
-        if (!this.state.isVisible) {
-            return (<div style={style}></div>);
-        }
-
-        let data = this.props.id ? this.props.stats.monthly[this.props.id] : this.props.stats.monthly;
-        if (!Object.keys(data)) {
-            return (<div style={style}>No data</div>);
-        }
-
-        let options = this.getMonthlyChartOptions();
         options.tooltip.positioner = () => {
             return {x: 75, y: -65 - gtTheme.theme.spacing.desktopGutterMini};
         };
@@ -321,10 +286,46 @@ export default class DashboardCharts extends React.Component {
             categories.push(formatter.formatMonth(`${date}-01`));
         }
         options.xAxis.categories = categories;
+        return options;
+    }
+
+    getDailyChart(metrics) {
+        if (!this.state.isVisible) {
+            return (<div style={styles.chart}></div>);
+        }
+
+        let data = this.props.id ? this.props.stats.daily[this.props.id] : this.props.stats.daily;
+        if (!Object.keys(data)) {
+            return (<div style={styles.chart}>No data</div>);
+        }
 
         return (
-            <div style={style}>
-                <ReactHighcharts config={options} />
+            <div style={styles.chart} onClick={this.zoomChart.bind(this, data, 'daily', metrics)}>
+                <ReactHighcharts config={this.getDailyChartOptions(data, metrics)} />
+            </div>
+        );
+    }
+
+    zoomChart(options, type, metrics) {
+        const { dispatch, isPoker } = this.props;
+        dispatch(dashboardActions.zoomChart(options, {type, metrics, isPoker}));
+    }
+
+    getMonthlyChart(metrics) {
+        let style = JSON.parse(JSON.stringify(styles.chart));
+        style.paddingTop = gtTheme.theme.spacing.desktopGutterMini;
+        if (!this.state.isVisible) {
+            return (<div style={style}></div>);
+        }
+
+        let data = this.props.id ? this.props.stats.monthly[this.props.id] : this.props.stats.monthly;
+        if (!Object.keys(data)) {
+            return (<div style={style}>No data</div>);
+        }
+
+        return (
+            <div style={style} onClick={this.zoomChart.bind(this, data, 'monthly', metrics)}>
+                <ReactHighcharts config={this.getMonthlyChartOptions(data, metrics)} />
             </div>
         );
     }
@@ -378,3 +379,5 @@ export default class DashboardCharts extends React.Component {
         );
     }
 }
+
+export default connect()(DashboardCharts);

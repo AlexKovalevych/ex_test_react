@@ -50,6 +50,16 @@ const dashboardActions = {
                     console.log(msg);
                 });
         };
+    },
+
+    zoomChart: (params, options) => {
+        return (dispatch) => {
+            dispatch({
+                type: 'DASHBOARD_ZOOM_CHART',
+                data: params,
+                options: options
+            });
+        };
     }
 };
 

@@ -17,7 +17,8 @@ class Modal extends React.Component {
         dispatch: PropTypes.func,
         options: PropTypes.object,
         isOpened: PropTypes.bool,
-        consolidatedChart: PropTypes.object
+        consolidatedChart: PropTypes.object,
+        zoomChart: PropTypes.object
     };
 
     closeDialog() {
@@ -26,8 +27,9 @@ class Modal extends React.Component {
     }
 
     getTitle() {
-        if (this.props.options) {
-            let dates = Object.keys(this.props.consolidatedChart).reverse();
+        if (this.props.consolidatedChart || this.props.zoomChart) {
+            let data = this.props.consolidatedChart || this.props.zoomChart;
+            let dates = Object.keys(data).reverse();
             switch (this.props.options.type) {
             case 'daily':
                 return translate(`dashboard.${this.props.options.metrics}_daily`, {
@@ -203,19 +205,12 @@ class Modal extends React.Component {
         let metrics = this.props.options.metrics;
         options.chart.type = 'column';
         options.rangeSelector.inputEnabled = false;
-
-        //     if (projectId == 'total') {
-        //         options.series[0].data = Object.values(this.stats.total[metrics].monthlyValues);
-        //     } else {
-        //         options.series[0].data = Object.values(this.stats.projectStats[projectId][metrics].monthlyValues);
-        //     }
         options.tooltip.formatter = function() {
             let result = `${formatter.formatMonth(this.x)} `;
             let points = [];
             for (let point of this.points) {
                 points.push(`<span style="color: ${point.color};">●</span>${formatter.formatValue(point.y, metrics, false)}`);
             }
-
             return `${points.join(' ')} (${result})`;
         };
 
@@ -239,6 +234,76 @@ class Modal extends React.Component {
         return (<ReactHighstock config={options} />);
     }
 
+    getDailyZoomChart() {
+        let options = this.defaultZoomChartOptions;
+        options.chart.type = 'area';
+        options.rangeSelector.inputEnabled = true;
+        options.tooltip.formatter = function() {
+            let result = `${formatter.formatDate(this.x)} `;
+            let points = [];
+            for (let point of this.points) {
+                points.push(`<span style="color: ${point.color};">●</span>${formatter.formatMoney(point.y)}`);
+            }
+            return `${points.join(' ')} (${result})`;
+        };
+
+        let data = this.props.zoomChart;
+        options.series = [];
+        for (let singleMetrics of this.props.options.metrics) {
+            if (singleMetrics == 'rakeAmount' && !this.props.options.isPoker) {
+                continue;
+            }
+            let chartData = [];
+            for (let date of Object.keys(data).reverse()) {
+                chartData.push({
+                    x: formatter.toTimestamp(date),
+                    y: singleMetrics == 'cashoutsAmount' ? Math.abs(data[date][singleMetrics]) : data[date][singleMetrics]
+                });
+            }
+            options.series.push({
+                name: translate(`dashboard.${singleMetrics}`),
+                color: colorManager.getChartColor(singleMetrics),
+                data: chartData
+            });
+        }
+        return (<ReactHighstock config={options} />);
+    }
+
+    getMonthlyZoomChart() {
+        let options = this.defaultZoomChartOptions;
+        options.chart.type = 'column';
+        options.rangeSelector.inputEnabled = false;
+        options.tooltip.formatter = function() {
+            let result = `${formatter.formatMonth(this.x)} `;
+            let points = [];
+            for (let point of this.points) {
+                points.push(`<span style="color: ${point.color};">●</span>${formatter.formatMoney(point.y)}`);
+            }
+            return `${points.join(' ')} (${result})`;
+        };
+
+        let data = this.props.zoomChart;
+        options.series = [];
+        for (let singleMetrics of this.props.options.metrics) {
+            if (singleMetrics == 'rakeAmount' && !this.props.options.isPoker) {
+                continue;
+            }
+            let chartData = [];
+            for (let date of Object.keys(data).reverse()) {
+                chartData.push({
+                    x: formatter.toTimestamp(`${date}-01`),
+                    y: Math.abs(data[date][singleMetrics] ? data[date][singleMetrics] / 100 : 0)
+                });
+            }
+            options.series.push({
+                name: translate(`dashboard.${singleMetrics}`),
+                color: colorManager.getChartColor(singleMetrics),
+                data: chartData
+            });
+        }
+        return (<ReactHighstock config={options} />);
+    }
+
     render() {
         let content;
         if (this.props.consolidatedChart) {
@@ -248,6 +313,17 @@ class Modal extends React.Component {
                 break;
             case 'monthly':
                 content = this.getMonthlyConsolidatedChart();
+                break;
+            }
+        }
+
+        if (this.props.zoomChart) {
+            switch (this.props.options.type) {
+            case 'daily':
+                content = this.getDailyZoomChart();
+                break;
+            case 'monthly':
+                content = this.getMonthlyZoomChart();
                 break;
             }
         }
@@ -268,7 +344,8 @@ const mapStateToProps = (state) => {
     return {
         isOpened: state.modal.isOpened,
         options: state.modal.options,
-        consolidatedChart: state.modal.consolidatedChart
+        consolidatedChart: state.modal.consolidatedChart,
+        zoomChart: state.modal.zoomChart
     };
 };
 

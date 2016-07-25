@@ -1,8 +1,8 @@
 import React, { PropTypes } from 'react';
 import { connect } from 'react-redux';
 import dashboardActions from 'actions/dashboard';
-import ConsolidatedTable from 'components/Dashboard/ConsolidatedTable';
-import DashboardCharts from 'components/Dashboard/DashboardCharts';
+import ConsolidatedTable from './ConsolidatedTable';
+import DashboardCharts from './DashboardCharts';
 import DashboardProgress from 'components/Dashboard/DashboardProgress';
 import Translate from 'react-translate-component';
 import gtTheme from 'themes';
