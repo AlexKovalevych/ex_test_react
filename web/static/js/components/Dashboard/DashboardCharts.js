@@ -275,9 +275,13 @@ export default class DashboardCharts extends React.Component {
 
         return (
             <div style={styles.chart}>
-                <ReactHighcharts config={options} />
+                <ReactHighcharts config={options} onClick={this.zoomDailyChart.bind(this, metrics)} />
             </div>
         );
+    }
+
+    zoomDailyChart(metrics) {
+        console.log(metrics);
     }
 
     getMonthlyChart(metrics) {
