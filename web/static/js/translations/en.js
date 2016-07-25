@@ -78,6 +78,24 @@ counterpart.registerTranslations('en', {
         rakeAmount: 'Rake',
         betsAmount: 'Bets',
         winsAmount: 'Wins',
+        current_period: 'Current period',
+        comparison_period: 'Comparison period',
+        sort_by_metrics: 'Sort by metrics',
+        sort_by: {
+            paymentsAmount: 'Inout',
+            depositsAmount: 'Deposits',
+            cashoutsAmount: 'Withdrawals',
+            netgamingAmount: 'Netgaming',
+            betsAmount: 'Bets',
+            winsAmount: 'Wins',
+            firstDepositsAmount: 'First deposits amount'
+        },
+        period: {
+            month: 'Month to date',
+            year: 'Year to date',
+            last_30_days: 'Last 30 days',
+            last_12_months: 'Last 12 months'
+        },
         paymentsAmount_daily: 'InOut by the period from %(from)s to %(to)s by days',
         paymentsAmount_monthly: 'InOut by the period from %(from)s to %(to)s monthly',
         depositsAmount_daily: 'Deposits by the period from %(from)s to %(to)s by days',

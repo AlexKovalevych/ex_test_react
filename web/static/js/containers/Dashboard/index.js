@@ -10,6 +10,10 @@ import Subheader from 'material-ui/Subheader';
 import Paper from 'material-ui/Paper';
 import Title from 'components/Title';
 import spinnerActions from 'actions/spinner';
+import SelectField from 'material-ui/SelectField';
+import MenuItem from 'material-ui/MenuItem';
+import moment from 'moment';
+import formatter from 'managers/Formatter';
 
 class Dashboard extends React.Component {
     static propTypes = {
@@ -97,6 +101,43 @@ class Dashboard extends React.Component {
         );
     }
 
+    onChangeCurrentPeriod(e, i, v) {
+        console.log(e,i,v);
+    }
+
+    onChangeComparisonPeriod(e, i, v) {
+        console.log(e,i,v);
+    }
+
+    onChangeSortMetrics(e, i ,v) {
+        console.log(e, i, v);
+    }
+
+    getComparisonPeriod() {
+        if (this.props.user.settings.dashboardPeriod != 'month') {
+            return '';
+        }
+
+        let now = moment();
+        let months = [];
+        for (let i of [...Array(6).keys()]) {
+            months.push(now.clone().subtract(i + 1, 'months'));
+        }
+
+        return (
+            <SelectField
+                id="comparisonPeriod"
+                value={this.props.user.settings.dashboardComparePeriod}
+                onChange={this.onChangeComparisonPeriod.bind(this)}
+                floatingLabelText={<Translate content="dashboard.comparison_period" />}
+            >
+                {months.map((month, i) => {
+                    return (<MenuItem key={i} value={-i - 1} primaryText={formatter.formatMonth(month.toDate())} />);
+                })}
+            </SelectField>
+        );
+    }
+
     render() {
         let title = (<Title title={<Translate content="dashboard.title" />} />);
         if (!this.props.data.lastUpdated) {
@@ -131,6 +172,34 @@ class Dashboard extends React.Component {
         return (
             <div>
                 {title}
+                <div>
+                    <SelectField
+                        id="currentPeriod"
+                        value={this.props.user.settings.dashboardPeriod}
+                        onChange={this.onChangeCurrentPeriod.bind(this)}
+                        floatingLabelText={<Translate content="dashboard.current_period" />}
+                    >
+                        <MenuItem value="month" primaryText={<Translate content="dashboard.period.month" />} />
+                        <MenuItem value="year" primaryText={<Translate content="dashboard.period.year" />} />
+                        <MenuItem value="monthPeriod" primaryText={<Translate content="dashboard.period.last_30_days" />} />
+                        <MenuItem value="yearPeriod" primaryText={<Translate content="dashboard.period.last_12_months" />} />
+                    </SelectField>
+                    {this.getComparisonPeriod()}
+                    <SelectField
+                        id="sortByMetrics"
+                        value={this.props.user.settings.dashboardSort}
+                        onChange={this.onChangeSortMetrics.bind(this)}
+                        floatingLabelText={<Translate content="dashboard.sort_by_metrics" />}
+                    >
+                        <MenuItem value="paymentsAmount" primaryText={<Translate content="dashboard.sort_by.paymentsAmount" />} />
+                        <MenuItem value="depositsAmount" primaryText={<Translate content="dashboard.sort_by.depositsAmount" />} />
+                        <MenuItem value="cashoutsAmount" primaryText={<Translate content="dashboard.sort_by.cashoutsAmount" />} />
+                        <MenuItem value="netgamingAmount" primaryText={<Translate content="dashboard.sort_by.netgamingAmount" />} />
+                        <MenuItem value="betsAmount" primaryText={<Translate content="dashboard.sort_by.betsAmount" />} />
+                        <MenuItem value="winsAmount" primaryText={<Translate content="dashboard.sort_by.winsAmount" />} />
+                        <MenuItem value="firstDepositsAmount" primaryText={<Translate content="dashboard.sort_by.firstDepositsAmount" />} />
+                    </SelectField>
+                </div>
                 <div>
                     <Paper style={this.getStyles().block}>
                         <Subheader>Total</Subheader>

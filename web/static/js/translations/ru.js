@@ -78,6 +78,24 @@ counterpart.registerTranslations('ru', {
         rakeAmount: 'Rake',
         betsAmount: 'Ставки',
         winsAmount: 'Выигрыши',
+        current_period: 'Текущий период',
+        comparison_period: 'Период сравнения',
+        sort_by_metrics: 'Сортировать по метрике',
+        sort_by: {
+            paymentsAmount: 'Inout',
+            depositsAmount: 'Депозитам',
+            cashoutsAmount: 'Выплатам',
+            netgamingAmount: 'Netgaming',
+            betsAmount: 'Ставкам',
+            winsAmount: 'Выигрышам',
+            firstDepositsAmount: 'Сумме первых депозитов'
+        },
+        period: {
+            month: 'С начала месяца',
+            year: 'С начала года',
+            last_30_days: 'Последние 30 дней',
+            last_12_months: 'Последние 12 месяцев'
+        },
         paymentsAmount_daily: 'InOut за период с %(from)s по %(to)s по дням',
         paymentsAmount_monthly: 'InOut за период с %(from)s по %(to)s по месяцам',
         depositsAmount_daily: 'Депозиты за период с %(from)s по %(to)s по дням',
