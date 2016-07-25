@@ -14,6 +14,12 @@ import SelectField from 'material-ui/SelectField';
 import MenuItem from 'material-ui/MenuItem';
 import moment from 'moment';
 import formatter from 'managers/Formatter';
+import RaisedButton from 'material-ui/RaisedButton';
+
+const styles = {
+    marginTop: 12,
+    marginBottom: 12
+};
 
 class Dashboard extends React.Component {
     static propTypes = {
@@ -113,6 +119,10 @@ class Dashboard extends React.Component {
         console.log(e, i, v);
     }
 
+    onChangeProjectsType(e, i, v) {
+        console.log(e, i, v);
+    }
+
     getComparisonPeriod() {
         if (this.props.user.settings.dashboardPeriod != 'month') {
             return '';
@@ -130,6 +140,7 @@ class Dashboard extends React.Component {
                 value={this.props.user.settings.dashboardComparePeriod}
                 onChange={this.onChangeComparisonPeriod.bind(this)}
                 floatingLabelText={<Translate content="dashboard.comparison_period" />}
+                style={{textAlign: 'left'}}
             >
                 {months.map((month, i) => {
                     return (<MenuItem key={i} value={-i - 1} primaryText={formatter.formatMonth(month.toDate())} />);
@@ -139,7 +150,7 @@ class Dashboard extends React.Component {
     }
 
     render() {
-        let title = (<Title title={<Translate content="dashboard.title" />} />);
+        let title = (<Title className="col-lg-4 col-md-4 col-xs-12" title={<Translate content="dashboard.title" />} />);
         if (!this.props.data.lastUpdated) {
             return (
                 <div>{title}</div>
@@ -170,35 +181,46 @@ class Dashboard extends React.Component {
         let maximumValue = Math.max.apply(null, projectValues);
 
         return (
-            <div>
+            <div className="row">
                 {title}
-                <div>
-                    <SelectField
-                        id="currentPeriod"
-                        value={this.props.user.settings.dashboardPeriod}
-                        onChange={this.onChangeCurrentPeriod.bind(this)}
-                        floatingLabelText={<Translate content="dashboard.current_period" />}
-                    >
-                        <MenuItem value="month" primaryText={<Translate content="dashboard.period.month" />} />
-                        <MenuItem value="year" primaryText={<Translate content="dashboard.period.year" />} />
-                        <MenuItem value="monthPeriod" primaryText={<Translate content="dashboard.period.last_30_days" />} />
-                        <MenuItem value="yearPeriod" primaryText={<Translate content="dashboard.period.last_12_months" />} />
-                    </SelectField>
-                    {this.getComparisonPeriod()}
-                    <SelectField
-                        id="sortByMetrics"
-                        value={this.props.user.settings.dashboardSort}
-                        onChange={this.onChangeSortMetrics.bind(this)}
-                        floatingLabelText={<Translate content="dashboard.sort_by_metrics" />}
-                    >
-                        <MenuItem value="paymentsAmount" primaryText={<Translate content="dashboard.sort_by.paymentsAmount" />} />
-                        <MenuItem value="depositsAmount" primaryText={<Translate content="dashboard.sort_by.depositsAmount" />} />
-                        <MenuItem value="cashoutsAmount" primaryText={<Translate content="dashboard.sort_by.cashoutsAmount" />} />
-                        <MenuItem value="netgamingAmount" primaryText={<Translate content="dashboard.sort_by.netgamingAmount" />} />
-                        <MenuItem value="betsAmount" primaryText={<Translate content="dashboard.sort_by.betsAmount" />} />
-                        <MenuItem value="winsAmount" primaryText={<Translate content="dashboard.sort_by.winsAmount" />} />
-                        <MenuItem value="firstDepositsAmount" primaryText={<Translate content="dashboard.sort_by.firstDepositsAmount" />} />
-                    </SelectField>
+                <div className="col-lg-8 col-md-8 col-xs-12">
+                    <div className="end-xs">
+                        <span style={{marginRight: 12}}>
+                            <Translate content="dashboard.project_types" />
+                            <RaisedButton label={<Translate content="dashboard.projects.default" />} primary={true} style={styles} />
+                            <RaisedButton label={<Translate content="dashboard.projects.partner" />} style={styles} />
+                        </span>
+                        <SelectField
+                            id="sortByMetrics"
+                            value={this.props.user.settings.dashboardSort}
+                            onChange={this.onChangeSortMetrics.bind(this)}
+                            floatingLabelText={<Translate content="dashboard.sort_by_metrics" />}
+                            style={{textAlign: 'left'}}
+                        >
+                            <MenuItem value="paymentsAmount" primaryText={<Translate content="dashboard.sort_by.paymentsAmount" />} />
+                            <MenuItem value="depositsAmount" primaryText={<Translate content="dashboard.sort_by.depositsAmount" />} />
+                            <MenuItem value="cashoutsAmount" primaryText={<Translate content="dashboard.sort_by.cashoutsAmount" />} />
+                            <MenuItem value="netgamingAmount" primaryText={<Translate content="dashboard.sort_by.netgamingAmount" />} />
+                            <MenuItem value="betsAmount" primaryText={<Translate content="dashboard.sort_by.betsAmount" />} />
+                            <MenuItem value="winsAmount" primaryText={<Translate content="dashboard.sort_by.winsAmount" />} />
+                            <MenuItem value="firstDepositsAmount" primaryText={<Translate content="dashboard.sort_by.firstDepositsAmount" />} />
+                        </SelectField>
+                    </div>
+                    <div className="end-xs">
+                        <SelectField
+                            id="currentPeriod"
+                            value={this.props.user.settings.dashboardPeriod}
+                            onChange={this.onChangeCurrentPeriod.bind(this)}
+                            floatingLabelText={<Translate content="dashboard.current_period" />}
+                            style={{textAlign: 'left'}}
+                        >
+                            <MenuItem value="month" primaryText={<Translate content="dashboard.period.month" />} />
+                            <MenuItem value="year" primaryText={<Translate content="dashboard.period.year" />} />
+                            <MenuItem value="monthPeriod" primaryText={<Translate content="dashboard.period.last_30_days" />} />
+                            <MenuItem value="yearPeriod" primaryText={<Translate content="dashboard.period.last_12_months" />} />
+                        </SelectField>
+                        {this.getComparisonPeriod()}
+                    </div>
                 </div>
                 <div>
                     <Paper style={this.getStyles().block}>

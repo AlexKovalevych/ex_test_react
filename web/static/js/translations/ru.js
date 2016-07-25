@@ -90,6 +90,11 @@ counterpart.registerTranslations('ru', {
             winsAmount: 'Выигрышам',
             firstDepositsAmount: 'Сумме первых депозитов'
         },
+        project_types: 'Проекты:',
+        projects: {
+            default: 'Наши',
+            partner: 'Партнерские'
+        },
         period: {
             month: 'С начала месяца',
             year: 'С начала года',

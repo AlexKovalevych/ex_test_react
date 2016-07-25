@@ -90,6 +90,11 @@ counterpart.registerTranslations('en', {
             winsAmount: 'Wins',
             firstDepositsAmount: 'First deposits amount'
         },
+        project_types: 'Projects:',
+        projects: {
+            default: 'Our',
+            partner: 'Partner'
+        },
         period: {
             month: 'Month to date',
             year: 'Year to date',

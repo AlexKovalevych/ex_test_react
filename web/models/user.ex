@@ -14,7 +14,8 @@ defmodule Gt.Model.User do
             "dashboardSort" => "paymentsAmount",
             "dashboardChartType" => "paymentsAmount",
             "dashboardPeriod" => "month",
-            "dashboardComparePeriod" => -1
+            "dashboardComparePeriod" => -1,
+            "dashboardProjectsType" => "default"
         }
         field :is_admin, :boolean, default: false
         field :locale, :string, default: "ru"
