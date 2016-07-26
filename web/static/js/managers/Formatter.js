@@ -82,6 +82,8 @@ class Formatter {
         switch (type) {
         case 'month':
             return this.formatMonth(value);
+        case 'year':
+            return this.formatYear(value);
         }
     }
 
@@ -111,6 +113,11 @@ class Formatter {
         let dateObj = new Date(date);
         let month = translate(`months.${Formatter.monthNames[dateObj.getMonth()]}`);
         return `${month} ${dateObj.getFullYear()}`;
+    }
+
+    formatYear(date) {
+        let dateObj = new Date(date);
+        return dateObj.getFullYear();
     }
 
     // formatMinutes(date) {

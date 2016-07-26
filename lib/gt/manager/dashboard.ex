@@ -5,17 +5,63 @@ defmodule Gt.Manager.Dashboard do
     alias Gt.Model.ConsolidatedStats
     alias Gt.Model.ConsolidatedStatsMonthly
     alias Gt.Repo
+    alias Gt.Manager.Permissions
+    alias Gt.Model.Project
 
-    def get_period(:month) do
+    def load_data(user, period \\ nil) do
+        settings = user.settings
+        project_ids = Permissions.get(user.permissions, "dashboard_index")
+        projects = Project |> Project.ids(project_ids) |> Repo.all
+        project_ids = Enum.map(project_ids, fn id ->
+            {:ok, object_id} = Mongo.Ecto.ObjectID.dump(id)
+            object_id
+        end)
+        period = case period do
+            nil -> String.to_atom(settings["dashboardPeriod"])
+            _ -> String.to_atom(period)
+        end
+        data = get_stats(
+            period,
+            settings["dashboardComparePeriod"],
+            project_ids
+        )
+        charts = get_charts(period, project_ids)
+        %{
+            stats: data.stats,
+            charts: charts,
+            periods: data.periods,
+            totals: data.totals,
+            projects: projects,
+            lastUpdated: GtDate.timestamp(GtDate.now)
+        }
+    end
+
+    def get_current_period(:month) do
         now = GtDate.today
         current_start = now |> Date.set([day: 1])
         current_end = now
         [GtDate.format(current_start, :date), GtDate.format(current_end, :date)]
     end
-    def get_period(:year_period) do
+    def get_current_period(:year) do
+        now = GtDate.today
+        current_start = now |> Date.set([month: 1, day: 1])
+        current_end = now
+        [GtDate.format(current_start, :date), GtDate.format(current_end, :date)]
+    end
+    def get_current_period(:months12) do
         current_end = GtDate.today |> Date.set([day: 1])
         current_start = current_end |> Timex.shift(months: -11)
         [GtDate.format(current_start, :month), GtDate.format(current_end, :month)]
+    end
+    def get_period(:year) do
+        now = GtDate.today
+        current_start = now |> Date.set([month: 1, day: 1])
+        current_end = now
+        comparison_start = Timex.shift(current_start, years: -1)
+        comparison_end = now |> Timex.shift(years: -1)
+        current_period = [GtDate.format(current_start, :date), GtDate.format(current_end, :date)]
+        comparison_period = [GtDate.format(comparison_start, :date), GtDate.format(comparison_end, :date)]
+        [current_start, current_end, comparison_start, comparison_end, current_period, comparison_period]
     end
     def get_period(:month, previous_period) do
         now = GtDate.today
@@ -96,19 +142,84 @@ defmodule Gt.Manager.Dashboard do
             totals: totals
         }
     end
-    def get_stats(:month_period, project_ids) do
+    def get_stats(:year, _, project_ids) do
+        [current_start, current_end, comparison_start, comparison_end, current_period, comparison_period] = get_period(:year)
+
+        # calculate project stats
+        initial = %{
+            "current" => %{},
+            "comparison" => %{}
+        }
+        stats = Enum.into(project_ids, %{}, fn id ->
+            {Gt.Model.id_to_string(id), initial}
+        end)
+        stats = Payment.depositors_number_by_period(
+            current_start,
+            current_end,
+            project_ids
+        )
+        |> Enum.to_list
+        |> set_depositors(stats, "current")
+        stats = Payment.depositors_number_by_period(
+            comparison_start,
+            comparison_end,
+            project_ids
+        )
+        |> Enum.to_list
+        |> set_depositors(stats, "comparison")
+
+        stats = ConsolidatedStats.dashboard(current_start, current_end, project_ids)
+        |> Enum.to_list
+        |> set_stats(stats, "current")
+
+        stats = ConsolidatedStats.dashboard(comparison_start, comparison_end, project_ids)
+        |> Enum.to_list
+        |> set_stats(stats, "comparison")
+
+        # calculate totals
+        totals = initial
+        totals = Payment.depositors_number_by_period(
+            current_start,
+            current_end,
+            project_ids,
+            :total
+        )
+        |> Enum.to_list
+        |> set_depositors(totals, "current", :total)
+
+        totals = Payment.depositors_number_by_period(
+            comparison_start,
+            comparison_end,
+            project_ids,
+            :total
+        )
+        |> Enum.to_list
+        |> set_depositors(totals, "comparison", :total)
+
+        totals = ConsolidatedStats.dashboard(current_start, current_end, project_ids, :total)
+        |> Enum.to_list
+        |> set_stats(totals, "current", :total)
+
+        totals = ConsolidatedStats.dashboard(comparison_start, comparison_end, project_ids, :total)
+        |> Enum.to_list
+        |> set_stats(totals, "comparison", :total)
+
+        %{
+            stats: stats,
+            periods: %{current: current_period, comparison: comparison_period},
+            totals: totals
+        }
+    end
+    def get_stats(:days30, _, project_ids) do
 
     end
-    def get_stats(:year, project_ids) do
-
-    end
-    def get_stats(:year_period, project_ids) do
+    def get_stats(:months12, _, project_ids) do
 
     end
 
     def get_charts(:month, project_ids) do
-        [daily_from, daily_to] = get_period(:month)
-        [monthly_from, monthly_to] = get_period(:year_period)
+        [daily_from, daily_to] = get_current_period(:month)
+        [monthly_from, monthly_to] = get_current_period(:months12)
 
         daily_charts = Enum.reduce(project_ids, %{}, fn (project_id, acc) ->
             id = Gt.Model.id_to_string(project_id)
@@ -157,6 +268,15 @@ defmodule Gt.Manager.Dashboard do
             }
         }
     end
+    def get_charts(:year, project_ids) do
+
+    end
+    def get_charts(:days30, project_ids) do
+
+    end
+    def get_charts(:months12, project_ids) do
+
+    end
 
     def consolidated_chart(:daily, from, to, project_ids) when is_list(project_ids) do
         ConsolidatedStats.consolidated_chart(from, to, project_ids)
@@ -178,7 +298,7 @@ defmodule Gt.Manager.Dashboard do
         end)
     end
     def consolidated_chart(:monthly, project_ids) when is_list(project_ids) do
-        [from, to] = get_period(:year_period)
+        [from, to] = get_current_period(:months12)
         ConsolidatedStatsMonthly.consolidated_chart(from, to, project_ids)
         |> Enum.to_list
         |> Enum.chunk(1)
@@ -187,7 +307,7 @@ defmodule Gt.Manager.Dashboard do
         end)
     end
     def consolidated_chart(:monthly, project_id) do
-        [from, to] = get_period(:year_period)
+        [from, to] = get_current_period(:months12)
         ConsolidatedStatsMonthly
         |> ConsolidatedStatsMonthly.project_id(project_id)
         |> ConsolidatedStatsMonthly.period(from, to)

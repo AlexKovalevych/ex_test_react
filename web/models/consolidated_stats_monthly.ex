@@ -16,9 +16,9 @@ defmodule Gt.Model.ConsolidatedStatsMonthly do
         field :firstDepositorsNumber, :integer
         field :firstDepositsAmount, :integer
         field :signupsNumber, :integer
-        field :averageDeposit, :float
-        field :averageArpu, :float
-        field :averageFirstDeposit, :float
+        field :averageDeposit, Ecto.Type.FloatInt
+        field :averageArpu, Ecto.Type.FloatInt
+        field :averageFirstDeposit, Ecto.Type.FloatInt
         field :netgamingAmount, :integer
         field :betsAmount, :float
         field :winsAmount, :float
@@ -29,7 +29,7 @@ defmodule Gt.Model.ConsolidatedStatsMonthly do
         field :authorizationsNumber, :integer
         field :trafficSources, :map
         field :vipLevels, :map
-        field :firstDepositorsNumberToSignupsNumber, :float
+        field :firstDepositorsNumberToSignupsNumber, Ecto.Type.FloatInt
 
         field :project, :binary_id
     end

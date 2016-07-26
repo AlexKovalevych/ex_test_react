@@ -15,7 +15,7 @@ defmodule Gt.GuardianSerializer do
         {:ok, Gt.Repo.get(User, id)}
     end
 
-    def from_token(thing) do
+    def from_token(_) do
         {:error, "Unknown resource type"}
     end
 end

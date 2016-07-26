@@ -10,6 +10,7 @@ import Subheader from 'material-ui/Subheader';
 import Paper from 'material-ui/Paper';
 import Title from 'components/Title';
 import spinnerActions from 'actions/spinner';
+import authActions from 'actions/auth';
 import SelectField from 'material-ui/SelectField';
 import MenuItem from 'material-ui/MenuItem';
 import moment from 'moment';
@@ -33,9 +34,9 @@ class Dashboard extends React.Component {
     };
 
     loadData(props) {
-        const { dispatch } = props;
-        if (props.ws.channel && !props.data.lastUpdated) {
-            dispatch(dashboardActions.loadStats({period: this.props.user.settings.dashboardPeriod}));
+        const { dispatch, user, ws, data } = props;
+        if (ws.channel && !data.lastUpdated) {
+            dispatch(dashboardActions.loadStats({period: user.settings.dashboardPeriod}));
         } else {
             dispatch(spinnerActions.stop());
         }
@@ -108,7 +109,8 @@ class Dashboard extends React.Component {
     }
 
     onChangeCurrentPeriod(e, i, v) {
-        console.log(e,i,v);
+        const { dispatch } = this.props;
+        dispatch(authActions.setDashboardCurrentPeriod(v));
     }
 
     onChangeComparisonPeriod(e, i, v) {
@@ -216,8 +218,8 @@ class Dashboard extends React.Component {
                         >
                             <MenuItem value="month" primaryText={<Translate content="dashboard.period.month" />} />
                             <MenuItem value="year" primaryText={<Translate content="dashboard.period.year" />} />
-                            <MenuItem value="monthPeriod" primaryText={<Translate content="dashboard.period.last_30_days" />} />
-                            <MenuItem value="yearPeriod" primaryText={<Translate content="dashboard.period.last_12_months" />} />
+                            <MenuItem value="days30" primaryText={<Translate content="dashboard.period.last_30_days" />} />
+                            <MenuItem value="months12" primaryText={<Translate content="dashboard.period.last_12_months" />} />
                         </SelectField>
                         {this.getComparisonPeriod()}
                     </div>

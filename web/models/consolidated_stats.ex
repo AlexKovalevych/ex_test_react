@@ -16,9 +16,9 @@ defmodule Gt.Model.ConsolidatedStats do
         field :firstDepositorsNumber, :integer
         field :firstDepositsAmount, :integer
         field :signupsNumber, :integer
-        field :averageDeposit, :float
-        field :averageArpu, :float
-        field :averageFirstDeposit, :float
+        field :averageDeposit, Ecto.Type.FloatInt
+        field :averageArpu, Ecto.Type.FloatInt
+        field :averageFirstDeposit, Ecto.Type.FloatInt
         field :netgamingAmount, :integer
         field :betsAmount, :integer
         field :winsAmount, :integer

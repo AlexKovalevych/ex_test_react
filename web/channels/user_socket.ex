@@ -24,7 +24,7 @@ defmodule Gt.UserSocket do
      def connect(%{"token" => token}, socket) do
         case Guardian.decode_and_verify(token) do
             {:ok, claims} -> case Gt.GuardianSerializer.from_token(claims["sub"]) do
-                {:ok, user} -> {:ok, assign(socket, :current_user, user)}
+                {:ok, user} -> {:ok, assign(socket, :current_user, user.id)}
                 {:error, _reason} -> :error
             end
             {:error, _reason} -> :error
@@ -43,5 +43,5 @@ defmodule Gt.UserSocket do
     #     Gt.Endpoint.broadcast("users_socket:#{user.id}", "disconnect", %{})
     #
     # Returning `nil` makes this socket anonymous.
-    def id(socket), do: "users_socket:#{socket.assigns.current_user.id}"
+    def id(socket), do: "users_socket:#{socket.assigns.current_user}"
 end

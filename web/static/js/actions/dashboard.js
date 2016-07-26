@@ -1,9 +1,9 @@
 const dashboardActions = {
-    loadStats: () => {
+    loadStats: (params) => {
         return (dispatch, getState) => {
-            const { auth } = getState();
-            auth.channel
-                .push('dashboard_stats')
+            const { ws } = getState();
+            ws.channel
+                .push('dashboard_stats', params)
                 .receive('ok', (msg) => {
                     dispatch({
                         type: 'DASHBOARD_LOAD_DATA',
@@ -17,27 +17,27 @@ const dashboardActions = {
         };
     },
 
-    loadCharts: () => {
-        return (dispatch, getState) => {
-            const { auth } = getState();
-            auth.channel
-                .push('dashboard_charts')
-                .receive('ok', (msg) => {
-                    dispatch({
-                        type: 'DASHBOARD_LOAD_CHART_DATA',
-                        data: msg
-                    });
-                })
-                .receive('error', (msg) => {
-                    console.log(msg);
-                });
-        };
-    },
+    // loadCharts: () => {
+    //     return (dispatch, getState) => {
+    //         const { ws } = getState();
+    //         ws.channel
+    //             .push('dashboard_charts')
+    //             .receive('ok', (msg) => {
+    //                 dispatch({
+    //                     type: 'DASHBOARD_LOAD_CHART_DATA',
+    //                     data: msg
+    //                 });
+    //             })
+    //             .receive('error', (msg) => {
+    //                 console.log(msg);
+    //             });
+    //     };
+    // },
 
     loadConsolidatedChart: (params, options) => {
         return (dispatch, getState) => {
-            const { auth } = getState();
-            auth.channel
+            const { ws } = getState();
+            ws.channel
                 .push('consolidated_chart', params)
                 .receive('ok', (msg) => {
                     dispatch({

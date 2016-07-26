@@ -29,7 +29,7 @@ class Modal extends React.Component {
     getTitle() {
         if (this.props.consolidatedChart || this.props.zoomChart) {
             let data = this.props.consolidatedChart || this.props.zoomChart;
-            let dates = Object.keys(data).reverse();
+            let dates = Object.keys(data).sort();
             let metrics = this.props.options.metrics;
             if (Array.isArray(metrics)) {
                 metrics = metrics[0];
@@ -189,7 +189,7 @@ class Modal extends React.Component {
 
         let data = this.props.consolidatedChart;
         let chartData = [];
-        for (let date of Object.keys(data).reverse()) {
+        for (let date of Object.keys(data).sort()) {
             chartData.push({
                 x: formatter.toTimestamp(date),
                 y: formatter.formatChartValue(data[date][metrics], metrics)
@@ -221,7 +221,7 @@ class Modal extends React.Component {
         let data = this.props.consolidatedChart;
         let chartData = [];
         let categories = [];
-        for (let date of Object.keys(data).reverse()) {
+        for (let date of Object.keys(data).sort()) {
             chartData.push({
                 x: formatter.toTimestamp(`${date}-01`),
                 y: formatter.formatChartValue(data[date][metrics], metrics)
@@ -258,7 +258,7 @@ class Modal extends React.Component {
                 continue;
             }
             let chartData = [];
-            for (let date of Object.keys(data).reverse()) {
+            for (let date of Object.keys(data).sort()) {
                 chartData.push({
                     x: formatter.toTimestamp(date),
                     y: singleMetrics == 'cashoutsAmount' ? Math.abs(data[date][singleMetrics]) : data[date][singleMetrics]
@@ -293,7 +293,7 @@ class Modal extends React.Component {
                 continue;
             }
             let chartData = [];
-            for (let date of Object.keys(data).reverse()) {
+            for (let date of Object.keys(data).sort()) {
                 chartData.push({
                     x: formatter.toTimestamp(`${date}-01`),
                     y: Math.abs(data[date][singleMetrics] ? data[date][singleMetrics] / 100 : 0)

@@ -99,16 +99,32 @@ const authActions = {
 
     setLocale: (locale) => {
         return (dispatch, getState) => {
-            const { auth } = getState();
-            auth.channel
+            const { ws } = getState();
+            ws.channel
                 .push('locale', locale)
                 .receive('ok', (user) => {
                     counterpart.setLocale(user.locale);
                     dispatch({
                         type: 'CURRENT_USER',
-                        currentUser: user,
-                        socket: auth.socket,
-                        channel: auth.channel
+                        currentUser: user
+                    });
+                })
+                .receive('error', (msg) => {
+                    console.log(msg);
+                });
+        };
+    },
+
+    setDashboardCurrentPeriod: (period) => {
+        return (dispatch, getState) => {
+            const { ws } = getState();
+            ws.channel
+                .push('dashboard_period', period)
+                .receive('ok', (msg) => {
+                    dispatch({
+                        type: 'CURRENT_USER',
+                        currentUser: msg,
+                        lastUpdated: null
                     });
                 })
                 .receive('error', (msg) => {

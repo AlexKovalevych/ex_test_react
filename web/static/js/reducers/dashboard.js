@@ -5,11 +5,16 @@ const initialState = {
     charts: null,
     projects: [],
     lastUpdated: null
-    // consolidatedChart: null
 };
 
 export default function reducer(state = initialState, action = {}) {
     switch (action.type) {
+    case 'CURRENT_USER':
+        let newState = {...state};
+        if (action.lastUpdated !== undefined) {
+            newState.lastUpdated = action.lastUpdated;
+        }
+        return newState;
     case 'DASHBOARD_LOAD_DATA':
         return {
             ...state,
@@ -25,11 +30,6 @@ export default function reducer(state = initialState, action = {}) {
             ...state,
             charts: action.data
         };
-    // case 'DASHBOARD_LOAD_CONSOLIDATED_CHART_DATA':
-    //     return {
-    //         ...state,
-    //         consolidatedChart: action.data
-    //     };
     default:
         return state;
     }
