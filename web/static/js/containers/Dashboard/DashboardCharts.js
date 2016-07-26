@@ -236,7 +236,7 @@ class DashboardCharts extends React.Component {
                 continue;
             }
             let chartData = [];
-            for (let date of Object.keys(data).reverse()) {
+            for (let date of Object.keys(data).sort()) {
                 chartData.push({
                     x: formatter.toTimestamp(date),
                     y: singleMetrics == 'cashoutsAmount' ? Math.abs(data[date][singleMetrics]) : data[date][singleMetrics]
@@ -272,7 +272,7 @@ class DashboardCharts extends React.Component {
                 continue;
             }
             let chartData = [];
-            for (let date of Object.keys(data).reverse()) {
+            for (let date of Object.keys(data).sort()) {
                 chartData.push(Math.abs(data[date][singleMetrics] ? data[date][singleMetrics] / 100 : 0));
             }
             options.series.push({
@@ -282,7 +282,7 @@ class DashboardCharts extends React.Component {
             });
         }
         let categories = [];
-        for (let date of Object.keys(data).reverse()) {
+        for (let date of Object.keys(data).sort()) {
             categories.push(formatter.formatMonth(`${date}-01`));
         }
         options.xAxis.categories = categories;

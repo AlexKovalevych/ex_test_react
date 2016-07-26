@@ -40,7 +40,6 @@ defmodule Gt.UserChannel do
     def handle_in("dashboard_period", period, socket) do
         user = Repo.get(User, socket.assigns.current_user)
         settings = user.settings |> Map.put("dashboardPeriod", period)
-        IO.inspect(settings)
         user = Ecto.Changeset.change user, settings: settings
         case Repo.update user do
             {:ok, user} -> {:reply, {:ok, user}, socket}
