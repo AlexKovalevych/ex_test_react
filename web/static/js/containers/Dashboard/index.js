@@ -255,8 +255,8 @@ class Dashboard extends React.Component {
                 </div>
                 <div>
                     {
-                        hasStats && (
-                            <Paper style={this.getStyles().block}>
+                        hasStats && ([
+                            <Paper style={this.getStyles().block} key="total">
                                 <Subheader>Total</Subheader>
                                 <div className='row'>
                                     <div className='col-lg-4 col-md-4 col-xs-12'>
@@ -282,8 +282,9 @@ class Dashboard extends React.Component {
                                         />
                                     </div>
                                 </div>
-                            </Paper>
-                        ) && sortedStats.map(this.renderProject.bind(this, maximumValue))
+                            </Paper>,
+                            sortedStats.map(this.renderProject.bind(this, maximumValue))
+                        ])
                     }
                     {
                         !hasStats && (<div><Translate content="dashboard.no_data" /></div>)

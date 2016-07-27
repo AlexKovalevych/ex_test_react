@@ -116,7 +116,8 @@ class DashboardCharts extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
-            isVisible: false
+            isVisible: false,
+            tab: 'inout'
         };
     }
 
@@ -330,15 +331,20 @@ class DashboardCharts extends React.Component {
         );
     }
 
+    onChangeTab(tab) {
+        this.setState({tab});
+    }
+
     render() {
         if (this.state.isVisible) {
             this.disableVisibilityHandling();
         }
 
         return (
-            <Tabs>
-                <Tab label={<Translate content="dashboard.inout" />} style={gtTheme.theme.tab}>
+            <Tabs value={this.state.tab} onChange={this.onChangeTab.bind(this)}>
+                <Tab value="inout" label={<Translate content="dashboard.inout" />} style={gtTheme.theme.tab}>
                     {
+                        this.state.tab == 'inout' &&
                         ['paymentsAmount', 'depositsAmount', 'cashoutsAmount'].map((metrics) => {
                             return (
                                 <div
@@ -356,8 +362,9 @@ class DashboardCharts extends React.Component {
                         })
                     }
                 </Tab>
-                <Tab label={<Translate content="dashboard.netgaming" />} style={gtTheme.theme.tab}>
+                <Tab value="netgaming" label={<Translate content="dashboard.netgaming" />} style={gtTheme.theme.tab}>
                     {
+                        this.state.tab == 'netgaming' &&
                         [['netgamingAmount', 'rakeAmount'], ['betsAmount'], ['winsAmount']].map((metrics) => {
                             return (
                                 <div
