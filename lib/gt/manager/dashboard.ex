@@ -16,14 +16,33 @@ defmodule Gt.Manager.Dashboard do
         [GtDate.format(from, :month), GtDate.format(to, :month)]
     end
 
-    def load_data(user, period \\ nil) do
+    def allowed_projects(user) do
         settings = user.settings
-        project_ids = Permissions.get(user.permissions, "dashboard_index")
-        projects = Project |> Project.ids(project_ids) |> Repo.all
-        project_ids = Enum.map(project_ids, fn id ->
+        ids = Permissions.get(user.permissions, "dashboard_index")
+        projects = Project
+        |> Project.ids(ids)
+        |> Repo.all
+        ids = Enum.reduce(projects, [], fn (project, acc) ->
+            if !Enum.member?(ids, project.id) do
+                acc
+            else
+                cond do
+                    settings["dashboardProjectsType"] == "partner" && project.isPartner -> acc ++ [project.id]
+                    settings["dashboardProjectsType"] == "default" && !project.isPartner -> acc ++ [project.id]
+                    true -> acc
+                end
+            end
+        end)
+        |>Enum.map(fn id ->
             {:ok, object_id} = Mongo.Ecto.ObjectID.dump(id)
             object_id
         end)
+        [projects, ids]
+    end
+
+    def load_data(user, period \\ nil) do
+        settings = user.settings
+        [projects, project_ids] = allowed_projects(user)
         period = case period do
             nil -> String.to_atom(settings["dashboardPeriod"])
             _ -> String.to_atom(period)
@@ -297,6 +316,9 @@ defmodule Gt.Manager.Dashboard do
         put_in(totals, [key, "depositorsNumber"], Enum.at(data, 0)["depositorsNumber"])
     end
 
+    defp set_stats([], stats, _) do
+        stats
+    end
     defp set_stats(data, stats, key) do
         Enum.reduce(data, stats, fn (project_stats, acc) ->
             project_id = Gt.Model.id_to_string(project_stats["_id"])
@@ -304,6 +326,9 @@ defmodule Gt.Manager.Dashboard do
             project_period_stats = get_in(stats, [project_id, key])
             put_in(acc, [project_id, key], Map.merge(project_period_stats, metrics_stats))
         end)
+    end
+    defp set_stats([], stats, _, :total) do
+        stats
     end
     defp set_stats(data, totals, key, :total) do
         metrics_stats = Map.drop(Enum.at(data, 0), ["_id"])

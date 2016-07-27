@@ -125,8 +125,10 @@ class Dashboard extends React.Component {
         dispatch(authActions.setDashboardSort(v));
     }
 
-    onChangeProjectsType(e, i, v) {
-        console.log(e, i, v);
+    onChangeProjectsType(v) {
+        const { dispatch } = this.props;
+        dispatch(spinnerActions.start());
+        dispatch(authActions.setDashboardProjectTypes(v));
     }
 
     getComparisonPeriod() {
@@ -163,6 +165,12 @@ class Dashboard extends React.Component {
             );
         }
 
+        if (!this.props.data.stats) {
+            return (
+                <div>{title}</div>
+            );
+        }
+
         let sortedStats = [];
         let sortBy = this.props.user.settings.dashboardSort;
         for (let projectId of Object.keys(this.props.data.stats)) {
@@ -188,6 +196,8 @@ class Dashboard extends React.Component {
             }
         }
         let maximumValue = Math.max.apply(null, projectValues);
+        let projectsType = this.props.user.settings.dashboardProjectsType;
+        let hasStats = Object.keys(this.props.data.stats).length > 0;
 
         return (
             <div>
@@ -197,8 +207,18 @@ class Dashboard extends React.Component {
                         <div className="end-xs">
                             <span style={{marginRight: 12}}>
                                 <Translate content="dashboard.project_types" />
-                                <RaisedButton label={<Translate content="dashboard.projects.default" />} primary={true} style={styles} />
-                                <RaisedButton label={<Translate content="dashboard.projects.partner" />} style={styles} />
+                                <RaisedButton
+                                    label={<Translate content="dashboard.projects.default" />}
+                                    primary={projectsType == 'default'}
+                                    style={styles}
+                                    onClick={this.onChangeProjectsType.bind(this, 'default')}
+                                />
+                                <RaisedButton
+                                    label={<Translate content="dashboard.projects.partner" />}
+                                    primary={projectsType == 'partner'}
+                                    style={styles}
+                                    onClick={this.onChangeProjectsType.bind(this, 'partner')}
+                                />
                             </span>
                             <SelectField
                                 id="sortByMetrics"
@@ -234,34 +254,40 @@ class Dashboard extends React.Component {
                     </div>
                 </div>
                 <div>
-                    <Paper style={this.getStyles().block}>
-                        <Subheader>Total</Subheader>
-                        <div className='row'>
-                            <div className='col-lg-4 col-md-4 col-xs-12'>
-                                <DashboardProgress
-                                    sortBy={this.props.user.settings.dashboardSort}
-                                    periods={this.props.data.periods}
-                                    stats={this.props.data.totals}
-                                    periodType={this.props.user.settings.dashboardPeriod}
-                                    maximumValue={maximumValue}
-                                />
-                                {
-                                    this.props.data.charts && (
-                                        <DashboardCharts stats={this.props.data.charts.totals} />
-                                    )
-                                }
-                            </div>
-                            <div className='col-lg-8 col-md-8 col-xs-12'>
-                                <ConsolidatedTable
-                                    periodType={this.props.user.settings.dashboardPeriod}
-                                    periods={this.props.data.periods}
-                                    stats={this.props.data.totals}
-                                    chart={this.props.data.consolidatedChart}
-                                />
-                            </div>
-                        </div>
-                    </Paper>
-                    {sortedStats.map(this.renderProject.bind(this, maximumValue))}
+                    {
+                        hasStats && (
+                            <Paper style={this.getStyles().block}>
+                                <Subheader>Total</Subheader>
+                                <div className='row'>
+                                    <div className='col-lg-4 col-md-4 col-xs-12'>
+                                        <DashboardProgress
+                                            sortBy={this.props.user.settings.dashboardSort}
+                                            periods={this.props.data.periods}
+                                            stats={this.props.data.totals}
+                                            periodType={this.props.user.settings.dashboardPeriod}
+                                            maximumValue={maximumValue}
+                                        />
+                                        {
+                                            this.props.data.charts && (
+                                                <DashboardCharts stats={this.props.data.charts.totals} />
+                                            )
+                                        }
+                                    </div>
+                                    <div className='col-lg-8 col-md-8 col-xs-12'>
+                                        <ConsolidatedTable
+                                            periodType={this.props.user.settings.dashboardPeriod}
+                                            periods={this.props.data.periods}
+                                            stats={this.props.data.totals}
+                                            chart={this.props.data.consolidatedChart}
+                                        />
+                                    </div>
+                                </div>
+                            </Paper>
+                        ) && sortedStats.map(this.renderProject.bind(this, maximumValue))
+                    }
+                    {
+                        !hasStats && (<div><Translate content="dashboard.no_data" /></div>)
+                    }
                 </div>
             </div>
         );

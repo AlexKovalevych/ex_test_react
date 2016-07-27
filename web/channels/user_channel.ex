@@ -64,16 +64,21 @@ defmodule Gt.UserChannel do
             {:error, changeset} -> {:error, %{reason: changeset}}
         end
     end
+    def handle_in("dashboard_projects_type", type, socket) do
+        user = Repo.get(User, socket.assigns.current_user)
+        settings = user.settings |> Map.put("dashboardProjectsType", type)
+        user = Ecto.Changeset.change user, settings: settings
+        case Repo.update user do
+            {:ok, user} -> {:reply, {:ok, user}, socket}
+            {:error, changeset} -> {:error, %{reason: changeset}}
+        end
+    end
     def handle_in("consolidated_chart", params, socket) do
         current_user = Repo.get(User, socket.assigns.current_user)
-        [from, to] = Dashboard.get_current_period(String.to_atom(current_user.settings["dashboardPeriod"]))
+        [from, to] = String.to_atom(current_user.settings["dashboardPeriod"])
+        |> Dashboard.get_current_period
         |> Dashboard.daily
-        project_ids = Permissions.get(current_user.permissions, "dashboard_index")
-        project_ids = Enum.map(project_ids, fn id ->
-            {:ok, object_id} = Mongo.Ecto.ObjectID.dump(id)
-            object_id
-        end)
-
+        [_, project_ids] = Dashboard.allowed_projects(current_user)
         result = case params do
             ["daily"] -> Dashboard.consolidated_chart(:daily, from, to, project_ids)
             ["monthly"] -> Dashboard.consolidated_chart(:monthly, project_ids)

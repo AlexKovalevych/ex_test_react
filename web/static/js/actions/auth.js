@@ -166,6 +166,24 @@ const authActions = {
                     console.log(msg);
                 });
         };
+    },
+
+    setDashboardProjectTypes: (type) => {
+        return (dispatch, getState) => {
+            const { ws } = getState();
+            ws.channel
+                .push('dashboard_projects_type', type)
+                .receive('ok', (msg) => {
+                    dispatch({
+                        type: 'CURRENT_USER',
+                        currentUser: msg,
+                        isOutdated: true
+                    });
+                })
+                .receive('error', (msg) => {
+                    console.log(msg);
+                });
+        };
     }
 };
 
