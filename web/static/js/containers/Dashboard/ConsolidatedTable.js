@@ -76,8 +76,8 @@ class ConsolidatedTable extends React.Component {
                 <TableHeader displaySelectAll={false} adjustForCheckbox={false} style={{tableLayout: 'auto'}}>
                     <TableRow>
                         <TableHeaderColumn style={styles.cell}></TableHeaderColumn>
-                        <TableHeaderColumn>{formatter.formatDashboardPeriod(this.props.periodType, this.props.periods.current[0])}</TableHeaderColumn>
-                        <TableHeaderColumn>{formatter.formatDashboardPeriod(this.props.periodType, this.props.periods.comparison[0])}</TableHeaderColumn>
+                        <TableHeaderColumn>{formatter.formatDashboardPeriod(this.props.periodType, this.props.periods.current[0], 'current')}</TableHeaderColumn>
+                        <TableHeaderColumn>{formatter.formatDashboardPeriod(this.props.periodType, this.props.periods.comparison[0], 'previous')}</TableHeaderColumn>
                         <TableHeaderColumn style={{width: '20%'}}><Translate content="difference" /></TableHeaderColumn>
                         <TableHeaderColumn style={{width: '13%'}}><Translate content="charts" /></TableHeaderColumn>
                     </TableRow>

@@ -254,6 +254,8 @@ defmodule Gt.Manager.Dashboard do
         end)
     end
     def consolidated_chart(:daily, from, to, project_id) do
+        IO.inspect(from)
+        IO.inspect(to)
         ConsolidatedStats
         |> ConsolidatedStats.project_id(project_id)
         |> ConsolidatedStats.period(from, to)

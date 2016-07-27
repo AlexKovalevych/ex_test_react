@@ -35,7 +35,7 @@ class Dashboard extends React.Component {
 
     loadData(props) {
         const { dispatch, user, ws, data } = props;
-        if (ws.channel && !data.lastUpdated) {
+        if (ws.channel && (!data.lastUpdated || data.isOutdated)) {
             dispatch(dashboardActions.loadStats({period: user.settings.dashboardPeriod}));
         } else {
             dispatch(spinnerActions.stop());
@@ -110,15 +110,19 @@ class Dashboard extends React.Component {
 
     onChangeCurrentPeriod(e, i, v) {
         const { dispatch } = this.props;
+        dispatch(spinnerActions.start());
         dispatch(authActions.setDashboardCurrentPeriod(v));
     }
 
     onChangeComparisonPeriod(e, i, v) {
-        console.log(e,i,v);
+        const { dispatch } = this.props;
+        dispatch(spinnerActions.start());
+        dispatch(authActions.setDashboardComparisonPeriod(v));
     }
 
     onChangeSortMetrics(e, i ,v) {
-        console.log(e, i, v);
+        const { dispatch } = this.props;
+        dispatch(authActions.setDashboardSort(v));
     }
 
     onChangeProjectsType(e, i, v) {
@@ -145,7 +149,7 @@ class Dashboard extends React.Component {
                 style={{textAlign: 'left'}}
             >
                 {months.map((month, i) => {
-                    return (<MenuItem key={i} value={-i - 1} primaryText={formatter.formatMonth(month.toDate())} />);
+                    return (<MenuItem key={i} value={-i - 1} primaryText={formatter.formatMonth(month.toDate())} style={gtTheme.theme.link} />);
                 })}
             </SelectField>
         );
@@ -162,7 +166,7 @@ class Dashboard extends React.Component {
         let sortedStats = [];
         let sortBy = this.props.user.settings.dashboardSort;
         for (let projectId of Object.keys(this.props.data.stats)) {
-            let value = this.props.data.stats[projectId].current[sortBy];
+            let value = formatter.formatChartValue(this.props.data.stats[projectId].current[sortBy], sortBy, false);
             if (value) {
                 sortedStats.push([projectId, value]);
             }
@@ -171,13 +175,16 @@ class Dashboard extends React.Component {
             return b[1] - a[1];
         });
 
-        let projectValues = [this.props.data.totals.current[sortBy], this.props.data.totals.comparison[sortBy]];
+        let projectValues = [
+            formatter.formatChartValue(this.props.data.totals.current[sortBy], sortBy, false),
+            formatter.formatChartValue(this.props.data.totals.comparison[sortBy], sortBy, false)
+        ];
         for (let key in this.props.data.stats) {
             if (Object.keys(this.props.data.stats[key].current).length !== 0) {
-                projectValues.push(this.props.data.stats[key].current[sortBy]);
+                projectValues.push(formatter.formatChartValue(this.props.data.stats[key].current[sortBy], sortBy, false));
             }
             if (Object.keys(this.props.data.stats[key].comparison).length !== 0) {
-                projectValues.push(this.props.data.stats[key].comparison[sortBy]);
+                projectValues.push(formatter.formatChartValue(this.props.data.stats[key].comparison[sortBy], sortBy, false));
             }
         }
         let maximumValue = Math.max.apply(null, projectValues);
@@ -199,13 +206,13 @@ class Dashboard extends React.Component {
                             floatingLabelText={<Translate content="dashboard.sort_by_metrics" />}
                             style={{textAlign: 'left'}}
                         >
-                            <MenuItem value="paymentsAmount" primaryText={<Translate content="dashboard.sort_by.paymentsAmount" />} />
-                            <MenuItem value="depositsAmount" primaryText={<Translate content="dashboard.sort_by.depositsAmount" />} />
-                            <MenuItem value="cashoutsAmount" primaryText={<Translate content="dashboard.sort_by.cashoutsAmount" />} />
-                            <MenuItem value="netgamingAmount" primaryText={<Translate content="dashboard.sort_by.netgamingAmount" />} />
-                            <MenuItem value="betsAmount" primaryText={<Translate content="dashboard.sort_by.betsAmount" />} />
-                            <MenuItem value="winsAmount" primaryText={<Translate content="dashboard.sort_by.winsAmount" />} />
-                            <MenuItem value="firstDepositsAmount" primaryText={<Translate content="dashboard.sort_by.firstDepositsAmount" />} />
+                            <MenuItem value="paymentsAmount" primaryText={<Translate content="dashboard.sort_by.paymentsAmount" />} style={gtTheme.theme.link} />
+                            <MenuItem value="depositsAmount" primaryText={<Translate content="dashboard.sort_by.depositsAmount" />} style={gtTheme.theme.link} />
+                            <MenuItem value="cashoutsAmount" primaryText={<Translate content="dashboard.sort_by.cashoutsAmount" />} style={gtTheme.theme.link} />
+                            <MenuItem value="netgamingAmount" primaryText={<Translate content="dashboard.sort_by.netgamingAmount" />} style={gtTheme.theme.link} />
+                            <MenuItem value="betsAmount" primaryText={<Translate content="dashboard.sort_by.betsAmount" />} style={gtTheme.theme.link} />
+                            <MenuItem value="winsAmount" primaryText={<Translate content="dashboard.sort_by.winsAmount" />} style={gtTheme.theme.link} />
+                            <MenuItem value="firstDepositsAmount" primaryText={<Translate content="dashboard.sort_by.firstDepositsAmount" />} style={gtTheme.theme.link} />
                         </SelectField>
                     </div>
                     <div className="end-xs">
@@ -216,10 +223,10 @@ class Dashboard extends React.Component {
                             floatingLabelText={<Translate content="dashboard.current_period" />}
                             style={{textAlign: 'left'}}
                         >
-                            <MenuItem value="month" primaryText={<Translate content="dashboard.period.month" />} />
-                            <MenuItem value="year" primaryText={<Translate content="dashboard.period.year" />} />
-                            <MenuItem value="days30" primaryText={<Translate content="dashboard.period.last_30_days" />} />
-                            <MenuItem value="months12" primaryText={<Translate content="dashboard.period.last_12_months" />} />
+                            <MenuItem value="month" primaryText={<Translate content="dashboard.period.month" />} style={gtTheme.theme.link} />
+                            <MenuItem value="year" primaryText={<Translate content="dashboard.period.year" />} style={gtTheme.theme.link} />
+                            <MenuItem value="days30" primaryText={<Translate content="dashboard.period.last_30_days" />} style={gtTheme.theme.link} />
+                            <MenuItem value="months12" primaryText={<Translate content="dashboard.period.last_12_months" />} style={gtTheme.theme.link} />
                         </SelectField>
                         {this.getComparisonPeriod()}
                     </div>

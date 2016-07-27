@@ -4,15 +4,16 @@ const initialState = {
     totals: null,
     charts: null,
     projects: [],
-    lastUpdated: null
+    lastUpdated: null,
+    isOutdated: null
 };
 
 export default function reducer(state = initialState, action = {}) {
     switch (action.type) {
     case 'CURRENT_USER':
         let newState = {...state};
-        if (action.lastUpdated !== undefined) {
-            newState.lastUpdated = action.lastUpdated;
+        if (action.isOutdated !== undefined) {
+            newState.isOutdated = action.isOutdated;
         }
         return newState;
     case 'DASHBOARD_LOAD_DATA':
@@ -23,7 +24,8 @@ export default function reducer(state = initialState, action = {}) {
             charts: action.data.charts,
             periods: action.data.periods,
             projects: action.data.projects,
-            lastUpdated: action.lastUpdated
+            lastUpdated: action.lastUpdated,
+            isOutdated: false
         };
     case 'DASHBOARD_LOAD_CHART_DATA':
         return {

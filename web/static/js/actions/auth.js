@@ -124,7 +124,42 @@ const authActions = {
                     dispatch({
                         type: 'CURRENT_USER',
                         currentUser: msg,
-                        lastUpdated: null
+                        isOutdated: true
+                    });
+                })
+                .receive('error', (msg) => {
+                    console.log(msg);
+                });
+        };
+    },
+
+    setDashboardComparisonPeriod: (period) => {
+        return (dispatch, getState) => {
+            const { ws } = getState();
+            ws.channel
+                .push('dashboard_comparison_period', period)
+                .receive('ok', (msg) => {
+                    dispatch({
+                        type: 'CURRENT_USER',
+                        currentUser: msg,
+                        isOutdated: true
+                    });
+                })
+                .receive('error', (msg) => {
+                    console.log(msg);
+                });
+        };
+    },
+
+    setDashboardSort: (sortBy) => {
+        return (dispatch, getState) => {
+            const { ws } = getState();
+            ws.channel
+                .push('dashboard_sort', sortBy)
+                .receive('ok', (msg) => {
+                    dispatch({
+                        type: 'CURRENT_USER',
+                        currentUser: msg
                     });
                 })
                 .receive('error', (msg) => {

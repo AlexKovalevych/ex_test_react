@@ -43,10 +43,12 @@ class Formatter {
         return Formatter.cashableMetrics;
     }
 
-    formatChartValue(value, metrics) {
+    formatChartValue(value, metrics, hundreds=true) {
         let formattedValue = value;
         if (Formatter.cashableMetrics.indexOf(metrics) > -1) {
-            formattedValue = Math.round(value / 100);
+            if (hundreds) {
+                formattedValue = Math.round(value / 100);
+            }
         }
 
         if (metrics == 'cashoutsAmount') {
@@ -78,12 +80,14 @@ class Formatter {
         return accounting.formatNumber(value, precision);
     }
 
-    formatDashboardPeriod(type, value) {
+    formatDashboardPeriod(type, value, period) {
         switch (type) {
         case 'month':
             return this.formatMonth(value);
         case 'year':
             return this.formatYear(value);
+        default:
+            return translate(`dashboard.${period}`);
         }
     }
 

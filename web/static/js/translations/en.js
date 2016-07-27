@@ -59,6 +59,8 @@ counterpart.registerTranslations('en', {
         invalid_email_password: 'Invalid email or password'
     },
     dashboard: {
+        current: 'Current',
+        previous: 'Previous',
         title: 'Projects indicators',
         average_deposit: 'Average receipt',
         arpu: 'ARPU',

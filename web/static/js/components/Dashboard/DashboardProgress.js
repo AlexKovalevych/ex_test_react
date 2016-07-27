@@ -15,39 +15,40 @@ export default class DashboardProgress extends React.Component {
     };
 
     render() {
-        let currentValue = this.props.stats.current[this.props.sortBy];
-        let comparisonValue = this.props.stats.comparison[this.props.sortBy];
+        let sortBy = this.props.sortBy;
+        let currentValue = formatter.formatChartValue(this.props.stats.current[sortBy], sortBy, false);
+        let comparisonValue = formatter.formatChartValue(this.props.stats.comparison[sortBy], sortBy, false);
 
         return (
             <div style={{padding: gtTheme.theme.appBar.padding}}>
                 <div className="row between-xs">
                     <div className="col-xs-6">
                         <div className="box">
-                            {formatter.formatDashboardPeriod(this.props.periodType, this.props.periods.current[0])}
+                            {formatter.formatDashboardPeriod(this.props.periodType, this.props.periods.current[0], 'current')}
                         </div>
                     </div>
                     <div className="col-xs-6 end-xs">
                         <div className="box">
-                            {formatter.formatValue(currentValue, this.props.sortBy)}
+                            {formatter.formatValue(currentValue, sortBy)}
                         </div>
                     </div>
                     <LinearProgress
-                        color={colorManager.getChartColor(this.props.sortBy)}
+                        color={colorManager.getChartColor(sortBy)}
                         mode="determinate"
                         value={currentValue / this.props.maximumValue * 100}
                     />
                 </div>
-                <Delta value={formatter.formatValue(currentValue - comparisonValue, this.props.sortBy)} />
-                <span> (<Delta value={`${Math.round(currentValue / comparisonValue * 100) - 100}%`} />)</span>
+                <Delta value={formatter.formatValue(currentValue - comparisonValue, sortBy)} />
+                <span> (<Delta value={`${comparisonValue == 0 ? 0 : Math.round(currentValue / comparisonValue * 100) - 100}%`} />)</span>
                 <div className="row between-xs" style={{paddingTop: gtTheme.theme.padding.sm}}>
                     <div className="col-xs-6">
                         <div className="box">
-                            {formatter.formatDashboardPeriod(this.props.periodType, this.props.periods.comparison[0])}
+                            {formatter.formatDashboardPeriod(this.props.periodType, this.props.periods.comparison[0], 'previous')}
                         </div>
                     </div>
                     <div className="col-xs-6 end-xs">
                         <div className="box">
-                            {formatter.formatValue(comparisonValue, this.props.sortBy)}
+                            {formatter.formatValue(comparisonValue, sortBy)}
                         </div>
                     </div>
                     <LinearProgress

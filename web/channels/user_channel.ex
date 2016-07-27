@@ -37,6 +37,15 @@ defmodule Gt.UserChannel do
             {:error, changeset} -> {:error, %{reason: changeset}}
         end
     end
+    def handle_in("dashboard_sort", sortBy, socket) do
+        user = Repo.get(User, socket.assigns.current_user)
+        settings = user.settings |> Map.put("dashboardSort", sortBy)
+        user = Ecto.Changeset.change user, settings: settings
+        case Repo.update user do
+            {:ok, user} -> {:reply, {:ok, user}, socket}
+            {:error, changeset} -> {:error, %{reason: changeset}}
+        end
+    end
     def handle_in("dashboard_period", period, socket) do
         user = Repo.get(User, socket.assigns.current_user)
         settings = user.settings |> Map.put("dashboardPeriod", period)
@@ -46,9 +55,19 @@ defmodule Gt.UserChannel do
             {:error, changeset} -> {:error, %{reason: changeset}}
         end
     end
+    def handle_in("dashboard_comparison_period", period, socket) do
+        user = Repo.get(User, socket.assigns.current_user)
+        settings = user.settings |> Map.put("dashboardComparePeriod", period)
+        user = Ecto.Changeset.change user, settings: settings
+        case Repo.update user do
+            {:ok, user} -> {:reply, {:ok, user}, socket}
+            {:error, changeset} -> {:error, %{reason: changeset}}
+        end
+    end
     def handle_in("consolidated_chart", params, socket) do
         current_user = Repo.get(User, socket.assigns.current_user)
         [from, to] = Dashboard.get_current_period(String.to_atom(current_user.settings["dashboardPeriod"]))
+        |> Dashboard.daily
         project_ids = Permissions.get(current_user.permissions, "dashboard_index")
         project_ids = Enum.map(project_ids, fn id ->
             {:ok, object_id} = Mongo.Ecto.ObjectID.dump(id)
