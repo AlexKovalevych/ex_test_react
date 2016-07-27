@@ -32,6 +32,7 @@ module.exports = {
     entry: [
         './web/static/js/index.js',
         'flexboxgrid/dist/flexboxgrid.css',
+        './web/static/css/material.min.css',
         './web/static/css/app.css'
     ],
     output: {

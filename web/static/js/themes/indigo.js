@@ -32,6 +32,9 @@ class Indigo {
             link: {
                 cursor: 'pointer'
             },
+            table: {
+                width: '100%'
+            },
             tableHeaderColumn: {
                 height: 48,
                 spacing: 8
