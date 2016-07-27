@@ -5,12 +5,14 @@ import dashboard from './dashboard';
 import ws from './ws';
 import menu from './menu';
 import modal from './modal';
+import error from './error';
 import { pendingTasksReducer as pendingTasks } from './spinner';
 
 export default combineReducers({
     routing: routerReducer,
     pendingTasks,
     menu,
+    error,
     auth,
     modal,
     dashboard,

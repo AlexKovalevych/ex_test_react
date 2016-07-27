@@ -12,27 +12,13 @@ const dashboardActions = {
                     });
                 })
                 .receive('error', (msg) => {
-                    console.log(msg);
+                    dispatch({
+                        type: 'SHOW_ERROR',
+                        message: msg.reason
+                    });
                 });
         };
     },
-
-    // loadCharts: () => {
-    //     return (dispatch, getState) => {
-    //         const { ws } = getState();
-    //         ws.channel
-    //             .push('dashboard_charts')
-    //             .receive('ok', (msg) => {
-    //                 dispatch({
-    //                     type: 'DASHBOARD_LOAD_CHART_DATA',
-    //                     data: msg
-    //                 });
-    //             })
-    //             .receive('error', (msg) => {
-    //                 console.log(msg);
-    //             });
-    //     };
-    // },
 
     loadConsolidatedChart: (params, options) => {
         return (dispatch, getState) => {
@@ -47,7 +33,10 @@ const dashboardActions = {
                     });
                 })
                 .receive('error', (msg) => {
-                    console.log(msg);
+                    dispatch({
+                        type: 'SHOW_ERROR',
+                        message: msg.reason
+                    });
                 });
         };
     },

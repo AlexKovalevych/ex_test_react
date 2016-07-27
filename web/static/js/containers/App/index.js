@@ -12,6 +12,7 @@ import IconButton from 'material-ui/IconButton';
 import Translate from 'react-translate-component';
 import Modal from 'containers/Modal';
 import Spinner from 'components/Spinner';
+import ErrorSnackbar from 'containers/ErrorSnackbar';
 
 class App extends React.Component {
     static propTypes = {
@@ -117,6 +118,7 @@ class App extends React.Component {
                 </div>
                 <Modal />
                 <Spinner />
+                <ErrorSnackbar />
             </div>
         );
     }

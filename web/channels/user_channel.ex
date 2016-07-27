@@ -17,61 +17,54 @@ defmodule Gt.UserChannel do
         data = Dashboard.load_data(current_user, Map.get(params, "period"))
         {:reply, {:ok, data}, socket}
     end
-    # def handle_in("dashboard_charts", _, socket) do
-    #     current_user = socket.assigns.current_user
-    #     settings = current_user.settings
-    #     project_ids = Permissions.get(current_user.permissions, "dashboard_index")
-    #     projects = Project |> Project.ids(project_ids) |> Repo.all
-    #     project_ids = Enum.map(project_ids, fn id ->
-    #         {:ok, object_id} = Mongo.Ecto.ObjectID.dump(id)
-    #         object_id
-    #     end)
-    #     charts = Dashboard.get_charts(String.to_atom(settings["dashboardPeriod"]), project_ids)
-    #     {:reply, {:ok, charts}, socket}
-    # end
     def handle_in("locale", locale, socket) do
         user = Repo.get(User, socket.assigns.current_user)
         user = Ecto.Changeset.change user, locale: locale
-        case Repo.update user do
-            {:ok, user} -> {:reply, {:ok, user}, socket}
+        response = case Repo.update user do
+            {:ok, user} -> {:ok, user}
             {:error, changeset} -> {:error, %{reason: changeset}}
         end
+        {:reply, response, socket}
     end
     def handle_in("dashboard_sort", sortBy, socket) do
         user = Repo.get(User, socket.assigns.current_user)
         settings = user.settings |> Map.put("dashboardSort", sortBy)
         user = Ecto.Changeset.change user, settings: settings
-        case Repo.update user do
-            {:ok, user} -> {:reply, {:ok, user}, socket}
+        response = case Repo.update user do
+            {:ok, user} -> {:ok, user}
             {:error, changeset} -> {:error, %{reason: changeset}}
         end
+        {:reply, response, socket}
     end
     def handle_in("dashboard_period", period, socket) do
         user = Repo.get(User, socket.assigns.current_user)
         settings = user.settings |> Map.put("dashboardPeriod", period)
         user = Ecto.Changeset.change user, settings: settings
-        case Repo.update user do
-            {:ok, user} -> {:reply, {:ok, user}, socket}
+        response = case Repo.update user do
+            {:ok, user} -> {:ok, user}
             {:error, changeset} -> {:error, %{reason: changeset}}
         end
+        {:reply, response, socket}
     end
     def handle_in("dashboard_comparison_period", period, socket) do
         user = Repo.get(User, socket.assigns.current_user)
         settings = user.settings |> Map.put("dashboardComparePeriod", period)
         user = Ecto.Changeset.change user, settings: settings
-        case Repo.update user do
-            {:ok, user} -> {:reply, {:ok, user}, socket}
+        response = case Repo.update user do
+            {:ok, user} -> {:ok, user}
             {:error, changeset} -> {:error, %{reason: changeset}}
         end
+        {:reply, response, socket}
     end
     def handle_in("dashboard_projects_type", type, socket) do
         user = Repo.get(User, socket.assigns.current_user)
         settings = user.settings |> Map.put("dashboardProjectsType", type)
         user = Ecto.Changeset.change user, settings: settings
-        case Repo.update user do
-            {:ok, user} -> {:reply, {:ok, user}, socket}
+        response = case Repo.update user do
+            {:ok, user} -> {:ok, user}
             {:error, changeset} -> {:error, %{reason: changeset}}
         end
+        {:reply, response, socket}
     end
     def handle_in("consolidated_chart", params, socket) do
         current_user = Repo.get(User, socket.assigns.current_user)
@@ -95,9 +88,10 @@ defmodule Gt.UserChannel do
                     Dashboard.consolidated_chart(:monthly, project_id)
                 end
         end
-        case result do
+        response = case result do
             {:error, reason} -> {:error, %{reason: reason}}
-            _ -> {:reply, {:ok, result}, socket}
+            _ -> {:ok, result}
         end
+        {:reply, response, socket}
     end
 end

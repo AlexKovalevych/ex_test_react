@@ -110,7 +110,10 @@ const authActions = {
                     });
                 })
                 .receive('error', (msg) => {
-                    console.log(msg);
+                    dispatch({
+                        type: 'SHOW_ERROR',
+                        message: msg.reason
+                    });
                 });
         };
     },
@@ -128,7 +131,10 @@ const authActions = {
                     });
                 })
                 .receive('error', (msg) => {
-                    console.log(msg);
+                    dispatch({
+                        type: 'SHOW_ERROR',
+                        message: msg.reason
+                    });
                 });
         };
     },
@@ -146,7 +152,10 @@ const authActions = {
                     });
                 })
                 .receive('error', (msg) => {
-                    console.log(msg);
+                    dispatch({
+                        type: 'SHOW_ERROR',
+                        message: msg.reason
+                    });
                 });
         };
     },
@@ -163,7 +172,10 @@ const authActions = {
                     });
                 })
                 .receive('error', (msg) => {
-                    console.log(msg);
+                    dispatch({
+                        type: 'SHOW_ERROR',
+                        message: msg.reason
+                    });
                 });
         };
     },
@@ -181,7 +193,10 @@ const authActions = {
                     });
                 })
                 .receive('error', (msg) => {
-                    console.log(msg);
+                    dispatch({
+                        type: 'SHOW_ERROR',
+                        message: msg.reason
+                    });
                 });
         };
     }
