@@ -1,7 +1,15 @@
 defmodule Gt.Model.User do
     use Gt.Web, :model
 
-    @derive {Poison.Encoder, only: [:id, :email, :permissions, :settings, :is_admin, :locale]}
+    @derive {Poison.Encoder, only: [
+        :id,
+        :email,
+        :permissions,
+        :settings,
+        :is_admin,
+        :locale,
+        :authenticationType
+    ]}
 
     @collection "users"
 
@@ -19,12 +27,27 @@ defmodule Gt.Model.User do
         }
         field :is_admin, :boolean, default: false
         field :locale, :string, default: "ru"
+        field :authenticationType, :string, default: "sms"
+        field :phoneNumber, :string
+        field :code, :string
+        field :failedLoginCount, :integer, default: 0
+        field :enabled, :boolean, default: true
 
         timestamps
     end
 
-    @required_fields ~w(email password_plain permissions settings is_admin)
-    @optional_fields ~w(password locale)
+    @required_fields ~w(
+        email
+        password_plain
+        permissions
+        settings
+        is_admin
+        authenticationType
+        phoneNumber
+        failedLoginCount
+        enabled
+    )
+    @optional_fields ~w(password locale code)
 
     def changeset(model, params \\ :empty) do
         model
@@ -41,6 +64,17 @@ defmodule Gt.Model.User do
     #     |> changeset(params)
     #     |> Repo.insert()
     # end
+
+    def no_two_factor(user) do
+        !user.authenticationType || user.authenticationType == 'none'
+    end
+
+    def two_factor(user, :google) do
+        user.authenticationType == 'google'
+    end
+    def two_factor(user, :sms) do
+        user.authenticationType == 'sms'
+    end
 
     def signin(params) do
         email = Map.get(params, "email", "")

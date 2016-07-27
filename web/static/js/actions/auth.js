@@ -26,7 +26,15 @@ function parseJSON(response) {
     return response.json();
 }
 
-export function setCurrentUser(dispatch, user, redirectPath) {
+export function setCurrentUser(dispatch, currentUser, qrcodeUrl=null) {
+    dispatch({
+        type: 'CURRENT_USER',
+        currentUser,
+        qrcodeUrl
+    });
+}
+
+export function setSocket(dispatch, user, redirectPath) {
     const socket = new Socket('/socket', {
         params: { token: localStorage.getItem('jwtToken') },
         logger: (kind, msg, data) => {
@@ -35,14 +43,12 @@ export function setCurrentUser(dispatch, user, redirectPath) {
     });
 
     socket.connect();
-
     const channel = socket.channel(`users:${user.id}`);
 
     if (channel.state != 'joined') {
         channel.join().receive('ok', () => {
             dispatch({
-                type: 'CURRENT_USER',
-                currentUser: user,
+                type: 'SOCKER_JOINED',
                 socket: socket,
                 channel: channel
             });
@@ -57,7 +63,6 @@ const authActions = {
     login: (params) => {
         return dispatch => {
             const body = JSON.stringify({auth: params});
-
             return fetch('/api/v1/auth', {
                 method: 'post',
                 headers: buildHeaders(),
@@ -66,9 +71,45 @@ const authActions = {
             })
             .then(checkStatus)
             .then(parseJSON)
+            .then(data => {
+                if (!data.user.authenticationType || data.user.authenticationType == 'none') {
+                    setSocket(dispatch, data.user, '/');
+                } else {
+                    switch (data.user.authenticationType) {
+                    case 'google':
+                        setCurrentUser(dispatch, data.user, data.url);
+                        break;
+                    case 'sms':
+                        setCurrentUser(dispatch, data.user);
+                        break;
+                    }
+                }
+            })
+            .catch((error) => {
+                error.response.json()
+                .then((errorJSON) => {
+                    dispatch({
+                        type: 'AUTH_LOGIN_ERROR',
+                        error: errorJSON.error
+                    });
+                });
+            });
+        };
+    },
+
+    twoFactor: (code) => {
+        return dispatch => {
+            return fetch('/api/v1/auth', {
+                method: 'post',
+                headers: buildHeaders(),
+                body: JSON.stringify({'two_factor': code}),
+                credentials: 'same-origin'
+            })
+            .then(checkStatus)
+            .then(parseJSON)
             .then((data) => {
                 localStorage.setItem('jwtToken', data.jwt);
-                setCurrentUser(dispatch, data.user, '/');
+                setSocket(dispatch, data.user, '/');
             })
             .catch((error) => {
                 error.response.json()

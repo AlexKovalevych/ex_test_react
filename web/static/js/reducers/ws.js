@@ -6,15 +6,12 @@ const initialState = {
 
 export default function reducer(state = initialState, action = {}) {
     switch (action.type) {
-    case 'CURRENT_USER':
-        let newState = state;
-        if (action.socket !== undefined) {
-            newState.socket = action.socket;
-        }
-        if (action.channel !== undefined) {
-            newState.channel = action.channel;
-        }
-        return newState;
+    case 'SOCKER_JOINED':
+        return {
+            ...state,
+            socket: action.socket,
+            channel: action.channel
+        };
     case 'CHANNEL_JOINED':
         return {
             ...state,

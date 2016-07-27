@@ -23,6 +23,7 @@ defmodule Gt.Guardian.EnsureAuthenticated do
     import Plug.Conn
     alias Gt.Model.User
     alias Gt.Repo
+    alias Gt.Manager.TwoFactor
 
     @doc false
     def init(opts) do
@@ -41,8 +42,7 @@ defmodule Gt.Guardian.EnsureAuthenticated do
     def call(conn, opts) do
         conn = conn |> fetch_session
         user_id = get_session(conn, :current_user)
-
-        if is_nil(user_id) do
+        if !TwoFactor.fully_authenticated(conn) do
             handle_error(conn, {:error, "Not authenticated"}, opts)
         else
             user = User

@@ -6,7 +6,7 @@ import Dashboard from '../containers/Dashboard';
 import Login from '../containers/Login';
 import ErrorPage from '../components/ErrorPage';
 import GtMenu from '../containers/GtMenu';
-import authActions, { setCurrentUser } from '../actions/auth';
+import authActions, { setCurrentUser, setSocket } from '../actions/auth';
 import Main from '../containers/main';
 import counterpart from 'counterpart';
 
@@ -23,6 +23,7 @@ export default function configRoutes(store) {
                 replace('/login');
             } else if (user) {
                 setCurrentUser(dispatch, user);
+                setSocket(dispatch, user);
             }
         }
 
