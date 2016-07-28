@@ -8,7 +8,8 @@ defmodule Gt.Model.User do
         :settings,
         :is_admin,
         :locale,
-        :authenticationType
+        :authenticationType,
+        :phoneNumber
     ]}
 
     @collection "users"
@@ -65,15 +66,24 @@ defmodule Gt.Model.User do
     #     |> Repo.insert()
     # end
 
+    def secure_phone(user) do
+        {a, b} = String.split_at(user.phoneNumber, -6)
+        {_, c} = String.split_at(b, -2)
+        phone = a <> "****" <> c
+        user
+        |> change(%{phoneNumber: phone})
+        |> apply_changes
+    end
+
     def no_two_factor(user) do
-        !user.authenticationType || user.authenticationType == 'none'
+        !user.authenticationType || user.authenticationType == "none"
     end
 
     def two_factor(user, :google) do
-        user.authenticationType == 'google'
+        user.authenticationType == "google"
     end
     def two_factor(user, :sms) do
-        user.authenticationType == 'sms'
+        user.authenticationType == "sms"
     end
 
     def signin(params) do

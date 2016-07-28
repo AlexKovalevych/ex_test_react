@@ -99,10 +99,10 @@ const authActions = {
 
     twoFactor: (code) => {
         return dispatch => {
-            return fetch('/api/v1/auth', {
+            return fetch('/api/v1/two_factor', {
                 method: 'post',
                 headers: buildHeaders(),
-                body: JSON.stringify({'two_factor': code}),
+                body: JSON.stringify({code}),
                 credentials: 'same-origin'
             })
             .then(checkStatus)
@@ -132,8 +132,9 @@ const authActions = {
             })
             .then(checkStatus)
             .then(() => {
-                localStorage.removeItem('jwtToken');
-                dispatch(push('/login'));
+                dispatch({
+                    type: 'AUTH_LOGOUT'
+                });
             });
         };
     },

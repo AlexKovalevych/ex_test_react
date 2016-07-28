@@ -17,6 +17,10 @@ counterpart.registerTranslations('ru', {
         Nov: 'Ноя',
         Dec: 'Дек'
     },
+    login: {
+        sms_sent: 'На ваш номер (%(phone)s) отправлено сообщение с кодом подтверждения. Если вы не получили код, обратитесь к администрации.',
+        invalid_sms_code: 'Неправильный код из СМС'
+    },
     difference: 'Разница',
     charts: 'Графики',
     menu: {
@@ -53,7 +57,8 @@ counterpart.registerTranslations('ru', {
     form: {
         email: 'Логин',
         password: 'Пароль',
-        login: 'Войти'
+        login: 'Войти',
+        sms_code: 'СМС код'
     },
     validation: {
         invalid_email_password: 'Неправильный логин или пароль'

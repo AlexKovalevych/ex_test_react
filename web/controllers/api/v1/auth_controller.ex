@@ -15,7 +15,7 @@ defmodule Gt.Api.V1.AuthController do
         case User.signin(auth_params) do
             {:ok, user} ->
                 conn = save_to_session(conn, :current_user, user.id)
-                cond do
+                conn = cond do
                     User.no_two_factor(user) -> save_to_session(conn, :is_two_factor, true)
                     true ->
                         # generate sms or qrcode here
@@ -24,6 +24,7 @@ defmodule Gt.Api.V1.AuthController do
                 if User.no_two_factor(user) do
                     login_success(conn, user)
                 else
+                    user = User.secure_phone(user)
                     cond do
                         User.two_factor(user, :google) ->
                             conn
@@ -39,7 +40,7 @@ defmodule Gt.Api.V1.AuthController do
         end
     end
 
-    def auth(conn, %{"two_factor" => code}) do
+    def two_factor(conn, %{"code" => code}) do
         conn = conn |> fetch_session
         user_id = get_session(conn, :current_user)
 
@@ -56,7 +57,7 @@ defmodule Gt.Api.V1.AuthController do
                     save_to_session(conn, :is_two_factor, true)
                     login_success(conn, user)
                 else
-                    login_error(conn, "Invalid sms code")
+                    login_error(conn, "login.invalid_sms_code")
                 end
             end
         end

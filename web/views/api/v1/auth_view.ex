@@ -1,9 +1,6 @@
 defmodule Gt.Api.V1.AuthView do
     use Gt.Web, :view
 
-    def render("show.json", %{user: user}) do
-        %{user: user}
-    end
     def render("show.json", %{jwt: jwt, user: user}) do
         %{
             jwt: jwt,
@@ -15,6 +12,9 @@ defmodule Gt.Api.V1.AuthView do
             url: url,
             user: user
         }
+    end
+    def render("show.json", %{user: user}) do
+        %{user: user}
     end
 
     def render("error.json", %{error: error}) do

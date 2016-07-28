@@ -30,6 +30,7 @@ defmodule Gt.Router do
 
         scope "/v1" do
             post "/auth", Api.V1.AuthController, :auth
+            post "/two_factor", Api.V1.AuthController, :two_factor
             delete "/auth", Api.V1.AuthController, :delete
             get "/current_user", Api.V1.CurrentUserController, :show
         end

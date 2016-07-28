@@ -10,21 +10,21 @@ defmodule Gt.Fixtures.User do
         {
             "alex@example.com",
             permissions,
-            'none',
+            "none",
             "06312345678",
             true
         },
         {
             "admin@example.com",
             permissions,
-            'sms',
+            "sms",
             "06312345678",
             true
         },
         {
             "test@example.com",
             permissions,
-            'google',
+            "google",
             "06312345678",
             false
         }

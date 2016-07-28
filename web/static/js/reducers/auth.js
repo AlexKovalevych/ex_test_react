@@ -22,7 +22,9 @@ export default function reducer(state = initialState, action = {}) {
             error: action.error
         };
     case 'AUTH_LOGOUT':
-        return initialState;
+        localStorage.removeItem('jwtToken');
+        window.location = '/login';
+        return {...state};
     default:
         return state;
     }

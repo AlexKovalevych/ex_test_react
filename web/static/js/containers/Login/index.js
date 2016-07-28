@@ -10,6 +10,9 @@ import Translate from 'react-translate-component';
 import counterpart from 'counterpart';
 
 const styles = {
+    button: {
+        margin: '20px'
+    },
     paper: {
         padding: '0 20px'
     },
@@ -27,6 +30,11 @@ class Login extends React.Component {
 
     static contextTypes = {
         router: PropTypes.object.isRequired
+    }
+
+    constructor(props) {
+        super(props);
+        this.state = {code: null};
     }
 
     resetError() {
@@ -56,6 +64,10 @@ class Login extends React.Component {
         dispatch(authActions.twoFactor(twoFactor.input.value));
     }
 
+    onChangeCode(e) {
+        this.setState({code: e.target.value});
+    }
+
     render() {
         let error;
         if (this.props.error) {
@@ -73,25 +85,28 @@ class Login extends React.Component {
                                 <img src="/images/logo.png" alt="logo" />
                             </IndexLink>
                             <Paper zDepth={2} style={styles.paper}>
+                                <div style={{padding: 16}}>
+                                    <Translate content="login.sms_sent" phone={this.props.user.phoneNumber} />
+                                </div>
+                                <Divider />
                                 <TextField
                                     hintText={<Translate content="form.sms_code" />}
+                                    floatingLabelText={<Translate content="form.sms_code" />}
                                     ref="twoFactor"
                                     id="twoFactor"
                                     underlineShow={false}
                                     fullWidth={true}
                                     errorText={error}
                                 />
+                                <div>
+                                    <RaisedButton
+                                        label={<Translate content="form.login" />}
+                                        primary={true}
+                                        style={styles.button}
+                                        onMouseUp={this.onTwoFactorSubmit.bind(this)}
+                                    />
+                                </div>
                             </Paper>
-                            <div>
-                                <RaisedButton
-                                    label={<Translate content="form.login" />}
-                                    primary={true}
-                                    style={{
-                                        margin: '20px'
-                                    }}
-                                    onMouseUp={this.onTwoFactorSubmit.bind(this)}
-                                />
-                            </div>
                         </div>
                     </div>
                 );
@@ -104,6 +119,9 @@ class Login extends React.Component {
                             </IndexLink>
                             <Paper zDepth={2} style={styles.paper}>
                                 <TextField
+                                    defaultValue=""
+                                    value={this.state.code}
+                                    onChange={this.onChangeCode.bind(this)}
                                     hintText={<Translate content="form.google_code" />}
                                     ref="twoFactor"
                                     id="twoFactor"
@@ -111,17 +129,15 @@ class Login extends React.Component {
                                     fullWidth={true}
                                     errorText={error}
                                 />
+                                <div>
+                                    <RaisedButton
+                                        label={<Translate content="form.login" />}
+                                        primary={true}
+                                        style={styles.button}
+                                        onMouseUp={this.onTwoFactorSubmit.bind(this)}
+                                    />
+                                </div>
                             </Paper>
-                            <div>
-                                <RaisedButton
-                                    label={<Translate content="form.login" />}
-                                    primary={true}
-                                    style={{
-                                        margin: '20px'
-                                    }}
-                                    onMouseUp={this.onTwoFactorSubmit.bind(this)}
-                                />
-                            </div>
                         </div>
                     </div>
                 );
@@ -157,9 +173,7 @@ class Login extends React.Component {
                             <RaisedButton
                                 label={<Translate content="form.login" />}
                                 primary={true}
-                                style={{
-                                    margin: '20px'
-                                }}
+                                style={styles.button}
                                 onMouseUp={this.onSubmit.bind(this)}
                             />
                         </div>

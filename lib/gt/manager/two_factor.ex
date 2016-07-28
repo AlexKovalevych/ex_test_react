@@ -8,6 +8,6 @@ defmodule Gt.Manager.TwoFactor do
     end
 
     def verify_code(user, code) do
-        true
+        code == "123"
     end
 end
