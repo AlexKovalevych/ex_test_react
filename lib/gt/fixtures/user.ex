@@ -41,13 +41,19 @@ defmodule Gt.Fixtures.User do
     def insert_user(user, project_ids) do
         {email, permissions, authenticated_type, phone, is_admin} = user;
         [pass, _] = String.split(email, "@")
-        Repo.insert!(User.changeset(%User{}, %{
+        user = %{
             email: email,
             password_plain: pass,
             permissions: add(permissions, Map.keys(permissions), project_ids),
             is_admin: is_admin,
             phoneNumber: phone,
             authenticationType: authenticated_type
-        }))
+        }
+        user = if authenticated_type == "sms" do
+            Map.put(user, :code, "123")
+        else
+            user
+        end
+        Repo.insert!(User.changeset(%User{}, user))
     end
 end

@@ -19,7 +19,8 @@ counterpart.registerTranslations('en', {
     },
     login: {
         sms_sent: 'SMS with confirmation code was sent to your phone number (%(phone)s). Please contact site administration if you didn\'t receive it.',
-        invalid_sms_code: 'Invalid sms code'
+        invalid_sms_code: 'Invalid sms code',
+        disabled: 'Your account is disabled. Contact system administrator'
     },
     difference: 'Difference',
     charts: 'Charts',

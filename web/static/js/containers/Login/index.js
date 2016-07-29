@@ -76,7 +76,7 @@ class Login extends React.Component {
         counterpart.setLocale('ru');
 
         let form;
-        if (this.props.user) {
+        if (this.props.user && this.props.user.enabled) {
             switch (this.props.user.authenticationType) {
             case 'sms':
                 form = ([

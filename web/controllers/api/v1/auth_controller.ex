@@ -53,11 +53,11 @@ defmodule Gt.Api.V1.AuthController do
             if is_nil(user) do
                 login_error(conn)
             else
-                if verify_code(user, code) do
-                    save_to_session(conn, :is_two_factor, true)
-                    login_success(conn, user)
-                else
-                    login_error(conn, "login.invalid_sms_code")
+                case verify_code(user, code) do
+                    :ok ->
+                        save_to_session(conn, :is_two_factor, true)
+                        login_success(conn, user)
+                    {:error, message} -> login_error(conn, message)
                 end
             end
         end

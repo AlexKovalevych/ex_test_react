@@ -3,6 +3,7 @@ defmodule Gt.Model.User do
 
     @derive {Poison.Encoder, only: [
         :id,
+        :enabled,
         :email,
         :permissions,
         :settings,
@@ -102,9 +103,13 @@ defmodule Gt.Model.User do
     defp cs_encrypt_password(cs), do: cs
 
     defp check_password(%__MODULE__{password: hash} = user, password) do
-        case Comeonin.Bcrypt.checkpw(password, hash) do
-            true -> {:ok, user}
-            false -> {:error, "validation.invalid_email_password"}
+        if user.enabled do
+            case Comeonin.Bcrypt.checkpw(password, hash) do
+                true -> {:ok, user}
+                false -> {:error, "validation.invalid_email_password"}
+            end
+        else
+            {:error, "login.disabled"}
         end
     end
     defp check_password(nil, _password) do
