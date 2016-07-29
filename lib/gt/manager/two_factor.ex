@@ -19,11 +19,11 @@ defmodule Gt.Manager.TwoFactor do
                     user
                     |> change(%{failedLoginCount: 0})
                     |> apply_changes
-                    Gt.Repo.update(user)
+                    |> Gt.Repo.update
                     :ok
                 false ->
                     changeset = %{failedLoginCount: user.failedLoginCount + 1}
-                    changeset = case changeset.failedLoginCount > @failed_login_limit do
+                    changeset = case changeset.failedLoginCount >= @failed_login_limit do
                         true -> Map.put(changeset, :enabled, false)
                         false -> changeset
                     end

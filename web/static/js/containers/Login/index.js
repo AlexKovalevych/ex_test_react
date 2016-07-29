@@ -25,6 +25,7 @@ class Login extends React.Component {
     static propTypes = {
         user: PropTypes.object,
         dispatch: PropTypes.func,
+        smsSent: PropTypes.bool,
         error: PropTypes.string
     };
 
@@ -53,8 +54,13 @@ class Login extends React.Component {
         const { email, password } = this.refs;
         const { dispatch } = this.props;
         const params = {email: email.input.value, password: password.input.value};
-
         dispatch(authActions.login(params));
+    }
+
+    onResendSms(e) {
+        e.preventDefault();
+        const { dispatch } = this.props;
+        dispatch(authActions.sendSms());
     }
 
     onTwoFactorSubmit(e) {
@@ -79,87 +85,103 @@ class Login extends React.Component {
         if (this.props.user && this.props.user.enabled) {
             switch (this.props.user.authenticationType) {
             case 'sms':
-                form = ([
-                    <div style={{padding: 16}} key="message">
-                        <Translate content="login.sms_sent" phone={this.props.user.phoneNumber} />
-                    </div>,
-                    <Divider key="divider" />,
-                    <TextField
-                        key="smsInput"
-                        hintText={<Translate content="form.sms_code" />}
-                        floatingLabelText={<Translate content="form.sms_code" />}
-                        ref="twoFactor"
-                        id="twoFactor"
-                        underlineShow={false}
-                        fullWidth={true}
-                        errorText={error}
-                    />,
-                    <div key="actions">
-                        <RaisedButton
-                            label={<Translate content="form.login" />}
-                            primary={true}
-                            style={styles.button}
-                            onMouseUp={this.onTwoFactorSubmit.bind(this)}
+                form = (
+                    <form onSubmit={this.onTwoFactorSubmit.bind(this)}>
+                        <div style={{padding: 16}}>
+                            <Translate content="login.sms_sent" phone={this.props.user.phoneNumber} />
+                        </div>
+                        <Divider />
+                        <TextField
+                            hintText={<Translate content="form.sms_code" />}
+                            floatingLabelText={<Translate content="form.sms_code" />}
+                            ref="twoFactor"
+                            id="twoFactor"
+                            underlineShow={false}
+                            fullWidth={true}
+                            errorText={error}
                         />
-                    </div>
-                ]);
+                        <div>
+                            {
+                                this.props.smsSent && (
+                                    <h6 style={{margin: 0}}>
+                                        <Translate content="login.sms_was_sent" />
+                                    </h6>
+                                )
+                            }
+                            <RaisedButton
+                                label={<Translate content="form.login" />}
+                                primary={true}
+                                style={styles.button}
+                                onMouseUp={this.onTwoFactorSubmit.bind(this)}
+                            />
+                            <RaisedButton
+                                label={<Translate content="form.sms_resend" />}
+                                style={styles.button}
+                                onMouseUp={this.onResendSms.bind(this)}
+                            />
+                        </div>
+                    </form>
+                );
                 break;
             case 'google':
-                form = ([
-                    <TextField
-                        key="googleInput"
-                        defaultValue=""
-                        value={this.state.code}
-                        onChange={this.onChangeCode.bind(this)}
-                        hintText={<Translate content="form.google_code" />}
-                        ref="twoFactor"
-                        id="twoFactor"
-                        underlineShow={false}
-                        fullWidth={true}
-                        errorText={error}
-                    />,
-                    <div key="actions">
-                        <RaisedButton
-                            label={<Translate content="form.login" />}
-                            primary={true}
-                            style={styles.button}
-                            onMouseUp={this.onTwoFactorSubmit.bind(this)}
+                form = (
+                    <form onSubmit={this.onTwoFactorSubmit.bind(this)}>
+                        <TextField
+                            defaultValue=""
+                            value={this.state.code}
+                            onChange={this.onChangeCode.bind(this)}
+                            hintText={<Translate content="form.google_code" />}
+                            ref="twoFactor"
+                            id="twoFactor"
+                            underlineShow={false}
+                            fullWidth={true}
+                            errorText={error}
                         />
-                    </div>
-                ]);
+                        <div>
+                            <RaisedButton
+                                label={<Translate content="form.login" />}
+                                primary={true}
+                                style={styles.button}
+                                onMouseUp={this.onTwoFactorSubmit.bind(this)}
+                            />
+                        </div>
+                    </form>
+                );
                 break;
             }
         } else {
-            form = ([
-                <TextField
-                    key="login"
-                    hintText={<Translate content="form.email" />}
-                    ref="email"
-                    id="email"
-                    underlineShow={false}
-                    fullWidth={true}
-                    errorText={error}
-                />,
-                <Divider key="divider1" />,
-                <TextField
-                    key="password"
-                    type="password"
-                    ref="password"
-                    id="password"
-                    hintText={<Translate content="form.password" />}
-                    underlineShow={false}
-                    fullWidth={true}
-                />,
-                <Divider key="divider2" />,
-                <div key="actions">
-                    <RaisedButton
-                        label={<Translate content="form.login" />}
-                        primary={true}
-                        style={styles.button}
-                        onMouseUp={this.onSubmit.bind(this)}
+            form = (
+                <form onSubmit={this.onSubmit.bind(this)}>
+                    <TextField
+                        hintText={<Translate content="form.email" />}
+                        ref="email"
+                        id="email"
+                        underlineShow={false}
+                        fullWidth={true}
+                        errorText={error}
                     />
-                </div>
-            ]);
+                    <Divider />
+                    <TextField
+                        key="password"
+                        type="password"
+                        ref="password"
+                        id="password"
+                        hintText={<Translate content="form.password" />}
+                        underlineShow={false}
+                        fullWidth={true}
+                    />
+                    <Divider />
+                    <div>
+                        <RaisedButton
+                            type="submit"
+                            label={<Translate content="form.login" />}
+                            primary={true}
+                            style={styles.button}
+                            onMouseUp={this.onSubmit.bind(this)}
+                        />
+                    </div>
+                </form>
+            );
         }
 
         return (

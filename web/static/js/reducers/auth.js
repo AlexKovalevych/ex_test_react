@@ -3,7 +3,8 @@ import setHighchartsLocale from 'managers/HighchartsManager';
 const initialState = {
     user: null,
     qrcodeUrl: null,
-    error: null
+    error: null,
+    smsSent: null
 };
 
 export default function reducer(state = initialState, action = {}) {
@@ -20,6 +21,16 @@ export default function reducer(state = initialState, action = {}) {
         return {
             ...state,
             error: action.error
+        };
+    case 'AUTH_SEND_SMS':
+        return {
+            ...state,
+            'smsSent': true
+        };
+    case 'AUTH_SENT_SMS':
+        return {
+            ...state,
+            smsSent: null
         };
     case 'AUTH_LOGOUT':
         localStorage.removeItem('jwtToken');

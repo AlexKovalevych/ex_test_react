@@ -19,8 +19,9 @@ counterpart.registerTranslations('ru', {
     },
     login: {
         sms_sent: 'На ваш номер (%(phone)s) отправлено сообщение с кодом подтверждения. Если вы не получили код, обратитесь к администрации.',
-        invalid_sms_code: 'Неправильный код из СМС',
-        disabled: 'Ваш аккаунт отключен. Свяжитесь с администратором'
+        invalid_sms_code: 'Неправильный код из SMS',
+        disabled: 'Ваш аккаунт отключен. Свяжитесь с администратором',
+        sms_was_sent: 'SMS было отправлено'
     },
     difference: 'Разница',
     charts: 'Графики',
@@ -59,7 +60,8 @@ counterpart.registerTranslations('ru', {
         email: 'Логин',
         password: 'Пароль',
         login: 'Войти',
-        sms_code: 'СМС код'
+        sms_code: 'SMS код',
+        sms_resend: 'Отправить SMS еще раз'
     },
     validation: {
         invalid_email_password: 'Неправильный логин или пароль'

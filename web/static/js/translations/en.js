@@ -20,7 +20,8 @@ counterpart.registerTranslations('en', {
     login: {
         sms_sent: 'SMS with confirmation code was sent to your phone number (%(phone)s). Please contact site administration if you didn\'t receive it.',
         invalid_sms_code: 'Invalid sms code',
-        disabled: 'Your account is disabled. Contact system administrator'
+        disabled: 'Your account is disabled. Contact system administrator',
+        sms_was_sent: 'SMS was sent'
     },
     difference: 'Difference',
     charts: 'Charts',
@@ -59,7 +60,8 @@ counterpart.registerTranslations('en', {
         email: 'Login',
         password: 'Password',
         login: 'Login',
-        sms_code: 'SMS code'
+        sms_code: 'SMS code',
+        sms_resend: 'Snd SMS again'
     },
     validation: {
         invalid_email_password: 'Invalid email or password'

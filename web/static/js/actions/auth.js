@@ -123,6 +123,37 @@ const authActions = {
         };
     },
 
+    sendSms: () => {
+        return dispatch => {
+            return fetch('/api/v1/send_sms', {
+                method: 'post',
+                headers: buildHeaders(),
+                credentials: 'same-origin'
+            })
+            .then(checkStatus)
+            .then(parseJSON)
+            .then(() => {
+                dispatch({
+                    type: 'AUTH_SEND_SMS'
+                });
+                setTimeout(() => {
+                    dispatch({
+                        type: 'AUTH_SENT_SMS'
+                    });
+                }, 4000);
+            })
+            .catch((error) => {
+                error.response.json()
+                .then((errorJSON) => {
+                    dispatch({
+                        type: 'AUTH_LOGIN_ERROR',
+                        error: errorJSON.error
+                    });
+                });
+            });
+        };
+    },
+
     logout: () => {
         return dispatch => {
             return fetch('/api/v1/auth', {

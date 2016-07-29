@@ -63,6 +63,25 @@ defmodule Gt.Api.V1.AuthController do
         end
     end
 
+    def send_sms(conn, _params) do
+        conn = conn |> fetch_session
+        user_id = get_session(conn, :current_user)
+
+        if is_nil(user_id) do
+            login_error(conn)
+        else
+            user = User
+            |> User.by_id(user_id)
+            |> Repo.one
+            if is_nil(user) do
+                login_error(conn)
+            else
+                # @todo resend sms here
+                conn |> send_resp(200, Poison.encode!(%{}))
+            end
+        end
+    end
+
     def delete(conn, _) do
         {:ok, claims} = Guardian.Plug.claims(conn)
 
