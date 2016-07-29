@@ -3,6 +3,8 @@ defmodule Gt.Manager.TwoFactor do
     import Ecto.Changeset
 
     @failed_login_limit 6
+    @sms_length 8
+    @code_variance 2
 
     def fully_authenticated(conn) do
         user_id = get_session(conn, :current_user)
@@ -33,6 +35,22 @@ defmodule Gt.Manager.TwoFactor do
                     |> Gt.Repo.update
                     {:error, "login.invalid_sms_code"}
             end
+        end
+    end
+
+    @spec generate_code(Gt.Model.User) :: Gt.Model.User
+    def generate_code(user) do
+        case user.authenticationType do
+            "sms" ->
+                code_length = @sms_length - @code_variance + :rand.uniform(@code_variance * 2)
+                code = to_string for n <- 1..code_length, do: to_string(:rand.uniform(10) - 1)
+                {:ok, user} = user
+                |> change(%{code: code})
+                |> apply_changes
+                |> Gt.Repo.update
+                user
+            "google" ->
+                user
         end
     end
 end

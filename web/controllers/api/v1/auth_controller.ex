@@ -1,7 +1,7 @@
 defmodule Gt.Api.V1.AuthController do
     use Gt.Web, :controller
     alias Gt.Model.User
-    import Gt.Manager.TwoFactor, only: [verify_code: 2]
+    import Gt.Manager.TwoFactor, only: [verify_code: 2, generate_code: 1]
 
     plug :scrub_params, "auth" when action in [:auth]
 
@@ -15,11 +15,9 @@ defmodule Gt.Api.V1.AuthController do
         case User.signin(auth_params) do
             {:ok, user} ->
                 conn = save_to_session(conn, :current_user, user.id)
-                conn = cond do
-                    User.no_two_factor(user) -> save_to_session(conn, :is_two_factor, true)
-                    true ->
-                        # generate sms or qrcode here
-                        conn
+                {conn, user} = cond do
+                    User.no_two_factor(user) -> {save_to_session(conn, :is_two_factor, true), user}
+                    true -> {conn, generate_code(user)}
                 end
                 if User.no_two_factor(user) do
                     login_success(conn, user)
@@ -76,7 +74,7 @@ defmodule Gt.Api.V1.AuthController do
             if is_nil(user) do
                 login_error(conn)
             else
-                # @todo resend sms here
+                generate_code(user)
                 conn |> send_resp(200, Poison.encode!(%{}))
             end
         end
