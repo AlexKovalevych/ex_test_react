@@ -6,7 +6,7 @@ import Dashboard from '../containers/Dashboard';
 import Login from '../containers/Login';
 import ErrorPage from '../components/ErrorPage';
 import GtMenu from '../containers/GtMenu';
-import authActions, { setCurrentUser, setSocket } from '../actions/auth';
+import { setCurrentUser, setSocket } from '../actions/auth';
 import Main from '../containers/main';
 import counterpart from 'counterpart';
 
@@ -17,9 +17,6 @@ export default function configRoutes(store) {
         const { user } = auth;
 
         if (typeof window !== 'undefined') {
-            // if (!user && localStorage.getItem('jwtToken')) {
-            //     dispatch(authActions.user());
-            // } else
             if (!user || !localStorage.getItem('jwtToken')) {
                 replace('/login');
             } if (user) {
