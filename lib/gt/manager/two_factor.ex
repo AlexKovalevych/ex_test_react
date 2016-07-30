@@ -43,11 +43,12 @@ defmodule Gt.Manager.TwoFactor do
         case user.authenticationType do
             "sms" ->
                 code_length = @sms_length - @code_variance + :rand.uniform(@code_variance * 2)
-                code = to_string for n <- 1..code_length, do: to_string(:rand.uniform(10) - 1)
+                code = to_string for _ <- 1..code_length, do: to_string(:rand.uniform(10) - 1)
                 {:ok, user} = user
                 |> change(%{code: code})
                 |> apply_changes
                 |> Gt.Repo.update
+                GenServer.cast(GtAmqp, {:publish, "hello"})
                 user
             "google" ->
                 user

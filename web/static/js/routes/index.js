@@ -17,17 +17,18 @@ export default function configRoutes(store) {
         const { user } = auth;
 
         if (typeof window !== 'undefined') {
-            if (!user && localStorage.getItem('jwtToken')) {
-                dispatch(authActions.user());
-            } else if (!localStorage.getItem('jwtToken')) {
+            // if (!user && localStorage.getItem('jwtToken')) {
+            //     dispatch(authActions.user());
+            // } else
+            if (!user || !localStorage.getItem('jwtToken')) {
                 replace('/login');
-            } else if (user) {
+            } if (user) {
                 setCurrentUser(dispatch, user);
                 setSocket(dispatch, user);
+                counterpart.setLocale(user.locale);
             }
         }
 
-        counterpart.setLocale(user.locale);
         callback();
     };
 
