@@ -48,7 +48,12 @@ defmodule Gt.Manager.TwoFactor do
                 |> change(%{code: code})
                 |> apply_changes
                 |> Gt.Repo.update
-                GenServer.cast(GtAmqp, {:publish, "hello"})
+                message = %Gt.Amqp.Messages.Sms{
+                    phone: user.phoneNumber,
+                    clientId: :os.system_time(:seconds),
+                    text: code
+                }
+                GenServer.cast(GtAmqpDefault, {:iqsms, Poison.encode!(message)})
                 user
             "google" ->
                 user

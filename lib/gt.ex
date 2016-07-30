@@ -14,7 +14,7 @@ defmodule Gt do
             # Here you could define other workers and supervisors as children
             # worker(Gt.Worker, [arg1, arg2, arg3]),
             supervisor(Gt.ReactIO, []),
-            worker(Gt.Amqp, [[], [name: GtAmqp]])
+            worker(Gt.Amqp.Connections.Default, [[], [name: GtAmqpDefault]])
         ]
 
         # See http://elixir-lang.org/docs/stable/elixir/Supervisor.html
