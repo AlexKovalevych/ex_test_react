@@ -16,26 +16,43 @@ defmodule Gt.Manager.TwoFactor do
         if user.failedLoginCount > @failed_login_limit do
             {:error, "login.disabled"}
         else
-            case user.code == code do
-                true ->
-                    user
-                    |> change(%{failedLoginCount: 0})
-                    |> apply_changes
-                    |> Gt.Repo.update
-                    :ok
-                false ->
-                    changeset = %{failedLoginCount: user.failedLoginCount + 1}
-                    changeset = case changeset.failedLoginCount >= @failed_login_limit do
-                        true -> Map.put(changeset, :enabled, false)
-                        false -> changeset
+            case user.authenticationType do
+                "sms" ->
+                    if user.code == code do
+                        success_code(user)
+                    else
+                        error_code(user)
+                        {:error, "login.invalid_sms_code"}
                     end
-                    user
-                    |> change(changeset)
-                    |> apply_changes
-                    |> Gt.Repo.update
-                    {:error, "login.invalid_sms_code"}
+                "google" ->
+                    if :pot.valid_totp(code, user.code) do
+                        success_code(user)
+                    else
+                        error_code(user)
+                        {:error, "login.invalid_google_code"}
+                    end
             end
         end
+    end
+
+    defp success_code(user) do
+        user
+        |> change(%{failedLoginCount: 0})
+        |> apply_changes
+        |> Gt.Repo.update
+        :ok
+    end
+
+    defp error_code(user) do
+        changeset = %{failedLoginCount: user.failedLoginCount + 1}
+        changeset = case changeset.failedLoginCount >= @failed_login_limit do
+            true -> Map.put(changeset, :enabled, false)
+            false -> changeset
+        end
+        user
+        |> change(changeset)
+        |> apply_changes
+        |> Gt.Repo.update
     end
 
     @spec generate_code(Gt.Model.User) :: Gt.Model.User
@@ -54,9 +71,21 @@ defmodule Gt.Manager.TwoFactor do
                     text: code
                 }
                 GenServer.cast(GtAmqpDefault, {:iqsms, Poison.encode!(message)})
-                user
             "google" ->
-                user
+                {:ok, user} = user
+                |> change(%{code: generate_google_secret})
+                |> apply_changes
+                |> Gt.Repo.update
         end
+        user
+    end
+
+    def generate_google_secret do
+        :crypto.strong_rand_bytes(10) |> Base.encode32
+    end
+
+    def google_qrcode_url(user) do
+        "https://chart.googleapis.com/chart?cht=qr&chs=200x200&chl=" <>
+        URI.encode_www_form("otpauth://totp/#{user.email}?secret=#{user.code}")
     end
 end

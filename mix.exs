@@ -50,7 +50,8 @@ defmodule Gt.Mixfile do
             {:exprintf, "~> 0.1.6"},
             {:progress_bar, "~> 1.5"},
             {:parallel_stream, "~> 1.0"},
-            {:amqp, "~> 0.1.4"}
+            {:amqp, "~> 0.1.4"},
+            {:pot, "~>0.9.5"}
             # {:nio_google_authenticator, "~> 1.0.1"} Required newer ecto
         ]
     end

@@ -20,6 +20,7 @@ counterpart.registerTranslations('ru', {
     login: {
         sms_sent: 'На ваш номер (%(phone)s) отправлено сообщение с кодом подтверждения. Если вы не получили код, обратитесь к администрации.',
         invalid_sms_code: 'Неправильный код из SMS',
+        invalid_google_code: 'Неправильный код',
         disabled: 'Ваш аккаунт отключен. Свяжитесь с администратором',
         sms_was_sent: 'SMS было отправлено'
     },

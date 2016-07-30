@@ -26,7 +26,8 @@ class Login extends React.Component {
         user: PropTypes.object,
         dispatch: PropTypes.func,
         smsSent: PropTypes.bool,
-        error: PropTypes.string
+        error: PropTypes.string,
+        qrcodeUrl: PropTypes.string
     };
 
     static contextTypes = {
@@ -126,9 +127,8 @@ class Login extends React.Component {
             case 'google':
                 form = (
                     <form onSubmit={this.onTwoFactorSubmit.bind(this)}>
+                        <img src={this.props.qrcodeUrl} />
                         <TextField
-                            defaultValue=""
-                            value={this.state.code}
                             onChange={this.onChangeCode.bind(this)}
                             hintText={<Translate content="form.google_code" />}
                             ref="twoFactor"

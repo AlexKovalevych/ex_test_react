@@ -1,7 +1,7 @@
 defmodule Gt.Api.V1.AuthController do
     use Gt.Web, :controller
     alias Gt.Model.User
-    import Gt.Manager.TwoFactor, only: [verify_code: 2, generate_code: 1]
+    import Gt.Manager.TwoFactor, only: [verify_code: 2, generate_code: 1, google_qrcode_url: 1]
 
     plug :scrub_params, "auth" when action in [:auth]
 
@@ -27,7 +27,7 @@ defmodule Gt.Api.V1.AuthController do
                         User.two_factor(user, :google) ->
                             conn
                             |> put_status(:created)
-                            |> render(Gt.Api.V1.AuthView, "show.json", url: "google.com", user: user)
+                            |> render(Gt.Api.V1.AuthView, "show.json", url: google_qrcode_url(user), user: user)
                         User.two_factor(user, :sms) ->
                             conn
                             |> put_status(:created)
