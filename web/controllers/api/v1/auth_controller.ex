@@ -27,7 +27,11 @@ defmodule Gt.Api.V1.AuthController do
                         User.two_factor(user, :google) ->
                             conn
                             |> put_status(:created)
-                            |> render(Gt.Api.V1.AuthView, "show.json", url: google_qrcode_url(user), user: user)
+                            |> render(Gt.Api.V1.AuthView, "show.json",
+                                url: google_qrcode_url(user),
+                                user: user,
+                                serverTime: :os.system_time(:milli_seconds)
+                            )
                         User.two_factor(user, :sms) ->
                             conn
                             |> put_status(:created)

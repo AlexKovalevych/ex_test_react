@@ -22,7 +22,8 @@ counterpart.registerTranslations('ru', {
         invalid_sms_code: 'Неправильный код из SMS',
         invalid_google_code: 'Неправильный код',
         disabled: 'Ваш аккаунт отключен. Свяжитесь с администратором',
-        sms_was_sent: 'SMS было отправлено'
+        sms_was_sent: 'SMS было отправлено',
+        server_time: 'Внимание! Код, генерируемый вашим телефоном, чувствителен ко времени, установленном в телефоне. Максимальная разница с серверным временем может быть ± 1 минуту. Серверное время:'
     },
     difference: 'Разница',
     charts: 'Графики',
@@ -62,7 +63,8 @@ counterpart.registerTranslations('ru', {
         password: 'Пароль',
         login: 'Войти',
         sms_code: 'SMS код',
-        sms_resend: 'Отправить SMS еще раз'
+        sms_resend: 'Отправить SMS еще раз',
+        google_code: 'Код аутентификации'
     },
     validation: {
         invalid_email_password: 'Неправильный логин или пароль'

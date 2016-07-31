@@ -8,6 +8,8 @@ import TextField from 'material-ui/TextField';
 import RaisedButton from 'material-ui/RaisedButton';
 import Translate from 'react-translate-component';
 import counterpart from 'counterpart';
+import moment from 'moment';
+import formatter from 'managers/Formatter';
 
 const styles = {
     button: {
@@ -27,7 +29,8 @@ class Login extends React.Component {
         dispatch: PropTypes.func,
         smsSent: PropTypes.bool,
         error: PropTypes.string,
-        qrcodeUrl: PropTypes.string
+        qrcodeUrl: PropTypes.string,
+        serverTime: PropTypes.number
     };
 
     static contextTypes = {
@@ -36,7 +39,10 @@ class Login extends React.Component {
 
     constructor(props) {
         super(props);
-        this.state = {code: null};
+        this.state = {
+            code: null,
+            serverTime: null
+        };
     }
 
     resetError() {
@@ -48,6 +54,20 @@ class Login extends React.Component {
 
     componentDidMount() {
         this.resetError();
+    }
+
+    componentWillReceiveProps(newProps) {
+        if (newProps.serverTime && !this.state.serverTime) {
+            this.serverTimeInterval = window.setInterval(() => {
+                let serverTime = this.state.serverTime.clone().add(1, 's');
+                this.setState({serverTime});
+            }, 1000);
+            this.setState({serverTime: moment(newProps.serverTime)});
+        }
+    }
+
+    componentWillUnmount() {
+        clearInterval(this.serverTimeInterval);
     }
 
     onSubmit(e) {
@@ -127,7 +147,13 @@ class Login extends React.Component {
             case 'google':
                 form = (
                     <form onSubmit={this.onTwoFactorSubmit.bind(this)}>
-                        <img src={this.props.qrcodeUrl} />
+                        <div>
+                            <img src={this.props.qrcodeUrl} />
+                        </div>
+                        <div>
+                            <Translate content="login.server_time" />
+                            <b>{formatter.formatDaytime(this.state.serverTime)}</b>
+                        </div>
                         <TextField
                             onChange={this.onChangeCode.bind(this)}
                             hintText={<Translate content="form.google_code" />}

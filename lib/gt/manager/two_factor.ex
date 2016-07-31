@@ -2,6 +2,7 @@ defmodule Gt.Manager.TwoFactor do
     import Plug.Conn
     import Ecto.Changeset
 
+    @server "Globotunes"
     @failed_login_limit 6
     @sms_length 8
     @code_variance 2
@@ -26,6 +27,9 @@ defmodule Gt.Manager.TwoFactor do
                     end
                 "google" ->
                     if :pot.valid_totp(code, user.googleSecret) do
+                        user = user
+                        |> change(%{showGoogleCode: false})
+                        |> apply_changes
                         success_code(user)
                     else
                         error_code(user)
@@ -91,12 +95,8 @@ defmodule Gt.Manager.TwoFactor do
 
     def google_qrcode_url(user) do
         if user.showGoogleCode do
-            user
-            |> change(%{showGoogleCode: false})
-            |> apply_changes
-            |> Gt.Repo.update
             "https://chart.googleapis.com/chart?cht=qr&chs=200x200&chl=" <>
-            URI.encode_www_form("otpauth://totp/#{user.email}?secret=#{user.googleSecret}")
+            URI.encode_www_form("otpauth://totp/#{@server}:#{user.email}?secret=#{user.googleSecret}")
         else
             nil
         end

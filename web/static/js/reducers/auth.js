@@ -4,7 +4,8 @@ const initialState = {
     user: null,
     qrcodeUrl: null,
     error: null,
-    smsSent: null
+    smsSent: null,
+    serverTime: null
 };
 
 export default function reducer(state = initialState, action = {}) {
@@ -15,6 +16,7 @@ export default function reducer(state = initialState, action = {}) {
             ...state,
             user: action.currentUser,
             qrcodeUrl: action.qrcodeUrl,
+            serverTime: action.serverTime,
             error: null
         };
     case 'AUTH_LOGIN_ERROR':

@@ -22,10 +22,12 @@ export default function configRoutes(store) {
             } if (user) {
                 setCurrentUser(dispatch, user);
                 setSocket(dispatch, user);
-                counterpart.setLocale(user.locale);
             }
         }
 
+        if (user) {
+            counterpart.setLocale(user.locale);
+        }
         callback();
     };
 

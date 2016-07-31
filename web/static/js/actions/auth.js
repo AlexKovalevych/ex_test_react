@@ -26,11 +26,12 @@ function parseJSON(response) {
     return response.json();
 }
 
-export function setCurrentUser(dispatch, currentUser, qrcodeUrl=null) {
+export function setCurrentUser(dispatch, currentUser, qrcodeUrl=null, serverTime=null) {
     dispatch({
         type: 'CURRENT_USER',
         currentUser,
-        qrcodeUrl
+        qrcodeUrl,
+        serverTime
     });
 }
 
@@ -77,7 +78,7 @@ const authActions = {
                 } else {
                     switch (data.user.authenticationType) {
                     case 'google':
-                        setCurrentUser(dispatch, data.user, data.url);
+                        setCurrentUser(dispatch, data.user, data.url, data.serverTime);
                         break;
                     case 'sms':
                         setCurrentUser(dispatch, data.user);
