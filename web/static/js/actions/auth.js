@@ -73,8 +73,10 @@ const authActions = {
             .then(checkStatus)
             .then(parseJSON)
             .then(data => {
-                if (!data.user.authenticationType || data.user.authenticationType == 'none') {
-                    setSocket(dispatch, data.user, '/');
+                if (data.jwt || data.user.authenticationType == 'none') {
+                    localStorage.setItem('jwtToken', data.jwt);
+                    setCurrentUser(dispatch, data.user);
+                    dispatch(push('/'));
                 } else {
                     switch (data.user.authenticationType) {
                     case 'google':

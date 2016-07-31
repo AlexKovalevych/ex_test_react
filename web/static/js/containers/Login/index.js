@@ -57,10 +57,11 @@ class Login extends React.Component {
     }
 
     componentWillReceiveProps(newProps) {
+        let component = this;
         if (newProps.serverTime && !this.state.serverTime) {
             this.serverTimeInterval = window.setInterval(() => {
-                let serverTime = this.state.serverTime.clone().add(1, 's');
-                this.setState({serverTime});
+                let serverTime = component.state.serverTime.clone().add(1, 's');
+                component.setState({serverTime});
             }, 1000);
             this.setState({serverTime: moment(newProps.serverTime)});
         }
@@ -133,7 +134,6 @@ class Login extends React.Component {
                                 label={<Translate content="form.login" />}
                                 primary={true}
                                 style={styles.button}
-                                onMouseUp={this.onTwoFactorSubmit.bind(this)}
                             />
                             <RaisedButton
                                 label={<Translate content="form.sms_resend" />}
@@ -168,7 +168,6 @@ class Login extends React.Component {
                                 label={<Translate content="form.login" />}
                                 primary={true}
                                 style={styles.button}
-                                onMouseUp={this.onTwoFactorSubmit.bind(this)}
                             />
                         </div>
                     </form>
@@ -203,7 +202,6 @@ class Login extends React.Component {
                             label={<Translate content="form.login" />}
                             primary={true}
                             style={styles.button}
-                            onMouseUp={this.onSubmit.bind(this)}
                         />
                     </div>
                 </form>
@@ -218,6 +216,36 @@ class Login extends React.Component {
                     </IndexLink>
                     <Paper zDepth={2} style={styles.paper}>{form}</Paper>
                 </div>
+                {
+                    this.props.user &&
+                    this.props.user.enabled &&
+                    this.props.user.authenticationType == 'google' &&
+                    (
+                        <div style={{margin: '20px auto'}}>
+                            <a
+                                className='storeLink'
+                                target="_blank"
+                                href="https://itunes.apple.com/ua/app/google-authenticator/id388497605?mt=8"
+                            >
+                                <img src="/images/button_app_store.png" width="150" height="44" />
+                            </a>
+                            <a
+                                className='storeLink'
+                                target="_blank"
+                                href="http://apps.microsoft.com/windows/en-us/app/google-authenticator/7ea6de74-dddb-47df-92cb-40afac4d38bb"
+                            >
+                                <img src="/images/button_windows_store.png" width="150" height="44" />
+                            </a>
+                            <a
+                                className='storeLink'
+                                target="_blank"
+                                href="https://play.google.com/store/apps/details?id=com.google.android.apps.authenticator2"
+                            >
+                                <img src="/images/button_play_store.png" width="150" height="44" />
+                            </a>
+                        </div>
+                    )
+                }
             </div>
         );
     }
