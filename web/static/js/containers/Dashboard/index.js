@@ -40,9 +40,6 @@ class Dashboard extends React.Component {
         } else {
             dispatch(spinnerActions.stop());
         }
-        // if (props.ws.channel && !props.data.charts) {
-        //     dispatch(dashboardActions.loadCharts({period: this.props.user.settings.dashboardPeriod}));
-        // }
     }
 
     componentDidMount() {

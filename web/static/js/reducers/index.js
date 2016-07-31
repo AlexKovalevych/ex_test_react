@@ -5,6 +5,7 @@ import dashboard from './dashboard';
 import ws from './ws';
 import menu from './menu';
 import modal from './modal';
+import users from './users';
 import error from './error';
 import { pendingTasksReducer as pendingTasks } from './spinner';
 
@@ -16,5 +17,6 @@ export default combineReducers({
     auth,
     modal,
     dashboard,
+    users,
     ws
 });

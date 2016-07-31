@@ -13,6 +13,7 @@ import Translate from 'react-translate-component';
 import Modal from 'containers/Modal';
 import Spinner from 'components/Spinner';
 import ErrorSnackbar from 'containers/ErrorSnackbar';
+import GtMenu from 'containers/GtMenu';
 
 class App extends React.Component {
     static propTypes = {
@@ -59,7 +60,7 @@ class App extends React.Component {
 
         return (
             <div>
-                {this.props.menu}
+                <GtMenu />
                 <Toolbar>
                     <ToolbarGroup firstChild={true}>
                         <IconButton
