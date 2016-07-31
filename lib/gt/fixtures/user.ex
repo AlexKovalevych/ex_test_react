@@ -50,7 +50,7 @@ defmodule Gt.Fixtures.User do
             authenticationType: authenticated_type
         }
         user = if authenticated_type == "sms" do
-            Map.put(user, :code, "123")
+            Map.put(user, :smsCode, "123")
         else
             user
         end

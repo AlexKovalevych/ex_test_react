@@ -18,14 +18,14 @@ defmodule Gt.Manager.TwoFactor do
         else
             case user.authenticationType do
                 "sms" ->
-                    if user.code == code do
+                    if user.smsCode == code do
                         success_code(user)
                     else
                         error_code(user)
                         {:error, "login.invalid_sms_code"}
                     end
                 "google" ->
-                    if :pot.valid_totp(code, user.code) do
+                    if :pot.valid_totp(code, user.googleSecret) do
                         success_code(user)
                     else
                         error_code(user)
@@ -62,7 +62,7 @@ defmodule Gt.Manager.TwoFactor do
                 code_length = @sms_length - @code_variance + :rand.uniform(@code_variance * 2)
                 code = to_string for _ <- 1..code_length, do: to_string(:rand.uniform(10) - 1)
                 {:ok, user} = user
-                |> change(%{code: code})
+                |> change(%{smsCode: code})
                 |> apply_changes
                 |> Gt.Repo.update
                 message = %Gt.Amqp.Messages.Sms{
@@ -71,13 +71,18 @@ defmodule Gt.Manager.TwoFactor do
                     text: code
                 }
                 GenServer.cast(GtAmqpDefault, {:iqsms, Poison.encode!(message)})
+                user
             "google" ->
-                {:ok, user} = user
-                |> change(%{code: generate_google_secret})
-                |> apply_changes
-                |> Gt.Repo.update
+                case !user.googleSecret do
+                    true ->
+                        {:ok, user} = user
+                        |> change(%{googleSecret: generate_google_secret})
+                        |> apply_changes
+                        |> Gt.Repo.update
+                        user
+                    false -> user
+                end
         end
-        user
     end
 
     def generate_google_secret do
@@ -85,7 +90,15 @@ defmodule Gt.Manager.TwoFactor do
     end
 
     def google_qrcode_url(user) do
-        "https://chart.googleapis.com/chart?cht=qr&chs=200x200&chl=" <>
-        URI.encode_www_form("otpauth://totp/#{user.email}?secret=#{user.code}")
+        if user.showGoogleCode do
+            user
+            |> change(%{showGoogleCode: false})
+            |> apply_changes
+            |> Gt.Repo.update
+            "https://chart.googleapis.com/chart?cht=qr&chs=200x200&chl=" <>
+            URI.encode_www_form("otpauth://totp/#{user.email}?secret=#{user.googleSecret}")
+        else
+            nil
+        end
     end
 end

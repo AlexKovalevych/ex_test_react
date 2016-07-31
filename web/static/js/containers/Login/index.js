@@ -89,7 +89,7 @@ class Login extends React.Component {
                 form = (
                     <form onSubmit={this.onTwoFactorSubmit.bind(this)}>
                         <div style={{padding: 16}}>
-                            <Translate content="login.sms_sent" phone={this.props.user.phoneNumber} />
+                            <Translate content="login.sms_sent" phone={this.props.user.securePhoneNumber} />
                         </div>
                         <Divider />
                         <TextField

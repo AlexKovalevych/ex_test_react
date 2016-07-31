@@ -10,7 +10,7 @@ defmodule Gt.Model.User do
         :is_admin,
         :locale,
         :authenticationType,
-        :phoneNumber
+        :securePhoneNumber
     ]}
 
     @collection "users"
@@ -31,9 +31,12 @@ defmodule Gt.Model.User do
         field :locale, :string, default: "ru"
         field :authenticationType, :string, default: "sms"
         field :phoneNumber, :string
-        field :code, :string
+        field :smsCode, :string
+        field :googleSecret, :string
         field :failedLoginCount, :integer, default: 0
         field :enabled, :boolean, default: true
+        field :showGoogleCode, :boolean, default: true
+        field :securePhoneNumber, :string, virtual: true
 
         timestamps
     end
@@ -49,7 +52,7 @@ defmodule Gt.Model.User do
         failedLoginCount
         enabled
     )
-    @optional_fields ~w(password locale code)
+    @optional_fields ~w(password locale smsCode googleSecret showGoogleCode)
 
     def changeset(model, params \\ :empty) do
         model
@@ -72,7 +75,7 @@ defmodule Gt.Model.User do
         {_, c} = String.split_at(b, -2)
         phone = a <> "****" <> c
         user
-        |> change(%{phoneNumber: phone})
+        |> change(%{securePhoneNumber: phone})
         |> apply_changes
     end
 
