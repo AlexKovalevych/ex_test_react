@@ -7,6 +7,16 @@ defmodule Gt.Api.V1.AuthView do
             user: user
         }
     end
+    def render("show.json", %{url: url, user: user, serverTime: serverTime}) do
+        %{
+            url: url,
+            user: user,
+            serverTime: serverTime
+        }
+    end
+    def render("show.json", %{user: user}) do
+        %{user: user}
+    end
 
     def render("error.json", %{error: error}) do
         %{error: error}

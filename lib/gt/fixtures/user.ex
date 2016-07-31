@@ -10,16 +10,22 @@ defmodule Gt.Fixtures.User do
         {
             "alex@example.com",
             permissions,
+            "none",
+            "06312345678",
             true
         },
         {
             "admin@example.com",
             permissions,
+            "sms",
+            "06312345678",
             true
         },
         {
             "test@example.com",
             permissions,
+            "google",
+            "06312345678",
             false
         }
     ]
@@ -33,13 +39,21 @@ defmodule Gt.Fixtures.User do
     end
 
     def insert_user(user, project_ids) do
-        {email, permissions, is_admin} = user;
+        {email, permissions, authenticated_type, phone, is_admin} = user;
         [pass, _] = String.split(email, "@")
-        Repo.insert!(User.changeset(%User{}, %{
+        user = %{
             email: email,
             password_plain: pass,
             permissions: add(permissions, Map.keys(permissions), project_ids),
-            is_admin: is_admin
-        }))
+            is_admin: is_admin,
+            phoneNumber: phone,
+            authenticationType: authenticated_type
+        }
+        user = case authenticated_type do
+            "sms" -> Map.put(user, :smsCode, "123")
+            "google" -> Map.put(user, :showGoogleCode, true)
+            "none" -> user
+        end
+        Repo.insert!(User.changeset(%User{}, user))
     end
 end

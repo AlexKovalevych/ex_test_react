@@ -17,6 +17,14 @@ counterpart.registerTranslations('en', {
         Nov: 'Nov',
         Dec: 'Dec'
     },
+    login: {
+        sms_sent: 'SMS with confirmation code was sent to your phone number (%(phone)s). Please contact site administration if you didn\'t receive it.',
+        invalid_sms_code: 'Invalid sms code',
+        invalid_google_code: 'Invalid code',
+        disabled: 'Your account is disabled. Contact system administrator',
+        sms_was_sent: 'SMS was sent',
+        server_time: 'Warning! Generated code is sensitive to the time set at your phone. Maximum difference with server time may be ± 1 minute. Server time:'
+    },
     difference: 'Difference',
     charts: 'Charts',
     menu: {
@@ -53,7 +61,10 @@ counterpart.registerTranslations('en', {
     form: {
         email: 'Login',
         password: 'Password',
-        login: 'Login'
+        login: 'Login',
+        sms_code: 'SMS code',
+        sms_resend: 'Snd SMS again',
+        google_code: 'Authentication code'
     },
     validation: {
         invalid_email_password: 'Invalid email or password'

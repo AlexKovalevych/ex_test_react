@@ -22,7 +22,7 @@ defmodule Gt.Mixfile do
         [mod: {Gt, []},
          applications: [:phoenix, :phoenix_html, :cowboy, :logger, :gettext,
                         :phoenix_ecto, :mongodb_ecto, :std_json_io, :guardian, :comeonin,
-                        :timex]]
+                        :timex, :amqp]]
     end
 
     # Specifies which paths to compile per environment.
@@ -49,7 +49,9 @@ defmodule Gt.Mixfile do
             {:tzdata, "~> 0.1.8", override: true},
             {:exprintf, "~> 0.1.6"},
             {:progress_bar, "~> 1.5"},
-            {:parallel_stream, "~> 1.0"}
+            {:parallel_stream, "~> 1.0"},
+            {:amqp, "~> 0.1.4"},
+            {:pot, "~>0.9.5"}
             # {:nio_google_authenticator, "~> 1.0.1"} Required newer ecto
         ]
     end

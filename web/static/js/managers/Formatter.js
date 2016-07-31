@@ -155,6 +155,14 @@ class Formatter {
     //     return `${dateStr} ${this._getZero(hours)}:${this._getZero(minutes)}:${this._getZero(seconds)}`;
     // }
 
+    formatDaytime(date) {
+        let dateObj = new Date(date);
+        let hours = dateObj.getHours();
+        let minutes = dateObj.getMinutes();
+        let seconds = dateObj.getSeconds();
+        return `${this._getZero(hours)}:${this._getZero(minutes)}:${this._getZero(seconds)}`;
+    }
+
     // getMonthNamesByRange(start, end) {
     //     return this.getMonthsByRange(start, end).map((v) => {
     //         return this.formatMonth(v.toString());
@@ -189,12 +197,12 @@ class Formatter {
         return string.charAt(0).toUpperCase() + string.slice(1);
     }
 
-    // _getZero(value) {
-    //     if (value < 10) {
-    //         return `0${value}`;
-    //     }
-    //     return value;
-    // }
+    _getZero(value) {
+        if (value < 10) {
+            return `0${value}`;
+        }
+        return value;
+    }
 }
 
 export default new Formatter();

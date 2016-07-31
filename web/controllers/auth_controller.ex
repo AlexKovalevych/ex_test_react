@@ -24,7 +24,8 @@ defmodule Gt.AuthController do
     def login(conn, _params) do
         conn = conn |> fetch_session
         user_id = get_session(conn, :current_user)
-        if !is_nil(user_id) do
+        is_two_factor = get_session(conn, :is_two_factor)
+        if !is_nil(user_id) && !is_nil(is_two_factor) do
             user = User
             |> User.by_id(user_id)
             |> Repo.one

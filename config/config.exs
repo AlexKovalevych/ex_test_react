@@ -53,6 +53,20 @@ config :gt,
         "permissions",
         "data_sources",
         "smtp_servers"
+    ],
+    amqp: [
+        connections: [
+            default: "amqp://guest:guest@localhost"
+        ],
+        producers: [
+            iqsms: %{
+                connection: :default,
+                exchange: "reactions",
+                queue: "send_sms_iqsms",
+                routing: "sms.iqsms",
+                sender: "iqsms"
+            }
+        ]
     ]
 
 # Configures Elixir's Logger

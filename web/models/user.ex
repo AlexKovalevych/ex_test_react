@@ -1,7 +1,17 @@
 defmodule Gt.Model.User do
     use Gt.Web, :model
 
-    @derive {Poison.Encoder, only: [:id, :email, :permissions, :settings, :is_admin, :locale]}
+    @derive {Poison.Encoder, only: [
+        :id,
+        :enabled,
+        :email,
+        :permissions,
+        :settings,
+        :is_admin,
+        :locale,
+        :authenticationType,
+        :securePhoneNumber
+    ]}
 
     @collection "users"
 
@@ -19,12 +29,30 @@ defmodule Gt.Model.User do
         }
         field :is_admin, :boolean, default: false
         field :locale, :string, default: "ru"
+        field :authenticationType, :string, default: "sms"
+        field :phoneNumber, :string
+        field :smsCode, :string
+        field :googleSecret, :string
+        field :failedLoginCount, :integer, default: 0
+        field :enabled, :boolean, default: true
+        field :showGoogleCode, :boolean, default: true
+        field :securePhoneNumber, :string, virtual: true
 
         timestamps
     end
 
-    @required_fields ~w(email password_plain permissions settings is_admin)
-    @optional_fields ~w(password locale)
+    @required_fields ~w(
+        email
+        password_plain
+        permissions
+        settings
+        is_admin
+        authenticationType
+        phoneNumber
+        failedLoginCount
+        enabled
+    )
+    @optional_fields ~w(password locale smsCode googleSecret showGoogleCode)
 
     def changeset(model, params \\ :empty) do
         model
@@ -42,6 +70,26 @@ defmodule Gt.Model.User do
     #     |> Repo.insert()
     # end
 
+    def secure_phone(user) do
+        {a, b} = String.split_at(user.phoneNumber, -6)
+        {_, c} = String.split_at(b, -2)
+        phone = a <> "****" <> c
+        user
+        |> change(%{securePhoneNumber: phone})
+        |> apply_changes
+    end
+
+    def no_two_factor(user) do
+        !user.authenticationType || user.authenticationType == "none"
+    end
+
+    def two_factor(user, :google) do
+        user.authenticationType == "google"
+    end
+    def two_factor(user, :sms) do
+        user.authenticationType == "sms"
+    end
+
     def signin(params) do
         email = Map.get(params, "email", "")
         email = if is_nil(email), do: "", else: email
@@ -58,9 +106,13 @@ defmodule Gt.Model.User do
     defp cs_encrypt_password(cs), do: cs
 
     defp check_password(%__MODULE__{password: hash} = user, password) do
-        case Comeonin.Bcrypt.checkpw(password, hash) do
-            true -> {:ok, user}
-            false -> {:error, "validation.invalid_email_password"}
+        if user.enabled do
+            case Comeonin.Bcrypt.checkpw(password, hash) do
+                true -> {:ok, user}
+                false -> {:error, "validation.invalid_email_password"}
+            end
+        else
+            {:error, "login.disabled"}
         end
     end
     defp check_password(nil, _password) do

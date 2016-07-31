@@ -26,7 +26,16 @@ function parseJSON(response) {
     return response.json();
 }
 
-export function setCurrentUser(dispatch, user, redirectPath) {
+export function setCurrentUser(dispatch, currentUser, qrcodeUrl=null, serverTime=null) {
+    dispatch({
+        type: 'CURRENT_USER',
+        currentUser,
+        qrcodeUrl,
+        serverTime
+    });
+}
+
+export function setSocket(dispatch, user, redirectPath) {
     const socket = new Socket('/socket', {
         params: { token: localStorage.getItem('jwtToken') },
         logger: (kind, msg, data) => {
@@ -35,14 +44,12 @@ export function setCurrentUser(dispatch, user, redirectPath) {
     });
 
     socket.connect();
-
     const channel = socket.channel(`users:${user.id}`);
 
     if (channel.state != 'joined') {
         channel.join().receive('ok', () => {
             dispatch({
-                type: 'CURRENT_USER',
-                currentUser: user,
+                type: 'SOCKER_JOINED',
                 socket: socket,
                 channel: channel
             });
@@ -57,7 +64,6 @@ const authActions = {
     login: (params) => {
         return dispatch => {
             const body = JSON.stringify({auth: params});
-
             return fetch('/api/v1/auth', {
                 method: 'post',
                 headers: buildHeaders(),
@@ -66,9 +72,78 @@ const authActions = {
             })
             .then(checkStatus)
             .then(parseJSON)
+            .then(data => {
+                if (data.jwt || data.user.authenticationType == 'none') {
+                    localStorage.setItem('jwtToken', data.jwt);
+                    setCurrentUser(dispatch, data.user);
+                    dispatch(push('/'));
+                } else {
+                    switch (data.user.authenticationType) {
+                    case 'google':
+                        setCurrentUser(dispatch, data.user, data.url, data.serverTime);
+                        break;
+                    case 'sms':
+                        setCurrentUser(dispatch, data.user);
+                        break;
+                    }
+                }
+            })
+            .catch((error) => {
+                error.response.json()
+                .then((errorJSON) => {
+                    dispatch({
+                        type: 'AUTH_LOGIN_ERROR',
+                        error: errorJSON.error
+                    });
+                });
+            });
+        };
+    },
+
+    twoFactor: (code) => {
+        return dispatch => {
+            return fetch('/api/v1/two_factor', {
+                method: 'post',
+                headers: buildHeaders(),
+                body: JSON.stringify({code}),
+                credentials: 'same-origin'
+            })
+            .then(checkStatus)
+            .then(parseJSON)
             .then((data) => {
                 localStorage.setItem('jwtToken', data.jwt);
-                setCurrentUser(dispatch, data.user, '/');
+                setSocket(dispatch, data.user, '/');
+            })
+            .catch((error) => {
+                error.response.json()
+                .then((errorJSON) => {
+                    dispatch({
+                        type: 'AUTH_LOGIN_ERROR',
+                        error: errorJSON.error
+                    });
+                });
+            });
+        };
+    },
+
+    sendSms: () => {
+        return dispatch => {
+            return fetch('/api/v1/send_sms', {
+                method: 'post',
+                headers: buildHeaders(),
+                credentials: 'same-origin'
+            })
+            .then(checkStatus)
+            .then(parseJSON)
+            .then(() => {
+                dispatch({
+                    type: 'AUTH_SEND_SMS'
+                });
+                setTimeout(() => {
+                    dispatch({
+                        type: 'AUTH_SENT_SMS'
+                    });
+                }, 4000);
             })
             .catch((error) => {
                 error.response.json()
@@ -91,8 +166,9 @@ const authActions = {
             })
             .then(checkStatus)
             .then(() => {
-                localStorage.removeItem('jwtToken');
-                dispatch(push('/login'));
+                dispatch({
+                    type: 'AUTH_LOGOUT'
+                });
             });
         };
     },

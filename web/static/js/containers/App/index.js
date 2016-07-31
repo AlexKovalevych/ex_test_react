@@ -16,10 +16,10 @@ import ErrorSnackbar from 'containers/ErrorSnackbar';
 
 class App extends React.Component {
     static propTypes = {
+        dispatch: PropTypes.func,
         menu: PropTypes.object,
         main: PropTypes.object,
         children: PropTypes.object,
-        dispatch: PropTypes.func,
         user: PropTypes.object,
         socket: PropTypes.object,
         channel: PropTypes.object
