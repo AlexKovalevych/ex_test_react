@@ -10,7 +10,9 @@ defmodule Gt.Model.User do
         :is_admin,
         :locale,
         :authenticationType,
-        :securePhoneNumber
+        :securePhoneNumber,
+        :lastLogin,
+        :description
     ]}
 
     @collection "users"
@@ -37,6 +39,8 @@ defmodule Gt.Model.User do
         field :enabled, :boolean, default: true
         field :showGoogleCode, :boolean, default: true
         field :securePhoneNumber, :string, virtual: true
+        field :lastLogin, Ecto.DateTime
+        field :description, :string
 
         timestamps
     end
@@ -52,7 +56,7 @@ defmodule Gt.Model.User do
         failedLoginCount
         enabled
     )
-    @optional_fields ~w(password locale smsCode googleSecret showGoogleCode)
+    @optional_fields ~w(password locale smsCode googleSecret showGoogleCode lastLogin description)
 
     def changeset(model, params \\ :empty) do
         model
@@ -126,5 +130,23 @@ defmodule Gt.Model.User do
         from u in query,
         where: u.id == ^user_id,
         limit: 1
+    end
+
+    def filter_by_email(query, search) do
+        regex = Mongo.Ecto.Helpers.regex(".*#{search}.*", "i")
+        from u in query,
+        where: fragment(email: ^regex),
+        order_by: u.email
+    end
+
+    def page(query, page_number, limit \\ 10) do
+        from u in query,
+        limit: ^limit,
+        offset: ^(limit * (page_number - 1))
+    end
+
+    def count(query) do
+        from u in query,
+        select: count(u.id)
     end
 end

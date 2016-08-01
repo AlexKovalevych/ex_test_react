@@ -2,6 +2,7 @@ defmodule Gt.Api.V1.AuthController do
     use Gt.Web, :controller
     alias Gt.Model.User
     import Gt.Manager.TwoFactor, only: [verify_code: 2, generate_code: 1, google_qrcode_url: 1]
+    import Ecto.Changeset
 
     plug :scrub_params, "auth" when action in [:auth]
 
@@ -110,6 +111,10 @@ defmodule Gt.Api.V1.AuthController do
 
     defp login_success(conn, user) do
         {:ok, jwt, _full_claims} = user |> Guardian.encode_and_sign(:token)
+        user
+        |> change(%{lastLogin: :os.timestamp})
+        |> apply_changes
+        |> Gt.Repo.update
         conn
         |> put_status(:created)
         |> render(Gt.Api.V1.AuthView, "show.json", jwt: jwt, user: user)

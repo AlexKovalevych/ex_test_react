@@ -3,6 +3,7 @@ defmodule Gt.UserChannel do
     alias Gt.Model.User
     alias Gt.Manager.Dashboard
     alias Gt.Manager.Permissions
+    alias Gt.Manager.Users
 
     def join("users:" <> user_id, _params, socket) do
         if user_id == socket.assigns.current_user do
@@ -91,6 +92,15 @@ defmodule Gt.UserChannel do
         response = case result do
             {:error, reason} -> {:error, %{reason: reason}}
             _ -> {:ok, result}
+        end
+        {:reply, response, socket}
+    end
+    def handle_in("users", params, socket) do
+        current_user = Repo.get(User, socket.assigns.current_user)
+        response = if !current_user.is_admin do
+            {:error, %{reason: "Permission denied"}}
+        else
+            {:ok, Users.load_users(params["page"], params["search"])}
         end
         {:reply, response, socket}
     end

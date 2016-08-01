@@ -175,5 +175,12 @@ counterpart.registerTranslations('en', {
         thursday: 'thursday',
         friday: 'friday',
         saturday: 'saturday'
+    },
+    user: {
+        email: 'Email',
+        comment: 'Comment',
+        phone_number: 'Phone number',
+        is_active: 'Is active',
+        last_online: 'Last online'
     }
 });

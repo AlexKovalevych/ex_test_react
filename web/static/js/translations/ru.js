@@ -175,5 +175,12 @@ counterpart.registerTranslations('ru', {
         thursday: 'четверг',
         friday: 'пятница',
         saturday: 'суббота'
+    },
+    user: {
+        email: 'Почта',
+        comment: 'Коментарий',
+        phone_number: 'Номер телефона',
+        is_active: 'Активный',
+        last_online: 'Последний вход'
     }
 });

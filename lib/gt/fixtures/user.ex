@@ -4,26 +4,26 @@ defmodule Gt.Fixtures.User do
     import Gt.Manager.Permissions, only: [add: 3]
     require Logger
 
-    permissions = Application.get_env(:gt, :permissions)
+    @permissions Application.get_env(:gt, :permissions)
 
     @users [
         {
             "alex@example.com",
-            permissions,
+            @permissions,
             "none",
             "06312345678",
             true
         },
         {
             "admin@example.com",
-            permissions,
+            @permissions,
             "sms",
             "06312345678",
             true
         },
         {
             "test@example.com",
-            permissions,
+            @permissions,
             "google",
             "06312345678",
             false
@@ -34,7 +34,9 @@ defmodule Gt.Fixtures.User do
         Logger.info("Loading #{__MODULE__} fixtures")
         projects = Repo.all(Project)
         project_ids = Enum.map(projects, fn project -> project.id end)
-        Enum.map(@users, &insert_user(&1, project_ids))
+        ParallelStream.map(@users, &insert_user(&1, project_ids)) |> Enum.to_list
+        users = for n <- 1..20, do: {"user#{n}@example.com", @permissions, "none", "06312345678", false}
+        ParallelStream.map(users, &insert_user(&1, project_ids)) |> Enum.to_list
         Logger.info("Loaded #{__MODULE__} fixtures")
     end
 
