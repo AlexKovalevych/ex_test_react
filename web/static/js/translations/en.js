@@ -51,12 +51,12 @@ counterpart.registerTranslations('en', {
         events_groups_list: 'Events groups list',
         signup_channels: 'Signup channels',
         multiaccounts: 'Multiaccounts',
-        users: 'Users',
-        projects: 'Projects',
-        notifications: 'Notifications',
+        user: 'Users',
+        project: 'Projects',
+        notification: 'Notifications',
         permissions: 'Permissions',
-        data_sources: 'Data sources',
-        smtp_servers: 'SMTP servers'
+        data_source: 'Data sources',
+        smtp_server: 'SMTP servers'
     },
     form: {
         email: 'Login',

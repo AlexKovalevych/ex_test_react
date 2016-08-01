@@ -117,11 +117,11 @@ class GtMenu extends React.Component {
 
     getSettingsChildren() {
         let navi = [];
-        for (let node of ['users', 'projects', 'notifications', 'permissions', 'data_sources', 'smtp_servers']) {
+        for (let node of ['user', 'project', 'notification', 'permissions', 'data_source', 'smtp_server']) {
             navi.push({
                 id: node,
                 text: node,
-                url: this.getUrl('settings', node)
+                url: `${this.getUrl('settings', node)}/list`
             });
         }
         return navi;

@@ -131,6 +131,7 @@ class Login extends React.Component {
                                 )
                             }
                             <RaisedButton
+                                type="submit"
                                 label={<Translate content="form.login" />}
                                 primary={true}
                                 style={styles.button}
@@ -165,6 +166,7 @@ class Login extends React.Component {
                         />
                         <div>
                             <RaisedButton
+                                type="submit"
                                 label={<Translate content="form.login" />}
                                 primary={true}
                                 style={styles.button}

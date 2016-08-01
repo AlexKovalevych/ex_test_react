@@ -7,8 +7,9 @@ import Login from 'containers/Login';
 import ErrorPage from 'components/ErrorPage';
 import { setCurrentUser, setSocket } from 'actions/auth';
 import Main from 'containers/main';
+import GtMenu from 'containers/GtMenu';
 import counterpart from 'counterpart';
-import UserList from 'containers/User/UserList';
+import UserList from 'containers/User/List';
 
 export default function configRoutes(store) {
     const _ensureAuthenticated = (nextState, replace, callback) => {
@@ -31,18 +32,23 @@ export default function configRoutes(store) {
         callback();
     };
 
+    const getComponents = (main) => {
+        let menu = GtMenu;
+        return {menu, main};
+    };
+
     return (
         <Route component={Main}>
             <Route path="/login" component={Login} />
 
             <Route path="/" component={AppContainer} onEnter={_ensureAuthenticated}>
-                <IndexRoute components={{main: Dashboard}} />
+                <IndexRoute components={getComponents(Dashboard)} />
 
                 <Route path="/statistics">
-                    <Route path="/statistics/timeline_report" components={{main: Timeline}} />
+                    <Route path="/statistics/timeline_report" components={getComponents(Timeline)} />
                 </Route>
                 <Route path="/settings">
-                    <Route path="/settings/user/list" components={{main: UserList}}></Route>
+                    <Route path="/settings/user/list" components={getComponents(UserList)}></Route>
                 </Route>
             </Route>
 
