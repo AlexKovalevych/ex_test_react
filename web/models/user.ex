@@ -74,10 +74,14 @@ defmodule Gt.Model.User do
     #     |> Repo.insert()
     # end
 
-    def secure_phone(user) do
-        {a, b} = String.split_at(user.phoneNumber, -6)
-        {_, c} = String.split_at(b, -2)
-        phone = a <> "****" <> c
+    def secure_phone(user, hide \\ true) do
+        phone = if hide do
+            {a, b} = String.split_at(user.phoneNumber, -6)
+            {_, c} = String.split_at(b, -2)
+            a <> "****" <> c
+        else
+            user.phoneNumber
+        end
         user
         |> change(%{securePhoneNumber: phone})
         |> apply_changes

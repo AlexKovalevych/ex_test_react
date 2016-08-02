@@ -3,6 +3,8 @@ import counterpart from 'counterpart';
 counterpart.registerTranslations('en', {
     ru: 'Russian',
     en: 'English',
+    yes: 'Yes',
+    no: 'No',
     months: {
         Jan: 'Jan',
         Feb: 'Feb',

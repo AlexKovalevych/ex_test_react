@@ -135,3 +135,11 @@ font-family: 'Roboto', sans-serif;
   float: left;
   margin: 8px;
 }
+
+.success {
+  color: #699737 !important;
+}
+
+.error {
+  color: #f76c51 !important;
+}

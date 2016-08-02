@@ -145,15 +145,18 @@ class Formatter {
     //     return `${dateObj.getFullYear()}-${this._getZero(month)}-${this._getZero(day)} ${this._getZero(hours)}:${this._getZero(minutes)}:${this._getZero(seconds)}`;
     // }
 
-    // formatTime(date) {
-    //     let dateObj = new Date(date);
-    //     let dateStr = this.formatDate(date);
-    //     let hours = dateObj.getHours();
-    //     let minutes = dateObj.getMinutes();
-    //     let seconds = dateObj.getSeconds();
+    formatTime(date) {
+        if (!date) {
+            return null;
+        }
+        let dateObj = new Date(date);
+        let dateStr = this.formatDate(date);
+        let hours = dateObj.getHours();
+        let minutes = dateObj.getMinutes();
+        let seconds = dateObj.getSeconds();
 
-    //     return `${dateStr} ${this._getZero(hours)}:${this._getZero(minutes)}:${this._getZero(seconds)}`;
-    // }
+        return `${dateStr} ${this._getZero(hours)}:${this._getZero(minutes)}:${this._getZero(seconds)}`;
+    }
 
     formatDaytime(date) {
         let dateObj = new Date(date);

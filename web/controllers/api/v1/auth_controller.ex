@@ -112,7 +112,7 @@ defmodule Gt.Api.V1.AuthController do
     defp login_success(conn, user) do
         {:ok, jwt, _full_claims} = user |> Guardian.encode_and_sign(:token)
         user
-        |> change(%{lastLogin: :os.timestamp})
+        |> change(%{lastLogin: Ecto.DateTime.local})
         |> apply_changes
         |> Gt.Repo.update
         conn

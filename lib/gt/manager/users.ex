@@ -11,7 +11,7 @@ defmodule Gt.Manager.Users do
             false -> users |> User.filter_by_email(search)
         end
         %{
-            users: users |> User.page(page) |> Gt.Repo.all,
+            users: users |> User.page(page) |> Gt.Repo.all |> Enum.map(&User.secure_phone(&1, false)),
             page: page,
             totalPages: Float.ceil((User.count(users) |> Gt.Repo.one) / @page_size),
             lastUpdated: GtDate.timestamp(GtDate.now)
