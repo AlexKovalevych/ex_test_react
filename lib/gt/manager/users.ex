@@ -12,7 +12,7 @@ defmodule Gt.Manager.Users do
         end
         %{
             users: users |> User.page(page) |> Gt.Repo.all |> Enum.map(&User.secure_phone(&1, false)),
-            page: page,
+            currentPage: page,
             totalPages: Float.ceil((User.count(users) |> Gt.Repo.one) / @page_size),
             lastUpdated: GtDate.timestamp(GtDate.now)
         }

@@ -24,7 +24,7 @@ class UserList extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
-            page: 1,
+            // page: 1,
             search: null
         };
     }
@@ -33,7 +33,7 @@ class UserList extends React.Component {
         const { dispatch, ws } = props;
         if (ws.channel && update) {
             dispatch(userActions.loadUsers({
-                page: this.state.page,
+                page: this.props.data.currentPage,
                 search: this.state.search
             }));
         } else {
@@ -42,7 +42,7 @@ class UserList extends React.Component {
     }
 
     componentDidMount() {
-        this.loadData(this.props);
+        this.loadData(this.props, true);
     }
 
     componentWillReceiveProps(newProps) {
@@ -93,7 +93,7 @@ class UserList extends React.Component {
                             {this.props.data.users.map((user, i) => {
                                 return (
                                     <tr key={i}>
-                                        <td style={{width: '5%'}}>{(this.props.data.page - 1) * 10 + i + 1}</td>
+                                        <td style={{width: '5%'}}>{(this.props.data.currentPage - 1) * 10 + i + 1}</td>
                                         <td style={{width: '20%'}}>{user.email}</td>
                                         <td>{user.description}</td>
                                         <td>{user.securePhoneNumber}</td>

@@ -1,8 +1,9 @@
 const initialState = {
     users: null,
     totalPages: null,
-    currentPage: null,
-    search: null
+    currentPage: 1,
+    search: null,
+    lastUpdated: null
 };
 
 export default function reducer(state = initialState, action = {}) {
@@ -11,8 +12,9 @@ export default function reducer(state = initialState, action = {}) {
         return {
             ...state,
             users: action.data.users,
-            currentPage: action.data.page,
-            totalPages: action.data.totalPages
+            currentPage: action.data.currentPage,
+            totalPages: action.data.totalPages,
+            lastUpdated: action.data.lastUpdated
         };
     default:
         return state;
