@@ -7,7 +7,9 @@ import Translate from 'react-translate-component';
 import gtTheme from 'themes/indigo';
 import formatter from 'managers/Formatter';
 import FontIcon from 'material-ui/FontIcon';
-import ReactPaginate from 'react-paginate';
+import Pagination from 'components/Pagination';
+import TextField from 'material-ui/TextField';
+import FloatingActionButton from 'material-ui/FloatingActionButton';
 
 const styles = {
     icon: {
@@ -19,6 +21,7 @@ const styles = {
 
 class UserList extends React.Component {
     static propTypes = {
+        dispatch: PropTypes.func,
         data: PropTypes.object
     };
 
@@ -67,7 +70,15 @@ class UserList extends React.Component {
         );
     }
 
-    onChangePage() {
+    onChangePage(page) {
+        const { dispatch } = this.props;
+        dispatch(userActions.loadUsers({
+            page: page,
+            search: this.state.search
+        }));
+    }
+
+    createUser() {
 
     }
 
@@ -83,6 +94,23 @@ class UserList extends React.Component {
             <div>
                 <div className="row">
                     {title}
+                    <div className="row middle-xs" style={{width: '100%'}}>
+                        <div className="col-xs-6">
+                            <FloatingActionButton secondary={true} mini={true   }>
+                                <FontIcon
+                                    className="material-icons"
+                                    onClick={this.createUser.bind(this)}
+                                >add</FontIcon>
+                            </FloatingActionButton>
+                        </div>
+                        <div className="col-xs-6 end-xs">
+                            <TextField
+                                id="search"
+                                hintText={<Translate content="user.email" />}
+                                floatingLabelText={<Translate content="search" />}
+                            />
+                        </div>
+                    </div>
                     <table className="mdl-data-table table-lg" style={gtTheme.theme.table}>
                         <thead style={{tableLayout: 'auto'}}>
                             <tr>
@@ -94,26 +122,6 @@ class UserList extends React.Component {
                                 <th><Translate content="user.last_online" /></th>
                             </tr>
                         </thead>
-                        <tfoot>
-                            <tr>
-                                <td colSpan="6">
-                                    <ReactPaginate
-                                        initialSelected={this.props.data.currentPage - 1}
-                                        previousLabel={<FontIcon style={gtTheme.theme.link} className="material-icons">navigate_before</FontIcon>}
-                                        nextLabel={<FontIcon style={gtTheme.theme.link} className="material-icons">navigate_next</FontIcon>}
-                                        breakLabel={<a href="">...</a>}
-                                        breakClassName={"break-me"}
-                                        pageNum={this.props.data.totalPages}
-                                        marginPagesDisplayed={2}
-                                        pageRangeDisplayed={5}
-                                        clickCallback={this.onChangePage.bind(this)}
-                                        containerClassName="pagination"
-                                        subContainerClassName={"pages pagination"}
-                                        pageClassName="mdl-button mdl-js-button mdl-js-ripple-effect"
-                                        activeClassName="mdl-button--colored" />
-                                </td>
-                            </tr>
-                        </tfoot>
                         <tbody>
                             {this.props.data.users.map((user, i) => {
                                 return (
@@ -129,6 +137,12 @@ class UserList extends React.Component {
                             })}
                         </tbody>
                     </table>
+                    <div className="col-xs-12" style={{textAlign: 'center'}}>
+                        <Pagination
+                            initialSelected={this.props.data.currentPage - 1}
+                            totalPages={this.props.data.totalPages}
+                            clickCallback={this.onChangePage.bind(this)} />
+                    </div>
                 </div>
             </div>
         );

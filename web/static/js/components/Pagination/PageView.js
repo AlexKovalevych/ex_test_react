@@ -1,25 +1,29 @@
-import React from 'react';
+import React, { PropTypes } from 'react';
+import RaisedButton from 'material-ui/RaisedButton';
+
+const styles = {
+    minWidth: 44
+};
 
 export default class PageView extends React.Component {
-    render() {
-        let linkClassName = this.props.pageLinkClassName;
-        let cssClassName = this.props.pageClassName;
-        let onClick = this.props.onClick;
+    static propTypes = {
+        page: PropTypes.number,
+        selected: PropTypes.bool,
+        onClick: PropTypes.func
+    };
 
+    render() {
+        let props = {
+            label: this.props.page,
+            onClick: this.props.onClick,
+            style: styles
+        };
         if (this.props.selected) {
-          if (typeof(cssClassName) !== 'undefined') {
-            cssClassName = cssClassName + ' ' + this.props.activeClassName;
-          } else {
-            cssClassName = this.props.activeClassName;
-          }
+            props.primary = true;
         }
 
         return (
-            <li onClick={onClick} className={cssClassName}>
-                <a className={linkClassName}>
-                  {this.props.page}
-                </a>
-            </li>
+            <RaisedButton {...props} />
         );
     }
 }

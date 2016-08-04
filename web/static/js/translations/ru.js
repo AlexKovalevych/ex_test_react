@@ -5,6 +5,7 @@ counterpart.registerTranslations('ru', {
     en: 'Английский',
     yes: 'Да',
     no: 'Нет',
+    search: 'Поиск',
     months: {
         Jan: 'Янв',
         Feb: 'Фев',
