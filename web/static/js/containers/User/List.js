@@ -7,6 +7,7 @@ import Translate from 'react-translate-component';
 import gtTheme from 'themes/indigo';
 import formatter from 'managers/Formatter';
 import FontIcon from 'material-ui/FontIcon';
+import ReactPaginate from 'react-paginate';
 
 const styles = {
     icon: {
@@ -66,6 +67,10 @@ class UserList extends React.Component {
         );
     }
 
+    onChangePage() {
+
+    }
+
     render() {
         let title = (<Title title={<Translate content="menu.user" />} />);
         if (!this.props.data.lastUpdated) {
@@ -89,6 +94,26 @@ class UserList extends React.Component {
                                 <th><Translate content="user.last_online" /></th>
                             </tr>
                         </thead>
+                        <tfoot>
+                            <tr>
+                                <td colSpan="6">
+                                    <ReactPaginate
+                                        initialSelected={this.props.data.currentPage - 1}
+                                        previousLabel={<FontIcon style={gtTheme.theme.link} className="material-icons">navigate_before</FontIcon>}
+                                        nextLabel={<FontIcon style={gtTheme.theme.link} className="material-icons">navigate_next</FontIcon>}
+                                        breakLabel={<a href="">...</a>}
+                                        breakClassName={"break-me"}
+                                        pageNum={this.props.data.totalPages}
+                                        marginPagesDisplayed={2}
+                                        pageRangeDisplayed={5}
+                                        clickCallback={this.onChangePage.bind(this)}
+                                        containerClassName="pagination"
+                                        subContainerClassName={"pages pagination"}
+                                        pageClassName="mdl-button mdl-js-button mdl-js-ripple-effect"
+                                        activeClassName="mdl-button--colored" />
+                                </td>
+                            </tr>
+                        </tfoot>
                         <tbody>
                             {this.props.data.users.map((user, i) => {
                                 return (
