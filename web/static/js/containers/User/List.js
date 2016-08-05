@@ -25,20 +25,12 @@ class UserList extends React.Component {
         data: PropTypes.object
     };
 
-    constructor(props) {
-        super(props);
-        this.state = {
-            // page: 1,
-            search: null
-        };
-    }
-
     loadData(props, update=false) {
         const { dispatch, ws } = props;
         if (ws.channel && update) {
             dispatch(userActions.loadUsers({
                 page: this.props.data.currentPage,
-                search: this.state.search
+                search: this.props.data.search
             }));
         } else {
             dispatch(spinnerActions.stop());
@@ -74,12 +66,28 @@ class UserList extends React.Component {
         const { dispatch } = this.props;
         dispatch(userActions.loadUsers({
             page: page,
-            search: this.state.search
+            search: this.props.data.search
         }));
     }
 
     createUser() {
 
+    }
+
+    onSearchUser(e) {
+        const {dispatch} = this.props;
+        if (e.target.value.length >= 3) {
+            dispatch(userActions.loadUsers({
+                page: 1,
+                search: e.target.value
+            }));
+        }
+        if (e.target.value.length == 0) {
+            dispatch(userActions.loadUsers({
+                page: 1,
+                search: null
+            }));
+        }
     }
 
     render() {
@@ -106,6 +114,7 @@ class UserList extends React.Component {
                         <div className="col-xs-6 end-xs">
                             <TextField
                                 id="search"
+                                onChange={this.onSearchUser.bind(this)}
                                 hintText={<Translate content="user.email" />}
                                 floatingLabelText={<Translate content="search" />}
                             />

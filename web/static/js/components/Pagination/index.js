@@ -25,6 +25,12 @@ export default class Pagination extends React.Component {
         };
     }
 
+    componentWillReceiveProps(newProps) {
+        if (newProps.initialSelected != this.props.initialSelected) {
+            this.setState({selected: newProps.initialSelected});
+        }
+    }
+
     onPreviousPage(e) {
         e.preventDefault ? e.preventDefault() : (e.returnValue = false);
         if (this.state.selected > 0) {

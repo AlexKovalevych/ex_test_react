@@ -18,6 +18,15 @@ const userActions = {
                     });
                 });
         };
+    },
+
+    setSearch: (search) => {
+        return (dispatch) => {
+            dispatch({
+                type: 'SET_SEARCH',
+                search: search
+            });
+        };
     }
 };
 
