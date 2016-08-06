@@ -44,7 +44,8 @@ defmodule Gt.Router do
         get "/logout", AuthController, :logout
         get "/", DashboardController, :index
         get "/settings/user/list", UserController, :list
-        get "/settings/user/view/*id", UserController, :view
+        get "/settings/user/create", UserController, :create
+        get "/settings/user/edit/:id", UserController, :edit
         get "/*path", PageController, :index
     end
 end

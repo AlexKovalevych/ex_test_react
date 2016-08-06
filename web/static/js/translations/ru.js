@@ -184,6 +184,8 @@ counterpart.registerTranslations('ru', {
         comment: 'Коментарий',
         phone_number: 'Номер телефона',
         is_active: 'Активный',
-        last_online: 'Последний вход'
+        last_online: 'Последний вход',
+        new: 'Новый пользователь',
+        edit: 'Пользователь %(email)s'
     }
 });

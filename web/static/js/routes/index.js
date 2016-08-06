@@ -10,6 +10,7 @@ import Main from 'containers/main';
 import GtMenu from 'containers/GtMenu';
 import counterpart from 'counterpart';
 import UserList from 'containers/User/List';
+import UserEdit from 'containers/User/Edit';
 
 export default function configRoutes(store) {
     const _ensureAuthenticated = (nextState, replace, callback) => {
@@ -41,15 +42,19 @@ export default function configRoutes(store) {
         <Route component={Main}>
             <Route path="/login" component={Login} />
 
-            <Route path="/" component={AppContainer} onEnter={_ensureAuthenticated}>
-                <IndexRoute components={getComponents(Dashboard)} />
+            <Route name="app" path="/" component={AppContainer} onEnter={_ensureAuthenticated}>
+                <IndexRoute name="dashboard" components={getComponents(Dashboard)} />
 
-                <Route path="/statistics">
-                    <Route path="/statistics/timeline_report" components={getComponents(Timeline)} />
-                </Route>
+                <Route path="/statistics/timeline_report" components={getComponents(Timeline)} />
+
                 <Route path="/settings">
-                    <Route path="/settings/user/list" components={getComponents(UserList)}></Route>
+                    <Route path="/user">
+                        <Route path="/settings/user/list" components={getComponents(UserList)}></Route>
+                        <Route path="/settings/user/create" components={getComponents(UserEdit)}></Route>
+                        <Route path="/settings/user/edit/:id" components={getComponents(UserEdit)}></Route>
+                    </Route>
                 </Route>
+
             </Route>
 
             <Route path="*" component={ErrorPage} />

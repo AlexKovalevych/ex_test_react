@@ -184,6 +184,8 @@ counterpart.registerTranslations('en', {
         comment: 'Comment',
         phone_number: 'Phone number',
         is_active: 'Is active',
-        last_online: 'Last online'
+        last_online: 'Last online',
+        new: 'New user',
+        edit: 'User %(email)s'
     }
 });

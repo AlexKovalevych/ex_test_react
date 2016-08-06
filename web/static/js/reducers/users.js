@@ -1,5 +1,6 @@
 const initialState = {
     users: null,
+    user: null,
     totalPages: null,
     currentPage: 1,
     search: null,
@@ -11,11 +12,17 @@ export default function reducer(state = initialState, action = {}) {
     case 'LOAD_USERS':
         return {
             ...state,
+            user: null,
             users: action.data.users,
             search: action.data.search,
             currentPage: action.data.currentPage,
             totalPages: action.data.totalPages,
             lastUpdated: action.data.lastUpdated
+        };
+    case 'LOAD_USER':
+        return {
+            ...state,
+            user: action.data
         };
     case 'SET_SEARCH':
         return {

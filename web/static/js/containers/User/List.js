@@ -10,6 +10,7 @@ import FontIcon from 'material-ui/FontIcon';
 import Pagination from 'components/Pagination';
 import TextField from 'material-ui/TextField';
 import FloatingActionButton from 'material-ui/FloatingActionButton';
+import { push } from 'react-router-redux';
 
 const styles = {
     icon: {
@@ -71,7 +72,13 @@ class UserList extends React.Component {
     }
 
     createUser() {
+        const { dispatch } = this.props;
+        dispatch(push('/settings/user/create'));
+    }
 
+    editUser(id) {
+        const { dispatch } = this.props;
+        dispatch(push(`/settings/user/edit/${id}`));
     }
 
     onSearchUser(e) {
@@ -91,7 +98,7 @@ class UserList extends React.Component {
     }
 
     render() {
-        let title = (<Title title={<Translate content="menu.user" />} />);
+        let title = (<Title><Translate content="menu.user" /></Title>);
         if (!this.props.data.lastUpdated) {
             return (
                 <div>{title}</div>
@@ -104,11 +111,8 @@ class UserList extends React.Component {
                     {title}
                     <div className="row middle-xs" style={{width: '100%'}}>
                         <div className="col-xs-6">
-                            <FloatingActionButton secondary={true} mini={true   }>
-                                <FontIcon
-                                    className="material-icons"
-                                    onClick={this.createUser.bind(this)}
-                                >add</FontIcon>
+                            <FloatingActionButton secondary={true} mini={true} onClick={this.createUser.bind(this)}>
+                                <FontIcon className="material-icons">add</FontIcon>
                             </FloatingActionButton>
                         </div>
                         <div className="col-xs-6 end-xs">
@@ -134,7 +138,7 @@ class UserList extends React.Component {
                         <tbody>
                             {this.props.data.users.map((user, i) => {
                                 return (
-                                    <tr key={i}>
+                                    <tr key={i} onClick={this.editUser.bind(this, user.id)} style={gtTheme.theme.link}>
                                         <td style={{width: '5%'}}>{(this.props.data.currentPage - 1) * 10 + i + 1}</td>
                                         <td style={{width: '20%'}}>{user.email}</td>
                                         <td>{user.description}</td>

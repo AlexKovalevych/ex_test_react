@@ -104,4 +104,13 @@ defmodule Gt.UserChannel do
         end
         {:reply, response, socket}
     end
+    def handle_in("user", id, socket) do
+        current_user = Repo.get(User, socket.assigns.current_user)
+        response = if !current_user.is_admin do
+            {:error, %{reason: "Permission denied"}}
+        else
+            {:ok, Gt.Repo.get!(Gt.Model.User, id)}
+        end
+        {:reply, response, socket}
+    end
 end

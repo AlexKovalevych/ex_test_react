@@ -155,7 +155,11 @@ class Dashboard extends React.Component {
     }
 
     render() {
-        let title = (<Title className="col-lg-4 col-md-4 col-xs-12" title={<Translate content="dashboard.title" />} />);
+        let title = (
+            <Title className="col-lg-4 col-md-4 col-xs-12">
+                <Translate content="dashboard.title" />
+            </Title>
+        );
         if (!this.props.data.lastUpdated) {
             return (
                 <div>{title}</div>

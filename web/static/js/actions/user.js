@@ -20,6 +20,26 @@ const userActions = {
         };
     },
 
+    loadUser: (id) => {
+        return (dispatch, getState) => {
+            const { ws } = getState();
+            ws.channel
+                .push('user', id)
+                .receive('ok', (msg) => {
+                    dispatch({
+                        type: 'LOAD_USER',
+                        data: msg
+                    });
+                })
+                .receive('error', (msg) => {
+                    dispatch({
+                        type: 'SHOW_ERROR',
+                        message: msg.reason
+                    });
+                });
+        };
+    },
+
     setSearch: (search) => {
         return (dispatch) => {
             dispatch({
