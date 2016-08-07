@@ -22,7 +22,7 @@ defmodule Gt.Model.User do
         field :email, :string
         field :password, :string
         field :password_plain, :string, virtual: true
-        field :permissions, :map
+        field :permissions, :map, default: Application.get_env(:gt, :permissions)
         field :settings, :map, default: %{
             "dashboardSort" => "paymentsAmount",
             "dashboardChartType" => "paymentsAmount",

@@ -13,7 +13,8 @@ import FontIcon from 'material-ui/FontIcon';
 import SelectField from 'material-ui/SelectField';
 import { push } from 'react-router-redux';
 import translate from 'counterpart';
-import Permissions from 'components/Permissions';
+import PermissionsLeftBlock from 'containers/Permissions/LeftBlock';
+import PermissionsModel from 'models/Permissions';
 
 const styles = {
     backButton: {marginRight: 15},
@@ -24,6 +25,7 @@ class UserEdit extends React.Component {
     static propTypes = {
         data: PropTypes.object,
         projects: PropTypes.array,
+        roles: PropTypes.array,
         params: PropTypes.object,
         dispatch: PropTypes.func
     };
@@ -164,7 +166,20 @@ class UserEdit extends React.Component {
                                 </SelectField>
                             </div>
                             <div className="col-lg-8 col-md-6 col-xs-12">
-                                <Permissions projects={this.props.projects} />
+                                <PermissionsLeftBlock
+                                    type="user"
+                                    value={this.props.data.id}
+                                    permissionsModel={new PermissionsModel(
+                                        this.state.user.permissions,
+                                        this.props.projects,
+                                        this.props.roles
+                                    )}
+                                />
+                                <Permissions
+                                    projects={this.props.projects}
+                                    permissions={this.props.permissions}
+                                    data={this.state.user}
+                                />
                             </div>
                             <div className="col-xs-12 col-lg-12 col-md-12 center-xs">
                                 <RaisedButton
@@ -183,6 +198,7 @@ class UserEdit extends React.Component {
             </div>
         );
     }
+                                // <PermissionsRightBlock permissionsModel={this.props.permissionsModel} />
 }
 
 const mapStateToProps = (state) => {
@@ -190,7 +206,7 @@ const mapStateToProps = (state) => {
         auth: state.auth,
         data: state.users.user,
         projects: state.users.projects,
-        permissions: state.users.permissions,
+        roles: state.users.permissions,
         ws: state.ws
     };
 };

@@ -40,6 +40,15 @@ const userActions = {
         };
     },
 
+    updatePermissions: (permissionsModel) => {
+        return (dispatch) => {
+            dispatch({
+                type: 'UPDATE_PERMISSIONS',
+                data: permissionsModel
+            });
+        };
+    },
+
     setSearch: (search) => {
         return (dispatch) => {
             dispatch({

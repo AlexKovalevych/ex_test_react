@@ -1,3 +1,5 @@
+import PermissionsModel from 'models/Permissions';
+
 const initialState = {
     users: null,
     user: null,
@@ -5,7 +7,6 @@ const initialState = {
     currentPage: 1,
     search: null,
     lastUpdated: null,
-    projects: null,
     permissions: null
 };
 
@@ -24,9 +25,17 @@ export default function reducer(state = initialState, action = {}) {
     case 'LOAD_USER':
         return {
             ...state,
-            user: action.data.user,
-            projects: action.data.projects,
-            permissions: action.data.permissions
+            permissions: new PermissionsModel(
+                action.data.user.permissions,
+                action.data.projects,
+                action.data.permissions
+            ),
+            user: action.data.user
+        };
+    case 'UPDATE_PERMISSIONS':
+        return {
+            ...state,
+            permissions: action.data
         };
     case 'SET_SEARCH':
         return {
