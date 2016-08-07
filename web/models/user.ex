@@ -12,7 +12,8 @@ defmodule Gt.Model.User do
         :authenticationType,
         :securePhoneNumber,
         :lastLogin,
-        :description
+        :description,
+        :notificationsEnabled
     ]}
 
     @collection "users"
@@ -41,6 +42,7 @@ defmodule Gt.Model.User do
         field :securePhoneNumber, :string, virtual: true
         field :lastLogin, Ecto.DateTime
         field :description, :string
+        field :notificationsEnabled, :boolean, default: true
 
         timestamps
     end
@@ -56,7 +58,7 @@ defmodule Gt.Model.User do
         failedLoginCount
         enabled
     )
-    @optional_fields ~w(password locale smsCode googleSecret showGoogleCode lastLogin description)
+    @optional_fields ~w(password locale smsCode googleSecret showGoogleCode lastLogin description notificationsEnabled)
 
     def changeset(model, params \\ :empty) do
         model

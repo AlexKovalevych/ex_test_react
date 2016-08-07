@@ -6,44 +6,23 @@ defmodule Gt.UserController do
     plug Gt.Guardian.EnsureAuthenticated, handler: Gt.AuthController
 
     def list(conn, _) do
-        user = current_user(conn)
-        if !user.is_admin do
-            redirect conn, to: "/login"
-        else
-            initial_state = %{
-                pendingTasks: 1,
-                auth: %{user: user},
-                users: Users.load_users(1)
-            }
-
-            Gt.AuthController.render_react(conn, initial_state)
-        end
+        initial_state = %{
+            users: Users.load_users(1)
+        }
+        Gt.AuthController.render_react(conn, initial_state, true)
     end
 
     def create(conn, _) do
-        user = current_user(conn)
-        if !user.is_admin do
-            redirect conn, to: "/login"
-        else
-            initial_state = %{
-                auth: %{user: user}
-            }
-
-            Gt.AuthController.render_react(conn, initial_state)
-        end
+        initial_state = %{
+            users: Users.load_users(1) |> Map.put(:user, Users.create_user)
+        }
+        Gt.AuthController.render_react(conn, initial_state, true)
     end
 
     def edit(conn, %{"id" => id}) do
-        current_user = current_user(conn)
-        if !current_user.is_admin do
-            redirect conn, to: "/login"
-        else
-            initial_state = %{
-                auth: %{user: current_user},
-                users: Users.load_users(1) |> Map.put(:user, Gt.Repo.get!(Gt.Model.User, id))
-            }
-
-            Gt.AuthController.render_react(conn, initial_state)
-        end
+        initial_state = %{
+            users: Users.load_users(1) |> Map.put(:user, Users.load_user(id))
+        }
+        Gt.AuthController.render_react(conn, initial_state, true)
     end
 end

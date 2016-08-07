@@ -5,6 +5,16 @@ defmodule Gt.UserChannel do
     alias Gt.Manager.Permissions
     alias Gt.Manager.Users
 
+    defp admin_required(socket, data) do
+        current_user = Repo.get(User, socket.assigns.current_user)
+        response = if !current_user.is_admin do
+            {:error, %{reason: "Permission denied"}}
+        else
+            {:ok, data}
+        end
+        {:reply, response, socket}
+    end
+
     def join("users:" <> user_id, _params, socket) do
         if user_id == socket.assigns.current_user do
             {:ok, socket}
@@ -96,21 +106,12 @@ defmodule Gt.UserChannel do
         {:reply, response, socket}
     end
     def handle_in("users", params, socket) do
-        current_user = Repo.get(User, socket.assigns.current_user)
-        response = if !current_user.is_admin do
-            {:error, %{reason: "Permission denied"}}
-        else
-            {:ok, Users.load_users(params["page"], params["search"])}
-        end
-        {:reply, response, socket}
+        admin_required(socket, Users.load_users(params["page"], params["search"]))
+    end
+    def handle_in("user", %{}, socket) do
+        admin_required(socket, Users.create_user)
     end
     def handle_in("user", id, socket) do
-        current_user = Repo.get(User, socket.assigns.current_user)
-        response = if !current_user.is_admin do
-            {:error, %{reason: "Permission denied"}}
-        else
-            {:ok, Gt.Repo.get!(Gt.Model.User, id)}
-        end
-        {:reply, response, socket}
+        admin_required(socket, Users.load_user(id))
     end
 end

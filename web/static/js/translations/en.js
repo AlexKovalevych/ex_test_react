@@ -67,7 +67,8 @@ counterpart.registerTranslations('en', {
         login: 'Login',
         sms_code: 'SMS code',
         sms_resend: 'Snd SMS again',
-        google_code: 'Authentication code'
+        google_code: 'Authentication code',
+        save: 'Save'
     },
     validation: {
         invalid_email_password: 'Invalid email or password'
@@ -181,11 +182,24 @@ counterpart.registerTranslations('en', {
     },
     user: {
         email: 'Email',
+        password: 'Password',
+        new_password: 'New password',
+        enabled: 'Enabled',
+        notifications_enabled: 'Notifications enabled',
+        is_admin: 'Is admin',
         comment: 'Comment',
         phone_number: 'Phone number',
         is_active: 'Is active',
         last_online: 'Last online',
         new: 'New user',
-        edit: 'User %(email)s'
+        edit: 'User %(email)s',
+        authentication_type: 'Authentication type',
+        locale: 'Language',
+        auth: {
+            none: 'Password',
+            google: 'Google',
+            sms: 'Sms'
+        },
+        generate_password: 'Generate password'
     }
 });

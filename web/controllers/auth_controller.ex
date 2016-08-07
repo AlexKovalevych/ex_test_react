@@ -2,22 +2,29 @@ defmodule Gt.AuthController do
     use Gt.Web, :controller
     alias Gt.Model.User
 
-    defmacro render_react(conn, initial_state) do
+    defmacro render_react(conn, initial_state, admin_required \\ false) do
         quote do
             conn = unquote conn
-            initial_state = unquote initial_state
-            props = %{
-                "location" => conn.request_path,
-                "initial_state" => initial_state,
-                "user_agent" => conn |> get_req_header("user-agent") |> Enum.at(0)
-            }
+            admin_required = unquote admin_required
+            current_user = current_user(conn)
+            if !current_user.is_admin && admin_required do
+                redirect conn, to: "/login"
+            else
+                initial_state = unquote initial_state
+                initial_state = Map.put(initial_state, :auth, %{user: current_user})
+                props = %{
+                    "location" => conn.request_path,
+                    "initial_state" => initial_state,
+                    "user_agent" => conn |> get_req_header("user-agent") |> Enum.at(0)
+                }
 
-            {:ok, result} = Gt.ReactIO.json_call(%{
-                component: "./priv/static/server/js/app.js",
-                props: props,
-            })
+                {:ok, result} = Gt.ReactIO.json_call(%{
+                    component: "./priv/static/server/js/app.js",
+                    props: props,
+                })
 
-            render(conn, Gt.PageView, "index.html", html: result["html"], props: Poison.encode!(props))
+                render(conn, Gt.PageView, "index.html", html: result["html"], props: Poison.encode!(props))
+            end
         end
     end
 

@@ -6,14 +6,10 @@ defmodule Gt.DashboardController do
     plug Gt.Guardian.EnsureAuthenticated, handler: Gt.AuthController
 
     def index(conn, _) do
-        user = current_user(conn)
-        data = Dashboard.load_data(user)
         initial_state = %{
-            "pendingTasks" => 1,
-            "auth" => %{"user" => user},
-            "dashboard" => data
+            pendingTasks: 1,
+            dashboard: current_user(conn) |> Dashboard.load_data
         }
-
         Gt.AuthController.render_react(conn, initial_state)
     end
 end

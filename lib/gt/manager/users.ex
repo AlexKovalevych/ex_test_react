@@ -18,4 +18,12 @@ defmodule Gt.Manager.Users do
             search: search
         }
     end
+
+    def load_user(id) do
+        Gt.Repo.get!(User, id) |> User.secure_phone(false)
+    end
+
+    def create_user do
+        %User{} |> User.changeset |> Ecto.Changeset.apply_changes
+    end
 end
