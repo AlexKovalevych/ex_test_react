@@ -13,6 +13,7 @@ import FontIcon from 'material-ui/FontIcon';
 import SelectField from 'material-ui/SelectField';
 import { push } from 'react-router-redux';
 import translate from 'counterpart';
+import Permissions from 'components/Permissions';
 
 const styles = {
     backButton: {marginRight: 15},
@@ -22,6 +23,7 @@ const styles = {
 class UserEdit extends React.Component {
     static propTypes = {
         data: PropTypes.object,
+        projects: PropTypes.array,
         params: PropTypes.object,
         dispatch: PropTypes.func
     };
@@ -161,7 +163,9 @@ class UserEdit extends React.Component {
                                     <MenuItem value="en" primaryText={<Translate content="en" />} />
                                 </SelectField>
                             </div>
-                            <div className="col-lg-8 col-md-6 col-xs-12"></div>
+                            <div className="col-lg-8 col-md-6 col-xs-12">
+                                <Permissions projects={this.props.projects} />
+                            </div>
                             <div className="col-xs-12 col-lg-12 col-md-12 center-xs">
                                 <RaisedButton
                                     type="submit"
@@ -185,6 +189,8 @@ const mapStateToProps = (state) => {
     return {
         auth: state.auth,
         data: state.users.user,
+        projects: state.users.projects,
+        permissions: state.users.permissions,
         ws: state.ws
     };
 };

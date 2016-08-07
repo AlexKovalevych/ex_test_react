@@ -3,6 +3,21 @@ defmodule Gt.ManagerCase.Permissions do
     alias Gt.Manager.Permissions
 
     @tag :unit
+    test "get_all" do
+        permissions = %{
+            "dashboard" => %{
+                "dashboard_index" => [],
+            },
+            "finance" => %{
+                "payment_systems" => [],
+                "payments_check" => []
+            }
+        }
+
+        assert Permissions.get_all(permissions, ["dashboard_index", "payment_systems", "payments_check"])
+    end
+
+    @tag :unit
     test "has" do
         permissions = %{
             "dashboard_index" => ["1", "3"],

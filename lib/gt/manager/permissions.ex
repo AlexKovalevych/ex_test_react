@@ -1,4 +1,16 @@
 defmodule Gt.Manager.Permissions do
+    def get_all(permissions) do
+        Enum.reduce(permissions, [], fn({block_key, node}, acc) ->
+            Enum.reduce(node, acc, fn({k, v}, a) ->
+                if Enum.member?(a, v) do
+                    acc
+                else
+                    acc ++ [v]
+                end
+            end)
+        end)
+    end
+
     def has(permissions, name, project_id) do
         Enum.any?(permissions, fn {block_k, block_v} ->
             Enum.any?(block_v, fn {node_k, node_v} ->

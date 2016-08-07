@@ -1,6 +1,8 @@
 defmodule Gt.Manager.Users do
     alias Gt.Model.User
+    alias Gt.Model.Project
     alias Gt.Manager.Date, as: GtDate
+    import Gt.Manager.Permissions, only: [get_all: 1]
 
     @page_size 10
 
@@ -20,10 +22,19 @@ defmodule Gt.Manager.Users do
     end
 
     def load_user(id) do
-        Gt.Repo.get!(User, id) |> User.secure_phone(false)
+        %{
+            user: Gt.Repo.get!(User, id) |> User.secure_phone(false),
+            permissions: get_all(Application.get_env(:gt, :permissions)),
+            projects: Gt.Repo.all(Project)
+        }
     end
 
     def create_user do
-        %User{} |> User.changeset |> Ecto.Changeset.apply_changes
+        IO.puts(get_all(Application.get_env(:gt, :permissions)))
+        %{
+            user: User.changeset(%User{}) |> Ecto.Changeset.apply_changes,
+            permissions: get_all(Application.get_env(:gt, :permissions)),
+            projects: Gt.Repo.all(Project)
+        }
     end
 end
