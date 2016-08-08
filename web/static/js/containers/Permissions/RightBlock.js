@@ -11,66 +11,33 @@ import { connect } from 'react-redux';
 import Checkbox from 'material-ui/Checkbox';
 import FontIcon from 'material-ui/FontIcon';
 import Translate from 'react-translate-component';
+import gtTheme from 'themes/indigo';
+import permissionsActions from 'actions/Permissions';
+import PermissionsModel from 'models/Permissions';
 
 class RightBlock extends React.Component {
     static propTypes = {
-        permissionsModel: PropTypes.object,
+        model: PropTypes.object,
         type: PropTypes.string,
         value: PropTypes.string,
         dispatch: PropTypes.func
     };
 
-    constructor(props) {
-        super(props);
-        this.state = {
-            permissions: props.permissionsModel.getPermissions(this.props.type, this.props.value)
-        };
-    }
-
-    // setIndeterminateState() {
-    //     $(ReactDOM.findDOMNode(this)).find('input.indeterminate').each((i, e) => {
-    //         e.indeterminate = true;
-    //     });
-    //     $(ReactDOM.findDOMNode(this)).find('input:not(.indeterminate)').each((i, e) => {
-    //         e.indeterminate = false;
-    //     });
-    // }
-
-    _onChange() {
-        this.setState({
-            permissions: this.props.permissionsModel.getPermissions(this.props.type, this.props.value)
-        });
-    }
-
-    // componentDidMount() {
-    //     this.changeListener = this._onChange.bind(this);
-    //     permissionsStore.addChangeListener(this.changeListener);
-    //     this.setIndeterminateState();
-    // }
-
-    // componentWillUnmount() {
-    //     permissionsStore.removeChangeListener(this.changeListener);
-    // }
-
-    // componentDidUpdate() {
-    //     this.setIndeterminateState();
-    // }
-
     checkRow(id, e) {
-        this.props.permissionsModel.checkRightRow(this.props.type, this.props.value, permissionsStore.selectedLeftRows, id, e.target.checked);
+        this.props.model.checkRightRow(this.props.type, this.props.value, permissionsStore.selectedLeftRows, id, e.target.checked);
         permissionsActionCreators.updatePermissions();
     }
 
     selectAll() {
-        for (let id of Object.keys(this.props.permissionsModel.getRightRowTitles(this.props.type))) {
-            this.props.permissionsModel.checkRightRow(this.props.type, this.props.value, permissionsStore.selectedLeftRows, id, true);
+        for (let id of Object.keys(this.props.model.getRightRowTitles(this.props.type))) {
+            this.props.model.checkRightRow(this.props.type, this.props.value, permissionsStore.selectedLeftRows, id, true);
         }
         permissionsActionCreators.updatePermissions();
     }
 
     unselectAll() {
-        for (let id of Object.keys(this.props.permissionsModel.getRightRowTitles(this.props.type))) {
-            this.props.permissionsModel.checkRightRow(this.props.type, this.props.value, permissionsStore.selectedLeftRows, id, false);
+        for (let id of Object.keys(this.props.model.getRightRowTitles(this.props.type))) {
+            this.props.model.checkRightRow(this.props.type, this.props.value, permissionsStore.selectedLeftRows, id, false);
         }
         permissionsActionCreators.updatePermissions();
     }
@@ -86,15 +53,22 @@ class RightBlock extends React.Component {
     }
 
     render() {
-        let title = Permissions.config[this.props.type].rightTitle;
-        let rightRowTitles = this.props.permissionsModel.getRightRowTitles(this.props.type);
+        let model = this.props.model;
+        if (!model) {
+            return false;
+        }
+        let type = this.props.type;
+        let title = Permissions.config[type].rightTitle;
+        let rightRowTitles = model.getRightRowTitles(type);
+        let permissions = model.getPermissions(type, this.props.value);
         let rows = Object.keys(rightRowTitles).map((id, i) => {
-            let value = this.props.permissionsModel.getRightBlockValue(this.props.permissionsModel.selectedLeftBlock, this.state.permissions, id);
+            let value = model.getRightBlockValue(model.selectedLeftBlock, permissions, id);
             let props = {
                 label: rightRowTitles[id],
                 onCheck: this.checkRow.bind(this, id),
                 checked: value,
-                // labelPosition: 'left'
+                inputStyle: {width: gtTheme.theme.spacing.desktopGutter},
+                labelStyle: {cursor: 'pointer'}
             };
             if (value === null) {
                 props.checkedIcon = (<FontIcon className="material-icons">indeterminate_check_box</FontIcon>);
@@ -127,11 +101,13 @@ class RightBlock extends React.Component {
 
 const mapStateToProps = (state) => {
     return {
-//         permissionsModel: new PermissionsModel(
-//             state.users.user.permissions,
-//             state.users.projects,
-//             state.users.roles
-//         )
+        model: new PermissionsModel(
+            state.permissions.users,
+            state.permissions.projects,
+            state.permissions.roles
+        ),
+        type: state.permissions.type,
+        value: state.permissions.value
     };
 };
 

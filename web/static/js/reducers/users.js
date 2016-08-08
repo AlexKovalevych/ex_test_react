@@ -1,5 +1,3 @@
-import PermissionsModel from 'models/Permissions';
-
 const initialState = {
     users: null,
     user: null,
@@ -24,9 +22,7 @@ export default function reducer(state = initialState, action = {}) {
     case 'LOAD_USER':
         return {
             ...state,
-            user: action.data.user,
-            projects: action.data.projects,
-            permissions: action.data.permissions
+            user: action.data.user
         };
     case 'UPDATE_USER':
         return {

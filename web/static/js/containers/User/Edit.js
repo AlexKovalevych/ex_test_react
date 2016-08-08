@@ -15,7 +15,6 @@ import { push } from 'react-router-redux';
 import translate from 'counterpart';
 import PermissionsLeftBlock from 'containers/Permissions/LeftBlock';
 import PermissionsRightBlock from 'containers/Permissions/RightBlock';
-import PermissionsModel from 'models/Permissions';
 
 const styles = {
     backButton: {marginRight: 15},
@@ -25,8 +24,6 @@ const styles = {
 class UserEdit extends React.Component {
     static propTypes = {
         data: PropTypes.object,
-        projects: PropTypes.array,
-        roles: PropTypes.array,
         params: PropTypes.object,
         dispatch: PropTypes.func
     };
@@ -101,20 +98,11 @@ class UserEdit extends React.Component {
         passwordProps.hintText = passwordLabel;
         passwordProps.floatingLabelText = passwordLabel;
 
-        let permissionsModel;
-        if (this.state.user && this.props.projects && this.props.roles) {
-            permissionsModel = new PermissionsModel(
-                [this.state.user],
-                this.props.projects,
-                this.props.roles
-            )
-        }
-
         return (
             <div>
                 <div className="row">
                     {this.getTitle()}
-                    {permissionsModel && (
+                    {this.state.user && (
                         <form className="row" style={{width: '100%'}}>
                             <div className="col-lg-4 col-md-6 col-xs-12">
                                 <TextField
@@ -176,18 +164,10 @@ class UserEdit extends React.Component {
                                 </SelectField>
                             </div>
                             <div className="col-lg-2 col-md-3 col-xs-6">
-                                <PermissionsLeftBlock
-                                    type="user"
-                                    value={this.props.data.id}
-                                    permissionsModel={permissionsModel}
-                                />
+                                <PermissionsLeftBlock />
                             </div>
                             <div className="col-lg-2 col-md-3 col-xs-6">
-                                <PermissionsRightBlock
-                                    type="user"
-                                    value={this.props.data.id}
-                                    permissionsModel={permissionsModel}
-                                />
+                                <PermissionsRightBlock />
                             </div>
                             <div className="col-xs-12 col-lg-12 col-md-12 center-xs">
                                 <RaisedButton
@@ -212,8 +192,6 @@ const mapStateToProps = (state) => {
     return {
         auth: state.auth,
         data: state.users.user,
-        projects: state.users.projects,
-        roles: state.users.permissions,
         ws: state.ws
     };
 };

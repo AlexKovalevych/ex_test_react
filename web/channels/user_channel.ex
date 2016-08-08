@@ -109,9 +109,11 @@ defmodule Gt.UserChannel do
         admin_required(socket, Users.load_users(params["page"], params["search"]))
     end
     def handle_in("user", %{}, socket) do
-        admin_required(socket, Users.create_user)
+        [users_state, permissions_state] = Users.load_user
+        admin_required(socket, %{user: users_state, permissions: permissions_state})
     end
     def handle_in("user", id, socket) do
-        admin_required(socket, Users.load_user(id))
+        [users_state, permissions_state] = Users.load_user(id)
+        admin_required(socket, %{user: users_state, permissions: permissions_state})
     end
 end

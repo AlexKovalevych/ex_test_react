@@ -13,12 +13,20 @@ defmodule Gt.UserController do
     end
 
     def create(conn, _) do
-        initial_state = %{users: Map.merge(Users.load_users(1), Users.create_user)}
+        [users_state, permissions_state] = Users.load_user
+        initial_state = %{
+            users: Map.merge(Users.load_users(1), users_state),
+            permissions: permissions_state
+        }
         Gt.AuthController.render_react(conn, initial_state, true)
     end
 
     def edit(conn, %{"id" => id}) do
-        initial_state = %{users: Map.merge(Users.load_users(1), Users.load_user(id))}
+        [users_state, permissions_state] = Users.load_user(id)
+        initial_state = %{
+            users: Map.merge(Users.load_users(1), users_state),
+            permissions: permissions_state
+        }
         Gt.AuthController.render_react(conn, initial_state, true)
     end
 end

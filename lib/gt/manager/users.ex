@@ -21,23 +21,32 @@ defmodule Gt.Manager.Users do
         }
     end
 
-    def load_user(id) do
-        %{
-            user: Gt.Repo.get!(User, id) |> User.secure_phone(false),
-            permissions: get_all(Application.get_env(:gt, :permissions)) |> Enum.map(&convert_role/1),
-            projects: Gt.Repo.all(Project)
-        }
+    def load_user(id \\ nil) do
+        user = case is_nil(id) do
+            true -> User.changeset(%User{}) |> Ecto.Changeset.apply_changes
+            false -> Gt.Repo.get!(User, id) |> User.secure_phone(false)
+        end
+        projects = Gt.Repo.all(Project)
+        [
+            %{user: user},
+            %{
+                users: [user],
+                roles: all_roles(),
+                projects: projects,
+                type: "user",
+                value: user.id,
+                selectedLeftRows: selected_projects(projects)
+            }
+        ]
     end
 
-    def create_user do
-        %{
-            user: User.changeset(%User{}) |> Ecto.Changeset.apply_changes,
-            permissions: get_all(Application.get_env(:gt, :permissions)) |> Enum.map(&convert_role/1),
-            projects: Gt.Repo.all(Project)
-        }
+    defp selected_projects(projects) do
+        projects |> Enum.map(fn project -> project.id end)
     end
 
-    defp convert_role(role) do
-        %{id: role, title: role}
+    defp all_roles do
+        get_all(Application.get_env(:gt, :permissions)) |> Enum.map(fn role ->
+            %{id: role, title: role}
+        end)
     end
 end
