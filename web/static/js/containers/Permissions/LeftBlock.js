@@ -1,17 +1,18 @@
 import React, { PropTypes } from 'react';
 import ReactDOM from 'react-dom';
-// import Table from 'material-ui/Table/Table';
-// import TableHeader from 'material-ui/Table/TableHeader';
-// import TableBody from 'material-ui/Table/TableBody';
-// import TableHeaderColumn from 'material-ui/Table/TableHeaderColumn';
-// import TableRow from 'material-ui/Table/TableRow';
-// import TableRowColumn from 'material-ui/Table/TableRowColumn';
+import Table from 'material-ui/Table/Table';
+import TableHeader from 'material-ui/Table/TableHeader';
+import TableBody from 'material-ui/Table/TableBody';
+import TableHeaderColumn from 'material-ui/Table/TableHeaderColumn';
+import TableRow from 'material-ui/Table/TableRow';
+import TableRowColumn from 'material-ui/Table/TableRowColumn';
 import Translate from 'react-translate-component';
 import PermissionsModel from 'models/Permissions';
-// import Toggle from 'material-ui/Toggle';
 import gtTheme from 'themes/indigo';
 import { connect } from 'react-redux';
 import userActions from 'actions/user';
+import Checkbox from 'material-ui/Checkbox';
+import FontIcon from 'material-ui/FontIcon';
 
 class LeftBlock extends React.Component {
     static propTypes = {
@@ -27,19 +28,6 @@ class LeftBlock extends React.Component {
         this.state = {
             permissions: props.permissionsModel.getPermissions(this.props.type, this.props.value)
         };
-    }
-
-    setIndeterminateState() {
-        $(ReactDOM.findDOMNode(this)).find('input.indeterminate').each((i, e) => {
-            e.indeterminate = true;
-        });
-        $(ReactDOM.findDOMNode(this)).find('input:not(.indeterminate)').each((i, e) => {
-            e.indeterminate = false;
-        });
-    }
-
-    componentDidUpdate() {
-        this.setIndeterminateState();
     }
 
     checkRow(id, e) {
@@ -67,48 +55,46 @@ class LeftBlock extends React.Component {
         dispatch(userActions.updatePermissions(this.props.permissionsModel));
     }
 
+    onSelectRows(a, b, c) {
+        console.log(a, b, c);
+    }
+
     render() {
         let title = PermissionsModel.config[this.props.type].leftTitle;
         let leftRowTitles = this.props.permissionsModel.getLeftRowTitles(this.props.type);
         let rows = Object.keys(leftRowTitles).map((id, i) => {
-            let properties = {};
             let value = this.props.permissionsModel.getLeftBlockValue(this.state.permissions[id]);
+            let props = {
+                label: leftRowTitles[id],
+                onCheck: this.checkRow.bind(this, id),
+                checked: value,
+                // labelPosition: 'left'
+            };
             if (value === null) {
-                properties.className = 'indeterminate';
-            }
-            if (value === true) {
-                properties.checked = 'checked';
-            }
-            let listGroupItemClassName = 'list-item-sm hover-pointer list-group-item';
-            if (this.props.permissionsModel.selectedLeftBlock.indexOf(id) > -1) {
-                listGroupItemClassName += ' bg-gray-important';
+                props.checkedIcon = (<FontIcon className="material-icons">indeterminate_check_box</FontIcon>);
             }
             return (
-                <tr key={i} onClick={this.selectRow.bind(this, id, i)}>
-                    <td>
-                        <input
-                            {...properties}
-                            type="checkbox"
-                            value={value}
-                            onChange={this.checkRow.bind(this, id)}
-                        />
-                        <span style={{marginLeft: 5}}>{leftRowTitles[id]}</span>
-                    </td>
-                </tr>
+                <TableRow key={i}>
+                    <TableRowColumn>
+                        <Checkbox {...props} />
+                    </TableRowColumn>
+                </TableRow>
             );
         });
 
         return (
-            <table >
-                <thead>
-                    <tr>
-                        <th>{title}</th>
-                    </tr>
-                </thead>
-                <tbody>
+            <Table multiSelectable={true} onRowSelection={this.onSelectRows.bind(this)}>
+                <TableHeader>
+                    <TableRow>
+                        <TableHeaderColumn>
+                            <Translate content={title} />
+                        </TableHeaderColumn>
+                    </TableRow>
+                </TableHeader>
+                <TableBody displayRowCheckbox={false}>
                     {rows}
-                </tbody>
-            </table>
+                </TableBody>
+            </Table>
         );
     }
 }

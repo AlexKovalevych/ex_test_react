@@ -24,17 +24,20 @@ defmodule Gt.Manager.Users do
     def load_user(id) do
         %{
             user: Gt.Repo.get!(User, id) |> User.secure_phone(false),
-            permissions: get_all(Application.get_env(:gt, :permissions)),
+            permissions: get_all(Application.get_env(:gt, :permissions)) |> Enum.map(&convert_role/1),
             projects: Gt.Repo.all(Project)
         }
     end
 
     def create_user do
-        IO.puts(get_all(Application.get_env(:gt, :permissions)))
         %{
             user: User.changeset(%User{}) |> Ecto.Changeset.apply_changes,
-            permissions: get_all(Application.get_env(:gt, :permissions)),
+            permissions: get_all(Application.get_env(:gt, :permissions)) |> Enum.map(&convert_role/1),
             projects: Gt.Repo.all(Project)
         }
+    end
+
+    defp convert_role(role) do
+        %{id: role, title: role}
     end
 end

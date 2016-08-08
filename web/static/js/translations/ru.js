@@ -68,7 +68,9 @@ counterpart.registerTranslations('ru', {
         sms_code: 'SMS код',
         sms_resend: 'Отправить SMS еще раз',
         google_code: 'Код аутентификации',
-        save: 'Сохранить'
+        save: 'Сохранить',
+        projects: 'Проекты',
+        roles: 'Роли'
     },
     validation: {
         invalid_email_password: 'Неправильный логин или пароль'

@@ -19,9 +19,9 @@ defmodule Gt.Model.User do
     @collection "users"
 
     schema @collection do
-        field :email, :string
+        field :email, :string, default: ""
         field :password, :string
-        field :password_plain, :string, virtual: true
+        field :password_plain, :string, virtual: true, default: ""
         field :permissions, :map, default: Application.get_env(:gt, :permissions)
         field :settings, :map, default: %{
             "dashboardSort" => "paymentsAmount",
@@ -39,9 +39,9 @@ defmodule Gt.Model.User do
         field :failedLoginCount, :integer, default: 0
         field :enabled, :boolean, default: true
         field :showGoogleCode, :boolean, default: true
-        field :securePhoneNumber, :string, virtual: true
+        field :securePhoneNumber, :string, virtual: true, default: ""
         field :lastLogin, Ecto.DateTime
-        field :description, :string
+        field :description, :string, default: ""
         field :notificationsEnabled, :boolean, default: true
 
         timestamps

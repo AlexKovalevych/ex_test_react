@@ -1,18 +1,16 @@
-import translate from 'counterpart';
-
 export default class Permissions {
     static config = {
         role: {
-            leftTitle: translate('form.projects'),
-            rightTitle: translate('form.users')
+            leftTitle: 'form.projects',
+            rightTitle: 'form.users'
         },
         user: {
-            leftTitle: translate('form.projects'),
-            rightTitle: translate('form.roles')
+            leftTitle: 'form.projects',
+            rightTitle: 'form.roles'
         },
         project: {
-            leftTitle: translate('form.users'),
-            rightTitle: translate('form.roles')
+            leftTitle: 'form.users',
+            rightTitle: 'form.roles'
         }
     };
 
@@ -124,9 +122,11 @@ export default class Permissions {
             if (userPermission.id != user) {
                 continue;
             }
-            for (let projectPermission of userPermission.permissions) {
-                for (let role of projectPermission.roles) {
-                    permissions[projectPermission.project.id][role] = true;
+            for (let group of Object.keys(userPermission.permissions)) {
+                for (let role of Object.keys(userPermission.permissions[group])) {
+                    for (let projectId of userPermission.permissions[group][role]) {
+                        permissions[projectId][role] = true;
+                    }
                 }
             }
         }

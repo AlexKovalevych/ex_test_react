@@ -14,6 +14,7 @@ import SelectField from 'material-ui/SelectField';
 import { push } from 'react-router-redux';
 import translate from 'counterpart';
 import PermissionsLeftBlock from 'containers/Permissions/LeftBlock';
+import PermissionsRightBlock from 'containers/Permissions/RightBlock';
 import PermissionsModel from 'models/Permissions';
 
 const styles = {
@@ -100,11 +101,20 @@ class UserEdit extends React.Component {
         passwordProps.hintText = passwordLabel;
         passwordProps.floatingLabelText = passwordLabel;
 
+        let permissionsModel;
+        if (this.state.user && this.props.projects && this.props.roles) {
+            permissionsModel = new PermissionsModel(
+                [this.state.user],
+                this.props.projects,
+                this.props.roles
+            )
+        }
+
         return (
             <div>
                 <div className="row">
                     {this.getTitle()}
-                    {this.state.user && (
+                    {permissionsModel && (
                         <form className="row" style={{width: '100%'}}>
                             <div className="col-lg-4 col-md-6 col-xs-12">
                                 <TextField
@@ -165,20 +175,18 @@ class UserEdit extends React.Component {
                                     <MenuItem value="en" primaryText={<Translate content="en" />} />
                                 </SelectField>
                             </div>
-                            <div className="col-lg-8 col-md-6 col-xs-12">
+                            <div className="col-lg-2 col-md-3 col-xs-6">
                                 <PermissionsLeftBlock
                                     type="user"
                                     value={this.props.data.id}
-                                    permissionsModel={new PermissionsModel(
-                                        this.state.user.permissions,
-                                        this.props.projects,
-                                        this.props.roles
-                                    )}
+                                    permissionsModel={permissionsModel}
                                 />
-                                <Permissions
-                                    projects={this.props.projects}
-                                    permissions={this.props.permissions}
-                                    data={this.state.user}
+                            </div>
+                            <div className="col-lg-2 col-md-3 col-xs-6">
+                                <PermissionsRightBlock
+                                    type="user"
+                                    value={this.props.data.id}
+                                    permissionsModel={permissionsModel}
                                 />
                             </div>
                             <div className="col-xs-12 col-lg-12 col-md-12 center-xs">
@@ -198,7 +206,6 @@ class UserEdit extends React.Component {
             </div>
         );
     }
-                                // <PermissionsRightBlock permissionsModel={this.props.permissionsModel} />
 }
 
 const mapStateToProps = (state) => {

@@ -6,8 +6,7 @@ const initialState = {
     totalPages: null,
     currentPage: 1,
     search: null,
-    lastUpdated: null,
-    permissions: null
+    lastUpdated: null
 };
 
 export default function reducer(state = initialState, action = {}) {
@@ -25,17 +24,14 @@ export default function reducer(state = initialState, action = {}) {
     case 'LOAD_USER':
         return {
             ...state,
-            permissions: new PermissionsModel(
-                action.data.user.permissions,
-                action.data.projects,
-                action.data.permissions
-            ),
-            user: action.data.user
+            user: action.data.user,
+            projects: action.data.projects,
+            permissions: action.data.permissions
         };
-    case 'UPDATE_PERMISSIONS':
+    case 'UPDATE_USER':
         return {
             ...state,
-            permissions: action.data
+            user: action.data
         };
     case 'SET_SEARCH':
         return {

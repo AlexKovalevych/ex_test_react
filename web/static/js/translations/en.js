@@ -68,7 +68,9 @@ counterpart.registerTranslations('en', {
         sms_code: 'SMS code',
         sms_resend: 'Snd SMS again',
         google_code: 'Authentication code',
-        save: 'Save'
+        save: 'Save',
+        projects: 'Projects',
+        roles: 'Roles'
     },
     validation: {
         invalid_email_password: 'Invalid email or password'
