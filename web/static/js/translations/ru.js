@@ -203,5 +203,14 @@ counterpart.registerTranslations('ru', {
             sms: 'Sms'
         },
         generate_password: 'Сгенерировать пароль'
+    },
+    project: {
+        title: 'Название',
+        prefix: 'Префикс',
+        item_id: 'Item id',
+        url: 'Url',
+        enabled: 'Включен',
+        edit: 'Проект %(title)s',
+        was_updated: 'Проект был обновлен'
     }
 });

@@ -1,7 +1,7 @@
 defmodule Gt.Model.Project do
     use Gt.Web, :model
 
-    @derive {Poison.Encoder, only: [:id, :title, :isPoker, :isPartner]}
+    @derive {Poison.Encoder, only: [:id, :title, :prefix, :item_id, :url, :enabled, :isPoker, :isPartner]}
 
     @collection "projects"
 
@@ -51,5 +51,23 @@ defmodule Gt.Model.Project do
     def prefix(query, prefix) do
         from u in query,
         where: u.prefix == ^prefix
+    end
+
+    def filter_by_title(query, search) do
+        regex = Mongo.Ecto.Helpers.regex(".*#{search}.*", "i")
+        from u in query,
+        where: fragment(title: ^regex),
+        order_by: u.title
+    end
+
+    def page(query, page_number, limit \\ 10) do
+        from u in query,
+        limit: ^limit,
+        offset: ^(limit * (page_number - 1))
+    end
+
+    def count(query) do
+        from u in query,
+        select: count(u.id)
     end
 end

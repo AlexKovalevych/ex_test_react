@@ -1,9 +1,11 @@
 defmodule Gt.UserChannel do
     use Gt.Web, :channel
     alias Gt.Model.User
+    alias Gt.Model.Project
     alias Gt.Manager.Dashboard
     alias Gt.Manager.Permissions
     alias Gt.Manager.Users
+    alias Gt.Manager.Projects
 
     defp admin_required(socket, data) do
         current_user = Repo.get(User, socket.assigns.current_user)
@@ -110,10 +112,31 @@ defmodule Gt.UserChannel do
     end
     def handle_in("user", %{}, socket) do
         [users_state, permissions_state] = Users.load_user
-        admin_required(socket, %{user: users_state, permissions: permissions_state})
+        admin_required(socket, Map.merge(users_state, permissions_state))
     end
     def handle_in("user", id, socket) do
         [users_state, permissions_state] = Users.load_user(id)
-        admin_required(socket, %{user: users_state, permissions: permissions_state})
+        admin_required(socket, Map.merge(users_state, permissions_state))
+    end
+    def handle_in("projects", params, socket) do
+        admin_required(socket, Projects.load_projects(params["page"], params["search"]))
+    end
+    def handle_in("project", %{"id" => id, "project" => data}, socket) do
+        current_user = Repo.get(User, socket.assigns.current_user)
+        response = if !current_user.is_admin do
+            {:error, %{reason: "Permission denied"}}
+        else
+            updated_project = Map.delete(data, :id)
+            %{project: project} = Projects.load_project(id)
+            project = Project.changeset(project, updated_project) |> Ecto.Changeset.apply_changes
+            case Repo.update(project) do
+                {:ok, project} -> {:ok, project}
+                {:error, changeset} -> {:error, %{reason: changeset}}
+            end
+        end
+        {:reply, response, socket}
+    end
+    def handle_in("project", id, socket) do
+        admin_required(socket, Projects.load_project(id))
     end
 end

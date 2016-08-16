@@ -11,6 +11,8 @@ import GtMenu from 'containers/GtMenu';
 import counterpart from 'counterpart';
 import UserList from 'containers/User/List';
 import UserEdit from 'containers/User/Edit';
+import ProjectList from 'containers/Project/List';
+import ProjectEdit from 'containers/Project/Edit';
 
 export default function configRoutes(store) {
     const _ensureAuthenticated = (nextState, replace, callback) => {
@@ -52,6 +54,10 @@ export default function configRoutes(store) {
                         <Route path="/settings/user/list" components={getComponents(UserList)}></Route>
                         <Route path="/settings/user/create" components={getComponents(UserEdit)}></Route>
                         <Route path="/settings/user/edit/:id" components={getComponents(UserEdit)}></Route>
+                    </Route>
+                    <Route path="/project">
+                        <Route path="/settings/project/list" components={getComponents(ProjectList)}></Route>
+                        <Route path="/settings/project/edit/:id" components={getComponents(ProjectEdit)}></Route>
                     </Route>
                 </Route>
 

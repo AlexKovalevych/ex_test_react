@@ -101,3 +101,8 @@ module.exports = {
         new CopyPlugin([{from: './web/static/assets'}])
     ].concat(plugins[env])
 };
+
+// TODO:
+// Load from localhost:
+// https://fonts.googleapis.com/css?family=Roboto:400,300,500,700&subset=latin,cyrillic
+// https://fonts.googleapis.com/icon?family=Material+Icons
