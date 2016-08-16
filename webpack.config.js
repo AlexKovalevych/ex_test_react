@@ -106,3 +106,6 @@ module.exports = {
 // Load from localhost:
 // https://fonts.googleapis.com/css?family=Roboto:400,300,500,700&subset=latin,cyrillic
 // https://fonts.googleapis.com/icon?family=Material+Icons
+
+// TODO:
+// Handle token expired case

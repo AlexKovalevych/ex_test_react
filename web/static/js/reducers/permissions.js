@@ -8,8 +8,6 @@ const initialState = {
     value: null,
     selectedLeftRows: null,
     selectedRightRows: null
-    // checkedLeftRows: null,
-    // checkedrightRows: null
 };
 
 export default function reducer(state = initialState, action = {}) {

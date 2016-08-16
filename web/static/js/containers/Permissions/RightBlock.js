@@ -24,23 +24,14 @@ class RightBlock extends React.Component {
         selectedLeftRows: PropTypes.array
     };
 
-    checkRow(id, e) {
-        this.props.model.checkRightRow(this.props.type, this.props.value, permissionsStore.selectedLeftRows, id, e.target.checked);
-        permissionsActionCreators.updatePermissions();
-    }
-
-    selectAll() {
-        for (let id of Object.keys(this.props.model.getRightRowTitles(this.props.type))) {
-            this.props.model.checkRightRow(this.props.type, this.props.value, permissionsStore.selectedLeftRows, id, true);
+    onCheckRow(id, e) {
+        const {dispatch} = this.props;
+        let value = false;
+        if (e.target.checked) {
+            value = true;
         }
-        permissionsActionCreators.updatePermissions();
-    }
-
-    unselectAll() {
-        for (let id of Object.keys(this.props.model.getRightRowTitles(this.props.type))) {
-            this.props.model.checkRightRow(this.props.type, this.props.value, permissionsStore.selectedLeftRows, id, false);
-        }
-        permissionsActionCreators.updatePermissions();
+        this.props.model.checkRightRow(this.props.type, this.props.value, this.props.selectedLeftRows, id, value);
+        dispatch(permissionsActions.update(this.props.model, this.props.type, this.props.value));
     }
 
     selectRightRow(e) {
@@ -49,8 +40,40 @@ class RightBlock extends React.Component {
         }
     }
 
-    onSelectRows(rows) {
+    isAllRowsChecked() {
+        let type = this.props.type;
+        let value = this.props.value;
+        let model = this.props.model;
+        let rightValues = Object.keys(model.getRightRowTitles(type));
+        let selectedLeftRows = this.props.selectedLeftRows;
+        let permissions = model.getPermissions(type, value);
+        let result = true;
+        for (let rightValue of rightValues) {
+            if (model.getRightBlockValue(selectedLeftRows, permissions, rightValue) !== true) {
+                result = false;
+                break;
+            }
+        }
+        return result;
+    }
 
+    onCheckAllRows() {
+        let model = this.props.model;
+        let type = this.props.type;
+        let value = this.props.value;
+        let selectedLeftRows = this.props.selectedLeftRows;
+        let rightValues = Object.keys(model.getRightRowTitles(type));
+        const {dispatch} = this.props;
+        if (this.isAllRowsChecked()) {
+            for (let rightValue of rightValues) {
+                model.checkRightRow(type, value, selectedLeftRows, rightValue, false);
+            }
+        } else {
+            for (let rightValue of rightValues) {
+                model.checkRightRow(type, value, selectedLeftRows, rightValue, true);
+            }
+        }
+        dispatch(permissionsActions.update(this.props.model, this.props.type, this.props.value));
     }
 
     render() {
@@ -66,7 +89,7 @@ class RightBlock extends React.Component {
             let value = model.getRightBlockValue(this.props.selectedLeftRows, permissions, id);
             let props = {
                 label: rightRowTitles[id],
-                onCheck: this.checkRow.bind(this, id),
+                onCheck: this.onCheckRow.bind(this, id),
                 checked: value,
                 inputStyle: {width: gtTheme.theme.spacing.desktopGutter},
                 labelStyle: {cursor: 'pointer'}
@@ -84,10 +107,15 @@ class RightBlock extends React.Component {
             );
         });
         return (
-            <Table multiSelectable={true} onRowSelection={this.onSelectRows.bind(this)}>
-                <TableHeader>
+            <Table className="not-selectable">
+                <TableHeader displaySelectAll={false} adjustForCheckbox={false}>
                     <TableRow>
                         <TableHeaderColumn>
+                            <Checkbox
+                                style={{width: 'inherit', float: 'left'}}
+                                checked={this.isAllRowsChecked()}
+                                onCheck={this.onCheckAllRows.bind(this)}
+                            />
                             <Translate content={title} />
                         </TableHeaderColumn>
                     </TableRow>

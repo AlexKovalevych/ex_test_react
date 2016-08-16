@@ -277,13 +277,25 @@ export default class Permissions {
         case 'user':
             for (let userPermissions of this.permissions) {
                 if (userPermissions.id == typeValueId) {
-                    for (let projectPermission of userPermissions.permissions) {
-                        if (selectedLeftRows.indexOf(projectPermission.project.id) > -1) {
-                            let roleIndex = projectPermission.roles.indexOf(id);
-                            if (value && roleIndex == -1) {
-                                projectPermission.roles.push(id);
-                            } else if (!value && roleIndex > -1) {
-                                projectPermission.roles.splice(roleIndex, 1);
+                    for (let group of Object.keys(userPermissions.permissions)) {
+                        for (let role of Object.keys(userPermissions.permissions[group])) {
+                            if (role == id) {
+                                if (value) {
+                                    for (let projectId of selectedLeftRows) {
+                                        let index = userPermissions.permissions[group][role].indexOf(projectId);
+                                        if (index == -1) {
+                                            userPermissions.permissions[group][role].push(projectId);
+                                        }
+                                    }
+                                } else {
+                                    for (let projectId of selectedLeftRows) {
+                                        let index = userPermissions.permissions[group][role].indexOf(projectId);
+                                        if (index > -1) {
+                                            userPermissions.permissions[group][role].splice(index, 1);
+                                        }
+                                    }
+                                }
+                                return;
                             }
                         }
                     }
