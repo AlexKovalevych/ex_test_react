@@ -164,7 +164,6 @@ class UserList extends React.Component {
 
 const mapStateToProps = (state) => {
     return {
-        auth: state.auth,
         data: state.users,
         ws: state.ws
     };

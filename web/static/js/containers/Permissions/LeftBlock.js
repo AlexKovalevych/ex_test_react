@@ -14,6 +14,15 @@ import FontIcon from 'material-ui/FontIcon';
 import permissionsActions from 'actions/Permissions';
 import PermissionsModel from 'models/Permissions';
 
+const styles = {
+    table: {
+        width: '100%'
+    },
+    selectedRow: {
+        backgroundColor: '#ccc'
+    }
+};
+
 class LeftBlock extends React.Component {
     static propTypes = {
         model: PropTypes.object,
@@ -23,21 +32,47 @@ class LeftBlock extends React.Component {
         dispatch: PropTypes.func
     };
 
+    constructor(props) {
+        super(props);
+        this.pivotRow = null;
+    }
+
     checkRow(id, e) {
         this.props.model.checkLeftRow(this.props.type, this.props.value, id, e.target.checked);
         const {dispatch} = this.props;
         dispatch(userActions.updatePermissions(this.props.model));
     }
 
-    onSelectRows(selectedRows) {
-        let ids = this.props.model.getLeftRowsIds(this.props.type);
+    onSelectRows(id, i, e) {
         let selectedIds = [];
-        for (let i of selectedRows) {
-            selectedIds.push(ids[i]);
+        if (this.pivotRow === null || !e.shiftKey) {
+            selectedIds.push(id);
+            this.pivotRow = i;
+        } else if (e.shiftKey) {
+            let titles = Object.keys(this.props.model.getLeftRowTitles(this.props.type));
+            for (let index in titles) {
+                if ((index >= this.pivotRow && index <= i) ||
+                    (index <= this.pivotRow && index >= i)) {
+                    selectedIds.push(titles[index]);
+                }
+            }
         }
-        this.props.model.selectedLeftBlock = selectedIds;
         const {dispatch} = this.props;
-        dispatch(permissionsActions.update(this.props.model, this.props.type, this.props.value));
+        dispatch(permissionsActions.selectLeftRows(selectedIds));
+    }
+
+    isAllRowsSelected() {
+        return this.props.selectedRows.length == Object.keys(this.props.model.getLeftRowTitles(this.props.type)).length;
+    }
+
+    onSelectAllRows() {
+        const {dispatch} = this.props;
+        if (this.isAllRowsSelected()) {
+            dispatch(permissionsActions.selectLeftRows([]));
+        } else {
+            let ids = Object.keys(this.props.model.getLeftRowTitles(this.props.type));
+            dispatch(permissionsActions.selectLeftRows(ids));
+        }
     }
 
     render() {
@@ -61,20 +96,28 @@ class LeftBlock extends React.Component {
             if (value === null) {
                 props.checkedIcon = (<FontIcon className="material-icons">indeterminate_check_box</FontIcon>);
             }
+            let style = this.props.selectedRows.indexOf(id) > -1 ? styles.selectedRow : {};
             return (
-                <TableRow key={i} selected={this.props.selectedRows.indexOf(id) > -1}>
+                <TableRow key={i} style={style}>
                     <TableRowColumn>
-                        <Checkbox {...props} />
+                        <div onClick={this.onSelectRows.bind(this, id, i)}>
+                            <Checkbox {...props} />
+                        </div>
                     </TableRowColumn>
                 </TableRow>
             );
         });
 
         return (
-            <Table multiSelectable={true} onRowSelection={this.onSelectRows.bind(this)}>
-                <TableHeader>
+            <Table className="not-selectable" style={styles.table} selectable={false}>
+                <TableHeader displaySelectAll={false} adjustForCheckbox={false}>
                     <TableRow>
                         <TableHeaderColumn>
+                            <Checkbox
+                                style={{width: 'inherit', float: 'left'}}
+                                checked={this.isAllRowsSelected()}
+                                onCheck={this.onSelectAllRows.bind(this)}
+                            />
                             <Translate content={title} />
                         </TableHeaderColumn>
                     </TableRow>

@@ -26,6 +26,11 @@ export default function reducer(state = initialState, action = {}) {
                 return project.id;
             })
         };
+    case 'SELECT_LEFT_ROWS':
+        return {
+            ...state,
+            selectedLeftRows: action.data
+        };
     case 'UPDATE_PERMISSIONS':
         return {
             ...state,

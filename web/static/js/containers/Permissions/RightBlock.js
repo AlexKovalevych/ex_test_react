@@ -20,7 +20,8 @@ class RightBlock extends React.Component {
         model: PropTypes.object,
         type: PropTypes.string,
         value: PropTypes.string,
-        dispatch: PropTypes.func
+        dispatch: PropTypes.func,
+        selectedLeftRows: PropTypes.array
     };
 
     checkRow(id, e) {
@@ -48,7 +49,7 @@ class RightBlock extends React.Component {
         }
     }
 
-    onSelectRows(value) {
+    onSelectRows(rows) {
 
     }
 
@@ -62,7 +63,7 @@ class RightBlock extends React.Component {
         let rightRowTitles = model.getRightRowTitles(type);
         let permissions = model.getPermissions(type, this.props.value);
         let rows = Object.keys(rightRowTitles).map((id, i) => {
-            let value = model.getRightBlockValue(model.selectedLeftBlock, permissions, id);
+            let value = model.getRightBlockValue(this.props.selectedLeftRows, permissions, id);
             let props = {
                 label: rightRowTitles[id],
                 onCheck: this.checkRow.bind(this, id),
@@ -107,7 +108,8 @@ const mapStateToProps = (state) => {
             state.permissions.roles
         ),
         type: state.permissions.type,
-        value: state.permissions.value
+        value: state.permissions.value,
+        selectedLeftRows: state.permissions.selectedLeftRows
     };
 };
 

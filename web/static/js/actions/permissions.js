@@ -6,6 +6,15 @@ const permissionsActions = {
                 data: {model, type, value}
             });
         };
+    },
+
+    selectLeftRows: (rows) => {
+        return (dispatch) => {
+            dispatch({
+                type: 'SELECT_LEFT_ROWS',
+                data: rows
+            });
+        };
     }
 };
 
