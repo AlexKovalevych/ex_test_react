@@ -31,6 +31,7 @@ module.exports = {
     devtool: devtool,
     entry: [
         './web/static/js/index.js',
+        './web/static/css/fonts.css',
         'flexboxgrid/dist/flexboxgrid.css',
         './web/static/css/material.min.css',
         './web/static/css/app.css'
@@ -101,11 +102,3 @@ module.exports = {
         new CopyPlugin([{from: './web/static/assets'}])
     ].concat(plugins[env])
 };
-
-// TODO:
-// Load from localhost:
-// https://fonts.googleapis.com/css?family=Roboto:400,300,500,700&subset=latin,cyrillic
-// https://fonts.googleapis.com/icon?family=Material+Icons
-
-// TODO:
-// Handle token expired case
