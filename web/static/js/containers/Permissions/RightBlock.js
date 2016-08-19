@@ -1,6 +1,4 @@
 import React, { PropTypes } from 'react';
-import ReactDOM from 'react-dom';
-import Permissions from 'models/Permissions';
 import Table from 'material-ui/Table/Table';
 import TableHeader from 'material-ui/Table/TableHeader';
 import TableBody from 'material-ui/Table/TableBody';
@@ -13,37 +11,33 @@ import FontIcon from 'material-ui/FontIcon';
 import Translate from 'react-translate-component';
 import gtTheme from 'themes/indigo';
 import permissionsActions from 'actions/Permissions';
-import PermissionsModel from 'models/Permissions';
+import permissionsModel from 'models/Permissions';
 
 class RightBlock extends React.Component {
     static propTypes = {
-        model: PropTypes.object,
+        permissions: PropTypes.array,
         type: PropTypes.string,
         value: PropTypes.string,
+        projects: PropTypes.array,
+        roles: PropTypes.array,
         dispatch: PropTypes.func,
         selectedLeftRows: PropTypes.array
     };
 
     onCheckRow(id, e) {
-        const {dispatch} = this.props;
-        let value = false;
-        if (e.target.checked) {
-            value = true;
-        }
-        this.props.model.checkRightRow(this.props.type, this.props.value, this.props.selectedLeftRows, id, value);
-        dispatch(permissionsActions.update(this.props.model.permissions, this.props.type, this.props.value));
+        const {dispatch, type, value, permissions, selectedLeftRows} = this.props;
+        let newPermissions = JSON.parse(JSON.stringify(permissions));
+        permissionsModel.checkRightRow(newPermissions, type, value, selectedLeftRows, id, e.target.checked);
+        dispatch(permissionsActions.update(newPermissions));
     }
 
     isAllRowsChecked() {
-        let type = this.props.type;
-        let value = this.props.value;
-        let model = this.props.model;
-        let rightValues = Object.keys(model.getRightRowTitles(type));
-        let selectedLeftRows = this.props.selectedLeftRows;
-        let permissions = model.getPermissions(type, value);
+        const {type, value, permissions, projects, roles, selectedLeftRows} = this.props;
+        let rightValues = permissionsModel.getRightRowTitles(type, permissions, roles);
+        let preparedPermissions = permissionsModel.getPermissions(permissions, projects, roles, type, value);
         let result = true;
         for (let rightValue of rightValues) {
-            if (model.getRightBlockValue(selectedLeftRows, permissions, rightValue) !== true) {
+            if (permissionsModel.getRightBlockValue(preparedPermissions, selectedLeftRows, rightValue) !== true) {
                 result = false;
                 break;
             }
@@ -52,44 +46,41 @@ class RightBlock extends React.Component {
     }
 
     onCheckAllRows() {
-        let model = this.props.model;
-        let type = this.props.type;
-        let value = this.props.value;
-        let selectedLeftRows = this.props.selectedLeftRows;
-        let rightValues = Object.keys(model.getRightRowTitles(type));
-        const {dispatch} = this.props;
+        const {type, value, dispatch, permissions, roles, selectedLeftRows} = this.props;
+        let rightValues = permissionsModel.getRightRowTitles(type, permissions, roles);
+        let newPermissions = JSON.parse(JSON.stringify(permissions));
         if (this.isAllRowsChecked()) {
             for (let rightValue of rightValues) {
-                model.checkRightRow(type, value, selectedLeftRows, rightValue, false);
+                newPermissions = permissionsModel.checkRightRow(newPermissions, type, value, selectedLeftRows, rightValue, false);
             }
         } else {
             for (let rightValue of rightValues) {
-                model.checkRightRow(type, value, selectedLeftRows, rightValue, true);
+                newPermissions = permissionsModel.checkRightRow(newPermissions, type, value, selectedLeftRows, rightValue, true);
             }
         }
-        dispatch(permissionsActions.update(this.props.model.permissions, this.props.type, this.props.value));
+        dispatch(permissionsActions.update(newPermissions));
     }
 
     render() {
-        let model = this.props.model;
-        if (!model) {
+        const {type, value, selectedLeftRows, permissions, projects, roles} = this.props;
+        if (!permissions) {
             return false;
         }
-        let type = this.props.type;
-        let title = Permissions.config[type].rightTitle;
-        let rightRowTitles = model.getRightRowTitles(type);
-        let permissions = model.getPermissions(type, this.props.value);
-        let rows = Object.keys(rightRowTitles).map((id, i) => {
-            let value = model.getRightBlockValue(this.props.selectedLeftRows, permissions, id);
+        let title = permissionsModel.getConfigRightTitle(type);
+        let preparedPermissions = permissionsModel.getPermissions(permissions, projects, roles, type, value);
+        let titleIds = permissionsModel.getRightRowTitleIds(type, preparedPermissions, roles);
+        let rows = titleIds.map((titleId, i) => {
+            let value = permissionsModel.getRightBlockValue(preparedPermissions, selectedLeftRows, titleId.id);
             let props = {
-                label: rightRowTitles[id],
-                onCheck: this.onCheckRow.bind(this, id),
+                label: titleId.title,
+                onCheck: this.onCheckRow.bind(this, titleId.id),
                 checked: value,
                 inputStyle: {width: gtTheme.theme.spacing.desktopGutter},
                 labelStyle: {cursor: 'pointer'}
             };
             if (value === null) {
-                props.checkedIcon = (<FontIcon className="material-icons">indeterminate_check_box</FontIcon>);
+                props.checkedIcon = (<FontIcon className="material-icons" color={gtTheme.theme.palette.primary1Color}>indeterminate_check_box</FontIcon>);
+                props.checked = true;
             }
 
             return (
@@ -124,11 +115,9 @@ class RightBlock extends React.Component {
 
 const mapStateToProps = (state) => {
     return {
-        model: new PermissionsModel(
-            state.permissions.users,
-            state.permissions.projects,
-            state.permissions.roles
-        ),
+        permissions: state.permissions.users,
+        projects: state.permissions.projects,
+        roles: state.permissions.roles,
         type: state.permissions.type,
         value: state.permissions.value,
         selectedLeftRows: state.permissions.selectedLeftRows

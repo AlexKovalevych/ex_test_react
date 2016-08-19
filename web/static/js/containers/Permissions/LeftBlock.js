@@ -11,7 +11,7 @@ import gtTheme from 'themes/indigo';
 import Checkbox from 'material-ui/Checkbox';
 import FontIcon from 'material-ui/FontIcon';
 import permissionsActions from 'actions/Permissions';
-import PermissionsModel from 'models/Permissions';
+import permissionsModel from 'models/Permissions';
 
 const styles = {
     table: {
@@ -24,9 +24,11 @@ const styles = {
 
 class LeftBlock extends React.Component {
     static propTypes = {
-        model: PropTypes.object,
+        permissions: PropTypes.array,
         type: PropTypes.string,
         value: PropTypes.string,
+        projects: PropTypes.array,
+        roles: PropTypes.array,
         selectedRows: PropTypes.array,
         dispatch: PropTypes.func
     };
@@ -37,56 +39,61 @@ class LeftBlock extends React.Component {
     }
 
     checkRow(id, e) {
-        this.props.model.checkLeftRow(this.props.type, this.props.value, id, e.target.checked);
-        const {dispatch} = this.props;
-        dispatch(permissionsActions.update(this.props.model.permissions, this.props.type, this.props.value));
+        const {type, value, dispatch, permissions, projects, roles} = this.props;
+        let newPermissions = permissionsModel.checkLeftRow(permissions, projects, roles, type, value, id, e.target.checked);
+        dispatch(permissionsActions.update(newPermissions));
     }
 
     onSelectRows(id, i, e) {
+        const {dispatch, projects, type, permissions, roles, value} = this.props;
         let selectedIds = [];
         if (this.pivotRow === null || !e.shiftKey) {
             selectedIds.push(id);
             this.pivotRow = i;
         } else if (e.shiftKey) {
-            let titles = Object.keys(this.props.model.getLeftRowTitles(this.props.type));
-            for (let index in titles) {
+            let preparedPermissions = permissionsModel.getPermissions(permissions, projects, roles, type, value);
+            let ids = permissionsModel.getLeftRowTitleIds(type, preparedPermissions, projects);
+            for (let index in ids) {
                 if ((index >= this.pivotRow && index <= i) ||
                     (index <= this.pivotRow && index >= i)) {
-                    selectedIds.push(titles[index]);
+                    selectedIds.push(ids[index].id);
                 }
             }
         }
-        const {dispatch} = this.props;
         dispatch(permissionsActions.selectLeftRows(selectedIds));
     }
 
     isAllRowsSelected() {
-        return this.props.selectedRows.length == Object.keys(this.props.model.getLeftRowTitles(this.props.type)).length;
+        const {type, permissions, projects, selectedRows} = this.props;
+        return selectedRows.length == permissionsModel.getLeftRowTitles(type, permissions, projects).length;
     }
 
     onSelectAllRows() {
-        const {dispatch} = this.props;
+        const {dispatch, type, value, permissions, projects, roles} = this.props;
+        let preparedPermissions = permissionsModel.getPermissions(permissions, projects, roles, type, value);
         if (this.isAllRowsSelected()) {
             dispatch(permissionsActions.selectLeftRows([]));
         } else {
-            let ids = Object.keys(this.props.model.getLeftRowTitles(this.props.type));
+            let ids = permissionsModel.getLeftRowTitleIds(type, preparedPermissions, projects).map((value) => {
+                return value.id;
+            });
             dispatch(permissionsActions.selectLeftRows(ids));
         }
     }
 
     render() {
-        let model = this.props.model;
-        if (!model) {
+        const {type, value, permissions, projects, roles, selectedRows} = this.props;
+        if (!permissions) {
             return false;
         }
-        let type = this.props.type;
-        let title = PermissionsModel.config[type].leftTitle;
-        let leftRowTitles = model.getLeftRowTitles(type);
-        let permissions = model.getPermissions(type, this.props.value);
-        let rows = Object.keys(leftRowTitles).map((id, i) => {
-            let value = model.getLeftBlockValue(permissions[id]);
+        let title = permissionsModel.getConfigLeftTitle(type);
+        let preparedPermissions = permissionsModel.getPermissions(permissions, projects, roles, type, value);
+        let titleIds = permissionsModel.getLeftRowTitleIds(type, preparedPermissions, projects);
+        let rows = titleIds.map((titleId, i) => {
+            let id = titleId.id;
+            let value = permissionsModel.getLeftBlockValue(preparedPermissions[id]);
             let props = {
-                label: leftRowTitles[id],
+                label: titleId.title,
                 onCheck: this.checkRow.bind(this, id),
                 checked: value,
                 inputStyle: {width: gtTheme.theme.spacing.desktopGutter},
@@ -96,7 +103,7 @@ class LeftBlock extends React.Component {
                 props.checkedIcon = (<FontIcon className="material-icons" color={gtTheme.theme.palette.primary1Color}>indeterminate_check_box</FontIcon>);
                 props.checked = true;
             }
-            let style = this.props.selectedRows.indexOf(id) > -1 ? styles.selectedRow : {};
+            let style = selectedRows.indexOf(id) > -1 ? styles.selectedRow : {};
             return (
                 <TableRow key={i} style={style}>
                     <TableRowColumn>
@@ -132,11 +139,9 @@ class LeftBlock extends React.Component {
 
 const mapStateToProps = (state) => {
     return {
-        model: new PermissionsModel(
-            state.permissions.users,
-            state.permissions.projects,
-            state.permissions.roles
-        ),
+        permissions: state.permissions.users,
+        projects: state.permissions.projects,
+        roles: state.permissions.roles,
         type: state.permissions.type,
         value: state.permissions.value,
         selectedRows: state.permissions.selectedLeftRows

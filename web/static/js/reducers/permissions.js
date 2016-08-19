@@ -1,13 +1,10 @@
-// import PermissionsModel from 'models/Permissions';
-
 const initialState = {
     users: null,
     projects: null,
     roles: null,
     type: null,
     value: null,
-    selectedLeftRows: null,
-    selectedRightRows: null
+    selectedLeftRows: null
 };
 
 export default function reducer(state = initialState, action = {}) {
@@ -32,9 +29,7 @@ export default function reducer(state = initialState, action = {}) {
     case 'UPDATE_PERMISSIONS':
         return {
             ...state,
-            users: action.data.users,
-            type: action.data.type,
-            value: action.data.value
+            users: action.data
         };
     default:
         return state;
