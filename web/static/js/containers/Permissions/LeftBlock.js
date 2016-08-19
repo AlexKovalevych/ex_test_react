@@ -8,7 +8,6 @@ import TableRowColumn from 'material-ui/Table/TableRowColumn';
 import Translate from 'react-translate-component';
 import { connect } from 'react-redux';
 import gtTheme from 'themes/indigo';
-import userActions from 'actions/user';
 import Checkbox from 'material-ui/Checkbox';
 import FontIcon from 'material-ui/FontIcon';
 import permissionsActions from 'actions/Permissions';
@@ -40,7 +39,7 @@ class LeftBlock extends React.Component {
     checkRow(id, e) {
         this.props.model.checkLeftRow(this.props.type, this.props.value, id, e.target.checked);
         const {dispatch} = this.props;
-        dispatch(userActions.updatePermissions(this.props.model));
+        dispatch(permissionsActions.update(this.props.model.permissions, this.props.type, this.props.value));
     }
 
     onSelectRows(id, i, e) {

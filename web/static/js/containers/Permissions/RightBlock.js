@@ -31,13 +31,7 @@ class RightBlock extends React.Component {
             value = true;
         }
         this.props.model.checkRightRow(this.props.type, this.props.value, this.props.selectedLeftRows, id, value);
-        dispatch(permissionsActions.update(this.props.model, this.props.type, this.props.value));
-    }
-
-    selectRightRow(e) {
-        if (e.target.tagName.toLowerCase() != 'input') {
-            $(ReactDOM.findDOMNode(e.currentTarget)).find('input').trigger('click');
-        }
+        dispatch(permissionsActions.update(this.props.model.permissions, this.props.type, this.props.value));
     }
 
     isAllRowsChecked() {
@@ -73,7 +67,7 @@ class RightBlock extends React.Component {
                 model.checkRightRow(type, value, selectedLeftRows, rightValue, true);
             }
         }
-        dispatch(permissionsActions.update(this.props.model, this.props.type, this.props.value));
+        dispatch(permissionsActions.update(this.props.model.permissions, this.props.type, this.props.value));
     }
 
     render() {

@@ -1,9 +1,9 @@
 const permissionsActions = {
-    update: (model, type, value) => {
+    update: (users, type, value) => {
         return (dispatch) => {
             dispatch({
                 type: 'UPDATE_PERMISSIONS',
-                data: {model, type, value}
+                data: {users, type, value}
             });
         };
     },

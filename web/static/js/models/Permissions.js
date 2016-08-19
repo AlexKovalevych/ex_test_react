@@ -224,14 +224,16 @@ export default class Permissions {
         case 'user':
             for (let userPermissions of this.permissions) {
                 if (userPermissions.id == typeValueId) {
-                    for (let projectPermission of userPermissions.permissions) {
-                        if (projectPermission.project.id == id) {
-                            for (let role of this.roles) {
-                                let roleIndex = projectPermission.roles.indexOf(role);
-                                if (value && roleIndex == -1) {
-                                    projectPermission.roles.push(role);
-                                } else if (!value && roleIndex > -1) {
-                                    projectPermission.roles.splice(roleIndex, 1);
+                    for (let group of Object.keys(userPermissions.permissions)) {
+                        for (let role of Object.keys(userPermissions.permissions[group])) {
+                            for (let projectId of this.projects) {
+                                if (projectId == id) {
+                                    let index = userPermissions.permissions[group][role].indexOf(projectId);
+                                    if (value && index == -1) {
+                                        userPermissions.permissions[group][role].push(projectId);
+                                    } else if (!value && index > -1) {
+                                        userPermissions.permissions[group][role].splice(index, 1);
+                                    }
                                 }
                             }
                         }

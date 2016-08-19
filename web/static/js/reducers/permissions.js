@@ -32,7 +32,7 @@ export default function reducer(state = initialState, action = {}) {
     case 'UPDATE_PERMISSIONS':
         return {
             ...state,
-            model: action.data.model,
+            users: action.data.users,
             type: action.data.type,
             value: action.data.value
         };
