@@ -94,7 +94,7 @@ class LeftBlock extends React.Component {
                 labelStyle: {cursor: 'pointer'}
             };
             if (value === null) {
-                props.checkedIcon = (<FontIcon className="material-icons">indeterminate_check_box</FontIcon>);
+                props.checkedIcon = (<FontIcon className="material-icons" color={gtTheme.theme.palette.primary1Color}>indeterminate_check_box</FontIcon>);
                 props.checked = true;
             }
             let style = this.props.selectedRows.indexOf(id) > -1 ? styles.selectedRow : {};
