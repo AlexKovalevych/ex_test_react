@@ -36,14 +36,16 @@ export function setCurrentUser(dispatch, currentUser, qrcodeUrl=null, serverTime
 }
 
 export function setSocket(dispatch, user, redirectPath) {
+    let token = localStorage.getItem('jwtToken');
     const socket = new Socket('/socket', {
-        params: { token: localStorage.getItem('jwtToken') },
+        params: {token},
         logger: (kind, msg, data) => {
             console.log(`${kind}: ${msg}`, data);
         }
     });
 
     socket.connect();
+
     const channel = socket.channel(`users:${user.id}`);
 
     if (channel.state != 'joined') {
@@ -57,6 +59,12 @@ export function setSocket(dispatch, user, redirectPath) {
                 dispatch(push(redirectPath));
             }
         });
+        // logout in case token is expired
+        if (token) {
+            channel.onError(() => {
+                dispatch(authActions.logout());
+            });
+        }
     }
 }
 

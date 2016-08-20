@@ -13,6 +13,7 @@ import UserList from 'containers/User/List';
 import UserEdit from 'containers/User/Edit';
 import ProjectList from 'containers/Project/List';
 import ProjectEdit from 'containers/Project/Edit';
+import authActions from 'actions/auth';
 
 export default function configRoutes(store) {
     const _ensureAuthenticated = (nextState, replace, callback) => {
@@ -22,7 +23,7 @@ export default function configRoutes(store) {
 
         if (typeof window !== 'undefined') {
             if (!user || !localStorage.getItem('jwtToken')) {
-                replace('/login');
+                dispatch(authActions.logout());
             } if (user) {
                 setCurrentUser(dispatch, user);
                 setSocket(dispatch, user);

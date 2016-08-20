@@ -86,11 +86,12 @@ defmodule Gt.Api.V1.AuthController do
     end
 
     def delete(conn, _) do
-        {:ok, claims} = Guardian.Plug.claims(conn)
-
-        conn
-        |> Guardian.Plug.current_token
-        |> Guardian.revoke!(claims)
+         case Guardian.Plug.claims(conn) do
+            {:ok, claims} -> conn
+                |> Guardian.Plug.current_token
+                |> Guardian.revoke!(claims)
+            {:error, _} -> conn
+        end
 
         conn = clear_session(conn)
         conn
