@@ -129,8 +129,8 @@ defmodule Gt.UserChannel do
             updated_project = Map.delete(data, :id)
             %{project: project} = Projects.load_project(id)
             case Repo.update(Project.changeset(project, updated_project)) do
-                {:ok, project} -> {:ok, project}
-                {:error, changeset} -> {:error, %{reason: changeset}}
+                {:ok, project} -> {:ok, %{project: project}}
+                {:error, changeset} -> {:ok, %{project: project, errors: changeset}}
             end
         end
         {:reply, response, socket}

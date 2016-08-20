@@ -4,7 +4,8 @@ const initialState = {
     totalPages: null,
     currentPage: 1,
     search: null,
-    lastUpdated: null
+    lastUpdated: null,
+    errors: null
 };
 
 export default function reducer(state = initialState, action = {}) {
@@ -17,17 +18,20 @@ export default function reducer(state = initialState, action = {}) {
             search: action.data.search,
             currentPage: action.data.currentPage,
             totalPages: action.data.totalPages,
-            lastUpdated: action.data.lastUpdated
+            lastUpdated: action.data.lastUpdated,
+            errors: null
         };
     case 'LOAD_PROJECT':
         return {
             ...state,
-            project: action.data.project
+            project: action.data.project,
+            errors: null
         };
     case 'UPDATE_PROJECT':
         return {
             ...state,
-            project: action.data
+            project: action.data.project,
+            errors: action.data.errors
         };
     case 'SET_SEARCH':
         return {

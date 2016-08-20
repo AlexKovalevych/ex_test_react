@@ -52,10 +52,12 @@ const projectActions = {
                         type: 'UPDATE_PROJECT',
                         data: msg
                     });
-                    dispatch({
-                        type: 'SHOW_ERROR',
-                        message: translate('project.was_updated')
-                    });
+                    if (!msg.errors) {
+                        dispatch({
+                            type: 'SHOW_ERROR',
+                            message: translate('project.was_updated')
+                        });
+                    }
                 })
                 .receive('error', (msg) => {
                     dispatch({

@@ -20,6 +20,7 @@ const styles = {
 class ProjectEdit extends React.Component {
     static propTypes = {
         data: PropTypes.object,
+        errors: PropTypes.object,
         params: PropTypes.object,
         dispatch: PropTypes.func
     };
@@ -38,7 +39,9 @@ class ProjectEdit extends React.Component {
         } else {
             dispatch(spinnerActions.stop());
         }
-        this.setState({project: props.data ? JSON.parse(JSON.stringify(props.data)) : null});
+        if (!props.errors && props.data) {
+            this.setState({project: JSON.parse(JSON.stringify(props.data))});
+        }
     }
 
     componentDidMount() {
@@ -88,6 +91,13 @@ class ProjectEdit extends React.Component {
         dispatch(projectActions.updateProject(this.props.data.id, this.state.project));
     }
 
+    getError(field) {
+        const {errors} = this.props;
+        if (errors && errors[field]) {
+            return (<Translate content={errors[field][0]} />);
+        }
+    }
+
     render() {
         return (
             <div>
@@ -104,6 +114,7 @@ class ProjectEdit extends React.Component {
                                     floatingLabelText={<Translate content="project.title" />}
                                     fullWidth={true}
                                     onChange={this.onChangeTextInput.bind(this, 'title')}
+                                    errorText={this.getError('title')}
                                 />
                                 <TextField
                                     id="prefix"
@@ -113,6 +124,7 @@ class ProjectEdit extends React.Component {
                                     floatingLabelText={<Translate content="project.prefix" />}
                                     fullWidth={true}
                                     onChange={this.onChangeTextInput.bind(this, 'prefix')}
+                                    errorText={this.getError('prefix')}
                                 />
                                 <TextField
                                     id="item_id"
@@ -122,6 +134,7 @@ class ProjectEdit extends React.Component {
                                     floatingLabelText={<Translate content="project.item_id" />}
                                     fullWidth={true}
                                     onChange={this.onChangeTextInput.bind(this, 'item_id')}
+                                    errorText={this.getError('item_id')}
                                 />
                                 <TextField
                                     id="url"
@@ -131,6 +144,7 @@ class ProjectEdit extends React.Component {
                                     floatingLabelText={<Translate content="project.url" />}
                                     fullWidth={true}
                                     onChange={this.onChangeTextInput.bind(this, 'url')}
+                                    errorText={this.getError('url')}
                                 />
                                 <Toggle
                                     label={translate('project.enabled')}
@@ -158,6 +172,7 @@ class ProjectEdit extends React.Component {
 const mapStateToProps = (state) => {
     return {
         data: state.projects.project,
+        errors: state.projects.errors,
         ws: state.ws
     };
 };
