@@ -73,7 +73,8 @@ counterpart.registerTranslations('en', {
         roles: 'Roles'
     },
     validation: {
-        invalid_email_password: 'Invalid email or password'
+        invalid_email_password: 'Invalid email or password',
+        not_blank: 'This field can\'t be blank'
     },
     dashboard: {
         no_data: 'No data',

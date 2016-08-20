@@ -26,6 +26,11 @@ defmodule Gt.Model.Project do
     def changeset(model, params \\ :empty) do
         model
         |> cast(params, @required_fields, @optional_fields)
+        # TODO: in ecto 2.0 replace with validate_required
+        |> validate_length(:title, min: 1, message: "validation.not_blank")
+        |> validate_length(:prefix, min: 1, message: "validation.not_blank")
+        |> validate_length(:item_id, min: 1, message: "validation.not_blank")
+        |> validate_length(:url, min: 1, message: "validation.not_blank")
         |> unique_constraint(:item_id, message: "Project with this item_id already exists")
     end
 

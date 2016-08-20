@@ -6,11 +6,9 @@ import Translate from 'react-translate-component';
 import Title from 'components/Title';
 import FloatingActionButton from 'material-ui/FloatingActionButton';
 import RaisedButton from 'material-ui/RaisedButton';
-import MenuItem from 'material-ui/MenuItem';
 import TextField from 'material-ui/TextField';
 import Toggle from 'material-ui/Toggle';
 import FontIcon from 'material-ui/FontIcon';
-import SelectField from 'material-ui/SelectField';
 import { push } from 'react-router-redux';
 import translate from 'counterpart';
 
@@ -40,7 +38,7 @@ class ProjectEdit extends React.Component {
         } else {
             dispatch(spinnerActions.stop());
         }
-        this.setState({project: JSON.parse(JSON.stringify(props.data))});
+        this.setState({project: props.data ? JSON.parse(JSON.stringify(props.data)) : null});
     }
 
     componentDidMount() {

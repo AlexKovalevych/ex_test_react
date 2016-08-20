@@ -128,8 +128,7 @@ defmodule Gt.UserChannel do
         else
             updated_project = Map.delete(data, :id)
             %{project: project} = Projects.load_project(id)
-            project = Project.changeset(project, updated_project) |> Ecto.Changeset.apply_changes
-            case Repo.update(project) do
+            case Repo.update(Project.changeset(project, updated_project)) do
                 {:ok, project} -> {:ok, project}
                 {:error, changeset} -> {:error, %{reason: changeset}}
             end
