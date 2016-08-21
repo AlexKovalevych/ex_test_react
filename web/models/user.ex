@@ -63,10 +63,11 @@ defmodule Gt.Model.User do
     def changeset(model, params \\ :empty) do
         model
         |> cast(params, @required_fields, @optional_fields)
-        |> validate_format(:email, ~r/@/, message: "Email format is not valid")
+        |> validate_format(:email, ~r/@/, message: "validation.email")
         |> validate_length(:password_plain, min: 4, message: "Password should be 5 or more characters long")
-        |> validate_confirmation(:password_plain, message: "Password confirmation doesn’t match")
-        |> unique_constraint(:email, message: "This email is already taken")
+        |> validate_format(:phoneNumber, ~r/^\+?\d{9,15}$/, message: "validation.phone_number")
+        # |> validate_confirmation(:password_plain, message: "Password confirmation doesn’t match")
+        |> unique_constraint(:email, message: "validation.email_not_unique")
         |> cs_encrypt_password()
     end
 

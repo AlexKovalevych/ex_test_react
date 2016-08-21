@@ -40,6 +40,17 @@ defmodule Gt.Manager.Users do
         ]
     end
 
+    def update_user(id, data) do
+        updated_user = data
+        |> Map.delete(:id)
+        |> Map.put(:phoneNumber, data.secure_phone)
+        [%{user: user}, _] = load_user(id)
+        case Repo.update(User.changeset(user, updated_user)) do
+            {:ok, user} -> {:ok, user}
+            {:error, changeset} -> {:error, user, changeset}
+        end
+    end
+
     defp selected_projects(projects) do
         projects |> Enum.map(fn project -> project.id end)
     end

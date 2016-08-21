@@ -74,6 +74,8 @@ counterpart.registerTranslations('en', {
     },
     validation: {
         invalid_email_password: 'Invalid email or password',
+        email: 'Email format is not valid',
+        email_not_unique: 'This email is already taken',
         not_blank: 'This field can\'t be blank'
     },
     dashboard: {
@@ -203,7 +205,8 @@ counterpart.registerTranslations('en', {
             google: 'Google',
             sms: 'Sms'
         },
-        generate_password: 'Generate password'
+        generate_password: 'Generate password',
+        was_updated: 'User was updated'
     },
     project: {
         title: 'Title',

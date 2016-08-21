@@ -74,6 +74,8 @@ counterpart.registerTranslations('ru', {
     },
     validation: {
         invalid_email_password: 'Неправильный логин или пароль',
+        email: 'Неверный формат почты',
+        email_not_unique: 'Этот адрес почты уже использован',
         not_blank: 'Это поле не может быть пустым'
     },
     dashboard: {
@@ -203,7 +205,8 @@ counterpart.registerTranslations('ru', {
             google: 'Google',
             sms: 'Sms'
         },
-        generate_password: 'Сгенерировать пароль'
+        generate_password: 'Сгенерировать пароль',
+        was_updated: 'Пользователь был обновлен'
     },
     project: {
         title: 'Название',

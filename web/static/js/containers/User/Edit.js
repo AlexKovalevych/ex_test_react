@@ -24,6 +24,7 @@ const styles = {
 class UserEdit extends React.Component {
     static propTypes = {
         data: PropTypes.object,
+        errors: PropTypes.object,
         params: PropTypes.object,
         dispatch: PropTypes.func
     };
@@ -43,7 +44,9 @@ class UserEdit extends React.Component {
         } else {
             dispatch(spinnerActions.stop());
         }
-        this.setState({user: props.data});
+        if (!props.errors && props.data) {
+            this.setState({user: props.data});
+        }
     }
 
     componentDidMount() {
@@ -61,11 +64,11 @@ class UserEdit extends React.Component {
 
     getTitle() {
         let crumb;
-        if (this.state.user) {
-            if (!this.state.user.id) {
+        if (this.props.data) {
+            if (!this.props.data.id) {
                 crumb = (<Translate content="user.new" />);
             } else {
-                crumb = (<Translate content="user.edit" email={this.state.user.email} />) ;
+                crumb = (<Translate content="user.edit" email={this.props.data.email} />) ;
             }
         }
 
@@ -77,6 +80,25 @@ class UserEdit extends React.Component {
                 {crumb}
             </Title>
         );
+    }
+
+    getError(field) {
+        const {errors} = this.props;
+        if (errors && errors[field]) {
+            return (<Translate content={errors[field][0]} />);
+        }
+    }
+
+    onChangeTextInput(field, e) {
+        let user = this.state.user;
+        user[field] = e.target.value;
+        this.setState({user});
+    }
+
+    updateUser(e) {
+        e.preventDefault();
+        const {dispatch} = this.props;
+        dispatch(userActions.updateUser(this.props.data.id, this.state.user));
     }
 
     render() {
@@ -103,7 +125,7 @@ class UserEdit extends React.Component {
                 <div className="row">
                     {this.getTitle()}
                     {this.state.user && (
-                        <form className="row" style={{width: '100%'}}>
+                        <form className="row" style={{width: '100%'}} onSubmit={this.updateUser.bind(this)}>
                             <div className="col-lg-4 col-md-6 col-xs-12">
                                 <TextField
                                     id="email"
@@ -112,6 +134,8 @@ class UserEdit extends React.Component {
                                     hintText={<Translate content="user.email" />}
                                     floatingLabelText={<Translate content="user.email" />}
                                     fullWidth={true}
+                                    onChange={this.onChangeTextInput.bind(this, 'email')}
+                                    errorText={this.getError('email')}
                                 />
                                 <TextField {...passwordProps} />
                                 <TextField
@@ -120,6 +144,8 @@ class UserEdit extends React.Component {
                                     value={this.state.user.securePhoneNumber}
                                     hintText={<Translate content="user.phone_number" />}
                                     floatingLabelText={<Translate content="user.phone_number" />}
+                                    onChange={this.onChangeTextInput.bind(this, 'securePhoneNumber')}
+                                    errorText={this.getError('phone_number')}
                                     fullWidth={true}
                                 />
                                 <TextField
@@ -192,6 +218,7 @@ const mapStateToProps = (state) => {
     return {
         auth: state.auth,
         data: state.users.user,
+        errors: state.users.errors,
         ws: state.ws
     };
 };

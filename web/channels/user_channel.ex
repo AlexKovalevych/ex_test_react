@@ -110,6 +110,18 @@ defmodule Gt.UserChannel do
     def handle_in("users", params, socket) do
         admin_required(socket, Users.load_users(params["page"], params["search"]))
     end
+    def handle_in("user", %{"id" => id, "user" => data}, socket) do
+        current_user = Repo.get(User, socket.assigns.current_user)
+        response = if !current_user.is_admin do
+            {:error, %{reason: "Permission denied"}}
+        else
+            case Users.update_user(id, data) do
+                {:ok, user} -> {:ok, %{user: user}}
+                {:error, user, changeset} -> {:ok, %{user: user, errors: changeset}}
+            end
+        end
+        {:reply, response, socket}
+    end
     def handle_in("user", %{}, socket) do
         [users_state, permissions_state] = Users.load_user
         admin_required(socket, Map.merge(users_state, permissions_state))
