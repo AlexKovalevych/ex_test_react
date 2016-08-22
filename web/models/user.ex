@@ -64,18 +64,12 @@ defmodule Gt.Model.User do
         model
         |> cast(params, @required_fields, @optional_fields)
         |> validate_format(:email, ~r/@/, message: "validation.email")
+        |> validate_length(:email, min: 4, message: "validation.email")
         |> validate_length(:password_plain, min: 4, message: "validation.short_password")
         |> validate_format(:phoneNumber, ~r/^\+?\d{9,15}$/, message: "validation.phone_number")
-        # |> validate_confirmation(:password_plain, message: "Password confirmation doesn’t match")
         |> unique_constraint(:email, message: "validation.email_not_unique")
         |> cs_encrypt_password()
     end
-
-    # def signup(params) do
-    #     %__MODULE__{}
-    #     |> changeset(params)
-    #     |> Repo.insert()
-    # end
 
     def secure_phone(user, hide \\ true) do
         phone = if hide do

@@ -52,7 +52,13 @@ defmodule Gt.Manager.Users do
         else
             updated_user
         end
-        case Gt.Repo.update(User.changeset(user, updated_user)) do
+        result = case is_nil(id) do
+            true -> Gt.Repo.insert(User.changeset(user, updated_user))
+            false -> Gt.Repo.update(User.changeset(user, updated_user))
+        end
+
+        IO.inspect(result)
+        case result do
             {:ok, user} -> {:ok, user}
             {:error, changeset} -> {:error, user, changeset}
         end

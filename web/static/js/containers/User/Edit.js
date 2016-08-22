@@ -185,7 +185,7 @@ class UserEdit extends React.Component {
                                 hintText={<Translate content="user.phone_number" />}
                                 floatingLabelText={<Translate content="user.phone_number" />}
                                 onChange={this.onChangeTextInput.bind(this, 'securePhoneNumber')}
-                                errorText={this.getError('phone_number')}
+                                errorText={this.getError('phoneNumber')}
                                 fullWidth={true}
                             />
                             <TextField
@@ -264,7 +264,7 @@ const mapStateToProps = (state) => {
         auth: state.auth,
         data: state.users.user,
         errors: state.users.errors,
-        permissions: state.permissions.users[0].permissions,
+        permissions: state.permissions.users ? state.permissions.users[0].permissions : null,
         ws: state.ws
     };
 };

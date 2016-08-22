@@ -77,7 +77,8 @@ counterpart.registerTranslations('en', {
         email: 'Email format is not valid',
         email_not_unique: 'This email is already taken',
         not_blank: 'This field can\'t be blank',
-        short_password: 'Password should not be less than 4 symbols'
+        short_password: 'Password should not be less than 4 symbols',
+        phone_number: 'Phone number is not valid'
     },
     dashboard: {
         no_data: 'No data',
