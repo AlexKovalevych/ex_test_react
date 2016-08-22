@@ -76,7 +76,8 @@ counterpart.registerTranslations('ru', {
         invalid_email_password: 'Неправильный логин или пароль',
         email: 'Неверный формат почты',
         email_not_unique: 'Этот адрес почты уже использован',
-        not_blank: 'Это поле не может быть пустым'
+        not_blank: 'Это поле не может быть пустым',
+        short_password: 'Пароль должен быть не короче 4-х символов'
     },
     dashboard: {
         no_data: 'Нет данных',

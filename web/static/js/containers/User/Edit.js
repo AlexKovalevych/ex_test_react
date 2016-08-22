@@ -15,6 +15,8 @@ import { push } from 'react-router-redux';
 import translate from 'counterpart';
 import PermissionsLeftBlock from 'containers/Permissions/LeftBlock';
 import PermissionsRightBlock from 'containers/Permissions/RightBlock';
+import gtTheme from 'themes';
+import passwordGenerator from 'managers/PasswordGenerator';
 
 const styles = {
     backButton: {marginRight: 15},
@@ -26,7 +28,8 @@ class UserEdit extends React.Component {
         data: PropTypes.object,
         errors: PropTypes.object,
         params: PropTypes.object,
-        dispatch: PropTypes.func
+        dispatch: PropTypes.func,
+        permissions: PropTypes.object
     };
 
     constructor(props) {
@@ -91,21 +94,60 @@ class UserEdit extends React.Component {
 
     onChangeTextInput(field, e) {
         let user = this.state.user;
-        user[field] = e.target.value;
-        this.setState({user});
+        let newState = this.state;
+        newState.user[field] = e.target.value;
+        if (field == 'password_plain') {
+            newState.generatedPassword = false;
+        }
+        this.setState(newState);
     }
 
     updateUser(e) {
         e.preventDefault();
         const {dispatch} = this.props;
-        dispatch(userActions.updateUser(this.props.data.id, this.state.user));
+        let user = this.state.user;
+        user.permissions = this.props.permissions;
+        dispatch(userActions.updateUser(this.props.data.id, user));
+    }
+
+    onToggle(field, e) {
+        let newState = this.state;
+        newState.user[field] = e.target.checked;
+        this.setState(newState);
+    }
+
+    onChangeSelect(field, e, key, value) {
+        let newState = this.state;
+        newState.user[field] = value;
+        this.setState(newState);
+    }
+
+    generatePassword() {
+        let newPassword = passwordGenerator.generate();
+        let newState = this.state;
+        newState.user.password_plain = newPassword;
+        newState.generatedPassword = true;
+        this.setState(newState);
     }
 
     render() {
+        if (!this.state.user) {
+            return (
+                <div>
+                    <div className="row">
+                        {this.getTitle()}
+                    </div>
+                </div>
+            );
+        }
+
+        let passwordPlain = this.state.user.password_plain ? this.state.user.password_plain : "";
         let passwordProps = {
             id: 'password',
-            ref: 'password',
-            fullWidth: true
+            fullWidth: true,
+            onChange: this.onChangeTextInput.bind(this, 'password_plain'),
+            value: passwordPlain,
+            errorText: this.getError('password_plain')
         };
         if (!this.state.generatedPassword) {
             passwordProps.type = 'password';
@@ -124,90 +166,93 @@ class UserEdit extends React.Component {
             <div>
                 <div className="row">
                     {this.getTitle()}
-                    {this.state.user && (
-                        <form className="row" style={{width: '100%'}} onSubmit={this.updateUser.bind(this)}>
-                            <div className="col-lg-4 col-md-6 col-xs-12">
-                                <TextField
-                                    id="email"
-                                    ref="email"
-                                    value={this.state.user.email}
-                                    hintText={<Translate content="user.email" />}
-                                    floatingLabelText={<Translate content="user.email" />}
-                                    fullWidth={true}
-                                    onChange={this.onChangeTextInput.bind(this, 'email')}
-                                    errorText={this.getError('email')}
-                                />
-                                <TextField {...passwordProps} />
-                                <TextField
-                                    id="phoneNumber"
-                                    ref="phoneNumber"
-                                    value={this.state.user.securePhoneNumber}
-                                    hintText={<Translate content="user.phone_number" />}
-                                    floatingLabelText={<Translate content="user.phone_number" />}
-                                    onChange={this.onChangeTextInput.bind(this, 'securePhoneNumber')}
-                                    errorText={this.getError('phone_number')}
-                                    fullWidth={true}
-                                />
-                                <TextField
-                                    id="comment"
-                                    ref="comment"
-                                    value={this.state.user.comment}
-                                    hintText={<Translate content="user.comment" />}
-                                    floatingLabelText={<Translate content="user.comment" />}
-                                    fullWidth={true}
-                                />
-                                <Toggle
-                                    label={translate('user.enabled')}
-                                    toggled={this.state.user.enabled}
-                                    labelPosition="right"
-                                />
-                                <Toggle
-                                    label={translate('user.notifications_enabled')}
-                                    toggled={this.state.user.notificationsEnabled}
-                                    labelPosition="right"
-                                />
-                                <Toggle
-                                    label={translate('user.is_admin')}
-                                    toggled={this.state.user.is_admin}
-                                    labelPosition="right"
-                                />
-                                <SelectField
-                                    id="authentication_type"
-                                    value={this.state.user.authenticationType}
-                                    floatingLabelText={<Translate content="user.authentication_type" />}
-                                >
-                                    <MenuItem value="none" primaryText={<Translate content="user.auth.none" />} />
-                                    <MenuItem value="google" primaryText={<Translate content="user.auth.google" />} />
-                                    <MenuItem value="sms" primaryText={<Translate content="user.auth.sms" />} />
-                                </SelectField>
-                                <SelectField
-                                    id="locale"
-                                    value={this.state.user.locale}
-                                    floatingLabelText={<Translate content="user.locale" />}
-                                >
-                                    <MenuItem value="ru" primaryText={<Translate content="ru" />} />
-                                    <MenuItem value="en" primaryText={<Translate content="en" />} />
-                                </SelectField>
-                            </div>
-                            <div className="col-lg-2 col-md-3 col-xs-6">
-                                <PermissionsLeftBlock />
-                            </div>
-                            <div className="col-lg-2 col-md-3 col-xs-6">
-                                <PermissionsRightBlock />
-                            </div>
-                            <div className="col-xs-12 col-lg-12 col-md-12 center-xs">
-                                <RaisedButton
-                                    type="submit"
-                                    label={<Translate content="form.save" />}
-                                    primary={true}
-                                    style={styles.button}
-                                />
-                                <RaisedButton
-                                    label={<Translate content="user.generate_password" />}
-                                />
-                            </div>
-                        </form>
-                    )}
+                    <form className="row" style={{width: '100%'}} onSubmit={this.updateUser.bind(this)}>
+                        <div className="col-lg-4 col-md-6 col-xs-12">
+                            <TextField
+                                id="email"
+                                value={this.state.user.email}
+                                hintText={<Translate content="user.email" />}
+                                floatingLabelText={<Translate content="user.email" />}
+                                fullWidth={true}
+                                onChange={this.onChangeTextInput.bind(this, 'email')}
+                                errorText={this.getError('email')}
+                            />
+                            <TextField {...passwordProps} />
+                            <TextField
+                                id="phoneNumber"
+                                ref="phoneNumber"
+                                value={this.state.user.securePhoneNumber}
+                                hintText={<Translate content="user.phone_number" />}
+                                floatingLabelText={<Translate content="user.phone_number" />}
+                                onChange={this.onChangeTextInput.bind(this, 'securePhoneNumber')}
+                                errorText={this.getError('phone_number')}
+                                fullWidth={true}
+                            />
+                            <TextField
+                                id="comment"
+                                ref="comment"
+                                value={this.state.user.comment}
+                                hintText={<Translate content="user.comment" />}
+                                floatingLabelText={<Translate content="user.comment" />}
+                                fullWidth={true}
+                            />
+                            <Toggle
+                                label={translate('user.enabled')}
+                                toggled={this.state.user.enabled}
+                                labelPosition="right"
+                                onToggle={this.onToggle.bind(this, 'enabled')}
+                            />
+                            <Toggle
+                                label={translate('user.notifications_enabled')}
+                                toggled={this.state.user.notificationsEnabled}
+                                labelPosition="right"
+                                onToggle={this.onToggle.bind(this, 'notificationsEnabled')}
+                            />
+                            <Toggle
+                                label={translate('user.is_admin')}
+                                toggled={this.state.user.is_admin}
+                                labelPosition="right"
+                                onToggle={this.onToggle.bind(this, 'is_admin')}
+                            />
+                            <SelectField
+                                id="authentication_type"
+                                value={this.state.user.authenticationType}
+                                floatingLabelText={<Translate content="user.authentication_type" />}
+                                onChange={this.onChangeSelect.bind(this, 'authenticationType')}
+                            >
+                                <MenuItem value="none" primaryText={<Translate content="user.auth.none" />} style={gtTheme.theme.link} />
+                                <MenuItem value="google" primaryText={<Translate content="user.auth.google" />} style={gtTheme.theme.link} />
+                                <MenuItem value="sms" primaryText={<Translate content="user.auth.sms" />} style={gtTheme.theme.link} />
+                            </SelectField>
+                            <SelectField
+                                id="locale"
+                                value={this.state.user.locale}
+                                floatingLabelText={<Translate content="user.locale" />}
+                                onChange={this.onChangeSelect.bind(this, 'locale')}
+                            >
+                                <MenuItem value="ru" primaryText={<Translate content="ru" />} style={gtTheme.theme.link} />
+                                <MenuItem value="en" primaryText={<Translate content="en" />} style={gtTheme.theme.link} />
+                            </SelectField>
+                        </div>
+                        <div className="col-lg-2 col-md-3 col-xs-6">
+                            <PermissionsLeftBlock />
+                        </div>
+                        <div className="col-lg-2 col-md-3 col-xs-6">
+                            <PermissionsRightBlock />
+                        </div>
+                        <div className="col-xs-12 col-lg-12 col-md-12 center-xs">
+                            <RaisedButton
+                                type="submit"
+                                label={<Translate content="form.save" />}
+                                primary={true}
+                                style={styles.button}
+                            />
+                            <RaisedButton
+                                label={<Translate content="user.generate_password" />}
+                                onClick={this.generatePassword.bind(this)}
+                            />
+                        </div>
+                    </form>
                 </div>
             </div>
         );
@@ -219,6 +264,7 @@ const mapStateToProps = (state) => {
         auth: state.auth,
         data: state.users.user,
         errors: state.users.errors,
+        permissions: state.permissions.users[0].permissions,
         ws: state.ws
     };
 };

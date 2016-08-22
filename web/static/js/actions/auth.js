@@ -49,22 +49,21 @@ export function setSocket(dispatch, user, redirectPath) {
     const channel = socket.channel(`users:${user.id}`);
 
     if (channel.state != 'joined') {
-        channel.join().receive('ok', () => {
-            dispatch({
-                type: 'SOCKER_JOINED',
-                socket: socket,
-                channel: channel
-            });
-            if (redirectPath) {
-                dispatch(push(redirectPath));
-            }
-        });
-        // logout in case token is expired
-        if (token) {
-            channel.onError(() => {
+        channel.join()
+            .receive('ok', () => {
+                dispatch({
+                    type: 'SOCKER_JOINED',
+                    socket: socket,
+                    channel: channel
+                });
+                if (redirectPath) {
+                    dispatch(push(redirectPath));
+                }
+            })
+            .receive("error", () => {
                 dispatch(authActions.logout());
-            });
-        }
+            })
+        ;
     }
 }
 

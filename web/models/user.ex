@@ -64,7 +64,7 @@ defmodule Gt.Model.User do
         model
         |> cast(params, @required_fields, @optional_fields)
         |> validate_format(:email, ~r/@/, message: "validation.email")
-        |> validate_length(:password_plain, min: 4, message: "Password should be 5 or more characters long")
+        |> validate_length(:password_plain, min: 4, message: "validation.short_password")
         |> validate_format(:phoneNumber, ~r/^\+?\d{9,15}$/, message: "validation.phone_number")
         # |> validate_confirmation(:password_plain, message: "Password confirmation doesn’t match")
         |> unique_constraint(:email, message: "validation.email_not_unique")

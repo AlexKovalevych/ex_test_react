@@ -43,9 +43,16 @@ defmodule Gt.Manager.Users do
     def update_user(id, data) do
         updated_user = data
         |> Map.delete(:id)
-        |> Map.put(:phoneNumber, data.secure_phone)
+        |> Map.put("phoneNumber", data["securePhoneNumber"])
         [%{user: user}, _] = load_user(id)
-        case Repo.update(User.changeset(user, updated_user)) do
+        updated_user = if data["authenticationType"] != user.authenticationType do
+            updated_user
+            |> Map.put("failedLoginCount", 0)
+            |> Map.put("showGoogleCode", true)
+        else
+            updated_user
+        end
+        case Gt.Repo.update(User.changeset(user, updated_user)) do
             {:ok, user} -> {:ok, user}
             {:error, changeset} -> {:error, user, changeset}
         end

@@ -76,7 +76,8 @@ counterpart.registerTranslations('en', {
         invalid_email_password: 'Invalid email or password',
         email: 'Email format is not valid',
         email_not_unique: 'This email is already taken',
-        not_blank: 'This field can\'t be blank'
+        not_blank: 'This field can\'t be blank',
+        short_password: 'Password should not be less than 4 symbols'
     },
     dashboard: {
         no_data: 'No data',
