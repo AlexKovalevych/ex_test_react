@@ -6,6 +6,7 @@ counterpart.registerTranslations('ru', {
     yes: 'Да',
     no: 'Нет',
     search: 'Поиск',
+    'can\'t be blank': 'Это поле не может быть пустым',
     months: {
         Jan: 'Янв',
         Feb: 'Фев',

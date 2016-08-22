@@ -6,6 +6,7 @@ counterpart.registerTranslations('en', {
     yes: 'Yes',
     no: 'No',
     search: 'Search',
+    'can\'t be blank': 'This field can\'t be blank',
     months: {
         Jan: 'Jan',
         Feb: 'Feb',

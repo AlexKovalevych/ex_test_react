@@ -13,7 +13,8 @@ defmodule Gt.Model.User do
         :securePhoneNumber,
         :lastLogin,
         :description,
-        :notificationsEnabled
+        :notificationsEnabled,
+        :password_plain
     ]}
 
     @collection "users"
@@ -61,6 +62,17 @@ defmodule Gt.Model.User do
     @optional_fields ~w(password locale smsCode googleSecret showGoogleCode lastLogin description notificationsEnabled)
 
     def changeset(model, params \\ :empty) do
+        params = case params do
+            :empty -> params
+            _ -> Enum.map(params, fn
+                {"password_plain", ""} -> case is_nil(model.id) do
+                    true -> {"password_plain", nil}
+                    false -> {"password_plain", ""}
+                end
+                {k, ""} -> {k, nil}
+                pair -> pair
+            end) |> Enum.into(%{})
+        end
         model
         |> cast(params, @required_fields, @optional_fields)
         |> validate_format(:email, ~r/@/, message: "validation.email")

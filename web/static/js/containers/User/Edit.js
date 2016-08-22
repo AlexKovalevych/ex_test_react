@@ -141,7 +141,7 @@ class UserEdit extends React.Component {
             );
         }
 
-        let passwordPlain = this.state.user.password_plain ? this.state.user.password_plain : "";
+        let passwordPlain = this.state.user.password_plain ? this.state.user.password_plain : '';
         let passwordProps = {
             id: 'password',
             fullWidth: true,
@@ -170,7 +170,7 @@ class UserEdit extends React.Component {
                         <div className="col-lg-4 col-md-6 col-xs-12">
                             <TextField
                                 id="email"
-                                value={this.state.user.email}
+                                value={this.state.user.email ? this.state.user.email : ''}
                                 hintText={<Translate content="user.email" />}
                                 floatingLabelText={<Translate content="user.email" />}
                                 fullWidth={true}
@@ -181,7 +181,7 @@ class UserEdit extends React.Component {
                             <TextField
                                 id="phoneNumber"
                                 ref="phoneNumber"
-                                value={this.state.user.securePhoneNumber}
+                                value={this.state.user.securePhoneNumber ? this.state.user.securePhoneNumber : ''}
                                 hintText={<Translate content="user.phone_number" />}
                                 floatingLabelText={<Translate content="user.phone_number" />}
                                 onChange={this.onChangeTextInput.bind(this, 'securePhoneNumber')}
@@ -191,7 +191,7 @@ class UserEdit extends React.Component {
                             <TextField
                                 id="comment"
                                 ref="comment"
-                                value={this.state.user.comment}
+                                value={this.state.user.comment ? this.state.user.comment : ''}
                                 hintText={<Translate content="user.comment" />}
                                 floatingLabelText={<Translate content="user.comment" />}
                                 fullWidth={true}

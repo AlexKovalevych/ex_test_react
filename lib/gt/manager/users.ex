@@ -57,7 +57,6 @@ defmodule Gt.Manager.Users do
             false -> Gt.Repo.update(User.changeset(user, updated_user))
         end
 
-        IO.inspect(result)
         case result do
             {:ok, user} -> {:ok, user}
             {:error, changeset} -> {:error, user, changeset}
