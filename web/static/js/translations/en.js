@@ -209,7 +209,8 @@ counterpart.registerTranslations('en', {
             sms: 'Sms'
         },
         generate_password: 'Generate password',
-        was_updated: 'User was updated'
+        was_updated: 'User was updated',
+        was_created: 'User was created'
     },
     project: {
         title: 'Title',

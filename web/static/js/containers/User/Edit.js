@@ -93,7 +93,6 @@ class UserEdit extends React.Component {
     }
 
     onChangeTextInput(field, e) {
-        let user = this.state.user;
         let newState = this.state;
         newState.user[field] = e.target.value;
         if (field == 'password_plain') {
@@ -189,12 +188,13 @@ class UserEdit extends React.Component {
                                 fullWidth={true}
                             />
                             <TextField
-                                id="comment"
-                                ref="comment"
-                                value={this.state.user.comment ? this.state.user.comment : ''}
+                                id="description"
+                                ref="description"
+                                value={this.state.user.description ? this.state.user.description : ''}
                                 hintText={<Translate content="user.comment" />}
                                 floatingLabelText={<Translate content="user.comment" />}
                                 fullWidth={true}
+                                onChange={this.onChangeTextInput.bind(this, 'description')}
                             />
                             <Toggle
                                 label={translate('user.enabled')}

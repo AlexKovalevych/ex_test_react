@@ -1,4 +1,5 @@
 import translate from 'counterpart';
+import {push} from 'react-router-redux';
 
 const userActions = {
     loadUsers: (params) => {
@@ -53,10 +54,17 @@ const userActions = {
                         data: msg
                     });
                     if (!msg.errors) {
+                        let message = 'user.was_updated';
+                        if (!id) {
+                            message = 'user.was_created';
+                        }
                         dispatch({
                             type: 'SHOW_ERROR',
-                            message: translate('user.was_updated')
+                            message: translate(message)
                         });
+                        if (!id) {
+                            dispatch(push(`/settings/user/edit/${msg.user.id}`));
+                        }
                     }
                 })
                 .receive('error', (msg) => {

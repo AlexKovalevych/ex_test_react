@@ -58,7 +58,12 @@ defmodule Gt.Manager.Users do
         end
 
         case result do
-            {:ok, user} -> {:ok, user}
+            {:ok, user} -> case is_nil(id) do
+                true ->
+                    [%{user: user}, _] = load_user(user.id)
+                    {:ok, user}
+                false -> {:ok, user}
+            end
             {:error, changeset} -> {:error, user, changeset}
         end
     end
