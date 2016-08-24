@@ -1,4 +1,24 @@
 const permissionsActions = {
+    load: () => {
+        return (dispatch, getState) => {
+            const {ws} = getState();
+            ws.channel
+                .push('permissions')
+                .receive('ok', (msg) => {
+                    dispatch({
+                        type: 'LOAD_PERMISSIONS',
+                        data: msg
+                    });
+                })
+                .receive('error', (msg) => {
+                    dispatch({
+                        type: 'SHOW_ERROR',
+                        message: msg.reason
+                    });
+                });
+        };
+    },
+
     update: (newPermissions) => {
         return (dispatch) => {
             dispatch({

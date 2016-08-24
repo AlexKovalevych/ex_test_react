@@ -2,7 +2,7 @@ defmodule Gt.Manager.Users do
     alias Gt.Model.User
     alias Gt.Model.Project
     alias Gt.Manager.Date, as: GtDate
-    import Gt.Manager.Permissions, only: [get_all: 1]
+    import Gt.Manager.Permissions, only: [all_roles: 0]
 
     @page_size 10
 
@@ -70,11 +70,5 @@ defmodule Gt.Manager.Users do
 
     defp selected_projects(projects) do
         projects |> Enum.map(fn project -> project.id end)
-    end
-
-    defp all_roles do
-        get_all(Application.get_env(:gt, :permissions)) |> Enum.map(fn role ->
-            %{id: role, title: role}
-        end)
     end
 end

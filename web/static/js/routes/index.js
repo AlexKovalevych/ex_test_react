@@ -13,6 +13,7 @@ import UserList from 'containers/User/List';
 import UserEdit from 'containers/User/Edit';
 import ProjectList from 'containers/Project/List';
 import ProjectEdit from 'containers/Project/Edit';
+import Permissions from 'containers/Permissions';
 import authActions from 'actions/auth';
 
 export default function configRoutes(store) {
@@ -60,6 +61,7 @@ export default function configRoutes(store) {
                         <Route path="/settings/project/list" components={getComponents(ProjectList)}></Route>
                         <Route path="/settings/project/edit/:id" components={getComponents(ProjectEdit)}></Route>
                     </Route>
+                    <Route path="/settings/permissions/index" components={getComponents(Permissions)} />
                 </Route>
 
             </Route>

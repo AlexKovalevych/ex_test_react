@@ -150,4 +150,7 @@ defmodule Gt.UserChannel do
     def handle_in("project", id, socket) do
         admin_required(socket, Projects.load_project(id))
     end
+    def handle_in("permissions", _, socket) do
+        admin_required(socket, Permissions.load())
+    end
 end

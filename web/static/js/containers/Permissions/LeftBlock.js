@@ -10,7 +10,7 @@ import { connect } from 'react-redux';
 import gtTheme from 'themes/indigo';
 import Checkbox from 'material-ui/Checkbox';
 import FontIcon from 'material-ui/FontIcon';
-import permissionsActions from 'actions/Permissions';
+import permissionsActions from 'actions/permissions';
 import permissionsModel from 'models/Permissions';
 
 const styles = {

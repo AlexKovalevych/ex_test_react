@@ -21,6 +21,13 @@ export default function reducer(state = initialState, action = {}) {
                 return project.id;
             })
         };
+    case 'LOAD_PERMISSIONS':
+        return {
+            ...state,
+            users: action.data.users,
+            projects: action.data.projects,
+            roles: action.data.roles
+        };
     case 'SELECT_LEFT_ROWS':
         return {
             ...state,

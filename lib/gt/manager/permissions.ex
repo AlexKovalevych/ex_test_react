@@ -1,4 +1,21 @@
 defmodule Gt.Manager.Permissions do
+    alias Gt.Model.Project
+    alias Gt.Model.User
+
+    def load() do
+        %{
+            users: Gt.Repo.all(User),
+            projects: Gt.Repo.all(Project),
+            roles: all_roles()
+        }
+    end
+
+    def all_roles do
+        get_all(Application.get_env(:gt, :permissions)) |> Enum.map(fn role ->
+            %{id: role, title: role}
+        end)
+    end
+
     def get_all(permissions) do
         Enum.reduce(permissions, [], fn({_, node}, acc) ->
             acc ++ Map.keys(node)

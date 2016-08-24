@@ -115,13 +115,17 @@ class GtMenu extends React.Component {
         return navi;
     }
 
+    getSettingsChildUrl(node) {
+        return node == 'permissions' ? 'index' : 'list';
+    }
+
     getSettingsChildren() {
         let navi = [];
         for (let node of ['user', 'project', 'notification', 'permissions', 'data_source', 'smtp_server']) {
             navi.push({
                 id: node,
                 text: node,
-                url: `${this.getUrl('settings', node)}/list`
+                url: `${this.getUrl('settings', node)}/${this.getSettingsChildUrl(node)}`
             });
         }
         return navi;

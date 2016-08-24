@@ -10,7 +10,7 @@ import Checkbox from 'material-ui/Checkbox';
 import FontIcon from 'material-ui/FontIcon';
 import Translate from 'react-translate-component';
 import gtTheme from 'themes/indigo';
-import permissionsActions from 'actions/Permissions';
+import permissionsActions from 'actions/permissions';
 import permissionsModel from 'models/Permissions';
 
 class RightBlock extends React.Component {
