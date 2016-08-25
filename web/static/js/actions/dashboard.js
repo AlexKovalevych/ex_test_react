@@ -2,7 +2,7 @@ const dashboardActions = {
     loadStats: (params) => {
         return (dispatch, getState) => {
             const { ws } = getState();
-            ws.channel
+            ws.channels['users']
                 .push('dashboard_stats', params)
                 .receive('ok', (msg) => {
                     dispatch({
@@ -23,7 +23,7 @@ const dashboardActions = {
     loadConsolidatedChart: (params, options) => {
         return (dispatch, getState) => {
             const { ws } = getState();
-            ws.channel
+            ws.channels['users']
                 .push('consolidated_chart', params)
                 .receive('ok', (msg) => {
                     dispatch({

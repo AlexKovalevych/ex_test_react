@@ -1,16 +1,14 @@
 const initialState = {
     socket: null,
-    channel: null
-    // channels: {}
+    channels: {}
 };
 
 export default function reducer(state = initialState, action = {}) {
     switch (action.type) {
-    case 'SOCKER_JOINED':
+    case 'SOCKET_JOINED':
         return {
             ...state,
-            socket: action.socket,
-            channel: action.channel
+            socket: action.socket
         };
     case 'CHANNEL_JOINED':
         return {

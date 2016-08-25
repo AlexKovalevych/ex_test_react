@@ -4,6 +4,7 @@ defmodule Gt.UserSocket do
     ## Channels
     # channel "visitors", Gt.VisitorsChannel
     channel "users:*", Gt.UserChannel
+    channel "admins:*", Gt.AdminChannel
 
     ## Transports
     transport :websocket, Phoenix.Transports.WebSocket

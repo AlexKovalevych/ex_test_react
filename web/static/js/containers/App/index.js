@@ -20,9 +20,7 @@ class App extends React.Component {
         menu: PropTypes.object,
         main: PropTypes.object,
         children: PropTypes.object,
-        user: PropTypes.object,
-        socket: PropTypes.object,
-        channel: PropTypes.object
+        user: PropTypes.object
     };
 
     static contextTypes = {
@@ -125,9 +123,7 @@ class App extends React.Component {
 }
 
 const mapStateToProps = (state) => ({
-    user: state.auth.user,
-    socket: state.auth.socket,
-    channel: state.auth.channel
+    user: state.auth.user
 });
 
 export default connect(mapStateToProps)(App);

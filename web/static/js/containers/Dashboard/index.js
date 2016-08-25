@@ -35,7 +35,7 @@ class Dashboard extends React.Component {
 
     loadData(props) {
         const { dispatch, user, ws, data } = props;
-        if (ws.channel && (!data.lastUpdated || data.isOutdated)) {
+        if (ws.channels['users'] && (!data.lastUpdated || data.isOutdated)) {
             dispatch(dashboardActions.loadStats({period: user.settings.dashboardPeriod}));
         } else {
             dispatch(spinnerActions.stop());

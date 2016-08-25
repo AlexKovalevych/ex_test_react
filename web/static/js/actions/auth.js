@@ -45,16 +45,39 @@ export function setSocket(dispatch, user, redirectPath) {
     });
 
     socket.connect();
+    socket.onOpen(() => {
+        dispatch({
+            type: 'SOCKET_JOINED',
+            socket: socket
+        });
+    });
 
-    const channel = socket.channel(`users:${user.id}`);
+    if (user.is_admin) {
+        const adminChannel = socket.channel(`admins:${user.id}`);
+        if (adminChannel.state != 'joined') {
+            adminChannel.join()
+                .receive('ok', () => {
+                    dispatch({
+                        type: 'CHANNEL_JOINED',
+                        channel: adminChannel,
+                        name: 'admins'
+                    });
+                })
+                .receive("error", () => {
+                    dispatch(authActions.logout());
+                })
+            ;
+        }
+    }
 
-    if (channel.state != 'joined') {
-        channel.join()
+    const userChannel = socket.channel(`users:${user.id}`);
+    if (userChannel.state != 'joined') {
+        userChannel.join()
             .receive('ok', () => {
                 dispatch({
-                    type: 'SOCKER_JOINED',
-                    socket: socket,
-                    channel: channel
+                    type: 'CHANNEL_JOINED',
+                    channel: userChannel,
+                    name: 'users'
                 });
                 if (redirectPath) {
                     dispatch(push(redirectPath));
@@ -183,7 +206,7 @@ const authActions = {
     setLocale: (locale) => {
         return (dispatch, getState) => {
             const { ws } = getState();
-            ws.channel
+            ws.channels['users']
                 .push('locale', locale)
                 .receive('ok', (user) => {
                     counterpart.setLocale(user.locale);
@@ -204,7 +227,7 @@ const authActions = {
     setDashboardCurrentPeriod: (period) => {
         return (dispatch, getState) => {
             const { ws } = getState();
-            ws.channel
+            ws.channels['users']
                 .push('dashboard_period', period)
                 .receive('ok', (msg) => {
                     dispatch({
@@ -225,7 +248,7 @@ const authActions = {
     setDashboardComparisonPeriod: (period) => {
         return (dispatch, getState) => {
             const { ws } = getState();
-            ws.channel
+            ws.channels['users']
                 .push('dashboard_comparison_period', period)
                 .receive('ok', (msg) => {
                     dispatch({
@@ -246,7 +269,7 @@ const authActions = {
     setDashboardSort: (sortBy) => {
         return (dispatch, getState) => {
             const { ws } = getState();
-            ws.channel
+            ws.channels['users']
                 .push('dashboard_sort', sortBy)
                 .receive('ok', (msg) => {
                     dispatch({
@@ -266,7 +289,7 @@ const authActions = {
     setDashboardProjectTypes: (type) => {
         return (dispatch, getState) => {
             const { ws } = getState();
-            ws.channel
+            ws.channels['users']
                 .push('dashboard_projects_type', type)
                 .receive('ok', (msg) => {
                     dispatch({

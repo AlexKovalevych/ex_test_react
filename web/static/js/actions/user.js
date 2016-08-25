@@ -5,7 +5,7 @@ const userActions = {
     loadUsers: (params) => {
         return (dispatch, getState) => {
             const { ws } = getState();
-            ws.channel
+            ws.channels['admins']
                 .push('users', params)
                 .receive('ok', (msg) => {
                     dispatch({
@@ -26,7 +26,7 @@ const userActions = {
     loadUser: (id) => {
         return (dispatch, getState) => {
             const { ws } = getState();
-            ws.channel
+            ws.channels['admins']
                 .push('user', id)
                 .receive('ok', (msg) => {
                     dispatch({
@@ -46,7 +46,7 @@ const userActions = {
     updateUser: (id, user) => {
         return (dispatch, getState) => {
             const { ws } = getState();
-            ws.channel
+            ws.channels['admins']
                 .push('user', {id, user})
                 .receive('ok', (msg) => {
                     dispatch({

@@ -34,7 +34,7 @@ class ProjectEdit extends React.Component {
 
     loadData(props, update=false) {
         const { dispatch, ws } = props;
-        if (ws.channel && update) {
+        if (ws.channels['admins'] && update) {
             dispatch(projectActions.loadProject(this.props.params ? this.props.params.id : null));
         } else {
             dispatch(spinnerActions.stop());

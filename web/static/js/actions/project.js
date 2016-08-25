@@ -4,7 +4,7 @@ const projectActions = {
     loadProjects: (params) => {
         return (dispatch, getState) => {
             const { ws } = getState();
-            ws.channel
+            ws.channels['admins']
                 .push('projects', params)
                 .receive('ok', (msg) => {
                     dispatch({
@@ -25,7 +25,7 @@ const projectActions = {
     loadProject: (id) => {
         return (dispatch, getState) => {
             const { ws } = getState();
-            ws.channel
+            ws.channels['admins']
                 .push('project', id)
                 .receive('ok', (msg) => {
                     dispatch({
@@ -45,7 +45,7 @@ const projectActions = {
     updateProject: (id, project) => {
         return (dispatch, getState) => {
             const { ws } = getState();
-            ws.channel
+            ws.channels['admins']
                 .push('project', {id, project})
                 .receive('ok', (msg) => {
                     dispatch({
