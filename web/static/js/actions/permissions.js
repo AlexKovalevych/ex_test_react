@@ -19,6 +19,24 @@ const permissionsActions = {
         };
     },
 
+    setType: (type) => {
+        return (dispatch) => {
+            dispatch({
+                type: 'CHANGE_TYPE',
+                data: type
+            });
+        };
+    },
+
+    setValue: (value) => {
+        return (dispatch) => {
+            dispatch({
+                type: 'CHANGE_VALUE',
+                data: value
+            });
+        };
+    },
+
     update: (newPermissions) => {
         return (dispatch) => {
             dispatch({

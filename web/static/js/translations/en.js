@@ -220,5 +220,10 @@ counterpart.registerTranslations('en', {
         enabled: 'Enabled',
         edit: 'Project %(title)s',
         was_updated: 'Project was updated'
+    },
+    permissions: {
+        user: 'User',
+        project: 'Project',
+        role: 'Role'
     }
 });

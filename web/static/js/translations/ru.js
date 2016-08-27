@@ -220,5 +220,10 @@ counterpart.registerTranslations('ru', {
         enabled: 'Включен',
         edit: 'Проект %(title)s',
         was_updated: 'Проект был обновлен'
+    },
+    permissions: {
+        user: 'Пользователь',
+        project: 'Проект',
+        role: 'Роль'
     }
 });

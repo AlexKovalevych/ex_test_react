@@ -48,6 +48,7 @@ defmodule Gt.Router do
         get "/settings/user/edit/:id", UserController, :edit
         get "/settings/project/list", ProjectController, :list
         get "/settings/project/edit/:id", ProjectController, :edit
+        get "/settings/permissions/index", PermissionsController, :index
         get "/*path", PageController, :index
     end
 end

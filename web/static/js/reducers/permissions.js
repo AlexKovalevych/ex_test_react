@@ -28,6 +28,17 @@ export default function reducer(state = initialState, action = {}) {
             projects: action.data.projects,
             roles: action.data.roles
         };
+    case 'CHANGE_TYPE':
+        return {
+            ...state,
+            type: action.data,
+            value: null
+        };
+    case 'CHANGE_VALUE':
+        return {
+            ...state,
+            value: action.data
+        };
     case 'SELECT_LEFT_ROWS':
         return {
             ...state,
