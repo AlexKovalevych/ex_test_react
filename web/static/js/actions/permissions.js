@@ -2,7 +2,7 @@ const permissionsActions = {
     load: () => {
         return (dispatch, getState) => {
             const {ws} = getState();
-            ws.channel
+            ws.channels['admins']
                 .push('permissions')
                 .receive('ok', (msg) => {
                     dispatch({
