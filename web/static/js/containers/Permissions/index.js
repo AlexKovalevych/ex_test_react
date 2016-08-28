@@ -8,6 +8,8 @@ import {RadioButton, RadioButtonGroup} from 'material-ui/RadioButton';
 import SelectField from 'material-ui/SelectField';
 // import permissionsModel from 'models/Permissions';
 import MenuItem from 'material-ui/MenuItem';
+import PermissionsLeftBlock from 'containers/Permissions/LeftBlock';
+import PermissionsRightBlock from 'containers/Permissions/RightBlock';
 
 class PermissionsIndex extends React.Component {
     static propTypes = {
@@ -128,6 +130,16 @@ class PermissionsIndex extends React.Component {
                                 )
                             }
                         </div>
+                        {
+                            this.props.data.type && this.props.data.value && ([
+                                <div key="left" className="col-lg-2 col-md-3 col-xs-6">
+                                    <PermissionsLeftBlock />
+                                </div>,
+                                <div key="right" className="col-lg-2 col-md-3 col-xs-6">
+                                    <PermissionsRightBlock />
+                                </div>
+                            ])
+                        }
                     </form>
                 </div>
             </div>

@@ -4,7 +4,7 @@ const initialState = {
     roles: null,
     type: null,
     value: null,
-    selectedLeftRows: null
+    selectedLeftRows: []
 };
 
 export default function reducer(state = initialState, action = {}) {
@@ -32,12 +32,14 @@ export default function reducer(state = initialState, action = {}) {
         return {
             ...state,
             type: action.data,
-            value: null
+            value: null,
+            selectedLeftRows: []
         };
     case 'CHANGE_VALUE':
         return {
             ...state,
-            value: action.data
+            value: action.data,
+            selectedLeftRows: []
         };
     case 'SELECT_LEFT_ROWS':
         return {
