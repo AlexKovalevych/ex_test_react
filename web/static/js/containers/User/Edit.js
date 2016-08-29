@@ -35,7 +35,7 @@ class UserEdit extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
-            user: null,
+            user: JSON.parse(JSON.stringify(props.data)),
             generatedPassword: false
         };
     }
@@ -48,7 +48,7 @@ class UserEdit extends React.Component {
             dispatch(spinnerActions.stop());
         }
         if (!props.errors && props.data) {
-            this.setState({user: props.data});
+            this.setState({user: JSON.parse(JSON.stringify(props.data))});
         }
     }
 

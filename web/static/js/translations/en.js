@@ -71,7 +71,8 @@ counterpart.registerTranslations('en', {
         google_code: 'Authentication code',
         save: 'Save',
         projects: 'Projects',
-        roles: 'Roles'
+        roles: 'Roles',
+        users: 'Users'
     },
     validation: {
         invalid_email_password: 'Invalid email or password',

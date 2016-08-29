@@ -26,7 +26,7 @@ class ProjectList extends React.Component {
 
     loadData(props, update=false) {
         const { dispatch, ws } = props;
-        if (ws.channel && update) {
+        if (ws.channels['admins'] && update) {
             dispatch(projectActions.loadProjects({
                 page: this.props.data.currentPage,
                 search: this.props.data.search

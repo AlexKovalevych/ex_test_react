@@ -28,7 +28,7 @@ class ProjectEdit extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
-            project: null
+            project: JSON.parse(JSON.stringify(props.data))
         };
     }
 

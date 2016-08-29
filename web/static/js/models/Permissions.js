@@ -319,22 +319,25 @@ class Permissions {
 
     checkRightRow(permissions, type, typeValueId, selectedLeftRows, id, value) {
         switch(type) {
-        // case 'project':
-        //     for (let userPermissions of this.permissions) {
-        //         if (selectedLeftRows.indexOf(userPermissions.id) > -1) {
-        //             for (let projectPermission of userPermissions.permissions) {
-        //                 if (projectPermission.project.id == typeValueId) {
-        //                     let roleIndex = projectPermission.roles.indexOf(id);
-        //                     if (value && roleIndex == -1) {
-        //                         projectPermission.roles.push(id);
-        //                     } else if (!value && roleIndex > -1) {
-        //                         projectPermission.roles.splice(roleIndex, 1);
-        //                     }
-        //                 }
-        //             }
-        //         }
-        //     }
-        //     break;
+        case 'project':
+            for (let userPermissions of permissions) {
+                if (selectedLeftRows.indexOf(userPermissions.id) === -1) {
+                    continue;
+                }
+                for (let group of Object.keys(userPermissions.permissions)) {
+                    for (let role of Object.keys(userPermissions.permissions[group])) {
+                        if (role == id) {
+                            let index = userPermissions.permissions[group][role].indexOf(typeValueId);
+                            if (value && index == -1) {
+                                userPermissions.permissions[group][role].push(typeValueId);
+                            } else if (!value && index > -1) {
+                                userPermissions.permissions[group][role].splice(index, 1);
+                            }
+                        }
+                    }
+                }
+            }
+            break;
         case 'user':
             for (let userPermissions of permissions) {
                 if (userPermissions.id == typeValueId) {

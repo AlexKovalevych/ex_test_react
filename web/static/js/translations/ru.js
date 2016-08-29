@@ -71,7 +71,8 @@ counterpart.registerTranslations('ru', {
         google_code: 'Код аутентификации',
         save: 'Сохранить',
         projects: 'Проекты',
-        roles: 'Роли'
+        roles: 'Роли',
+        users: 'Пользователи'
     },
     validation: {
         invalid_email_password: 'Неправильный логин или пароль',
