@@ -68,7 +68,7 @@ class RightBlock extends React.Component {
         }
         let title = permissionsModel.getConfigRightTitle(type);
         let preparedPermissions = permissionsModel.getPermissions(permissions, projects, roles, type, value);
-        let titleIds = permissionsModel.getRightRowTitleIds(type, preparedPermissions, roles);
+        let titleIds = permissionsModel.getRightRowTitleIds(type, preparedPermissions, roles, permissions);
         let rows = titleIds.map((titleId, i) => {
             let value = permissionsModel.getRightBlockValue(preparedPermissions, selectedLeftRows, titleId.id);
             let props = {

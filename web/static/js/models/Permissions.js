@@ -89,77 +89,86 @@ class Permissions {
         let values;
         switch(type) {
         case 'project':
-            values = permissions;
+            for (let user of permissions) {
+                titles.push(user.email);
+            }
             break;
         case 'user':
-            values = projects;
+            for (let project of projects) {
+                titles.push(project.title);
+            }
             break;
         case 'role':
-            values = projects;
+            for (let project of projects) {
+                titles.push(project.title);
+            }
             break;
-        }
-        for (let value of values) {
-            titles.push(value.title);
         }
         return titles;
     }
 
-    getLeftRowTitleIds(type, permissions, projects) {
+    getLeftRowTitleIds(type, permissions, projects, users) {
         let ids = [];
-        let values;
         switch(type) {
         case 'project':
-            values = permissions;
+            for (let user of users) {
+                ids.push({id: user.id, title: user.email});
+            }
             break;
         case 'user':
-            values = projects;
+            for (let project of projects) {
+                ids.push({id: project.id, title: project.title});
+            }
             break;
         case 'role':
-            values = projects;
+            for (let project of projects) {
+                ids.push({id: project.id, title: project.title});
+            }
             break;
-        }
-        for (let value of values) {
-            ids.push({id: value.id, title: value.title});
         }
         return ids;
     }
 
     getRightRowTitles(type, permissions, roles) {
         let titles = [];
-        let values;
         switch(type) {
         case 'project':
-            values = roles;
+            for (let role of roles) {
+                titles.push(role.title);
+            }
             break;
         case 'user':
-            values = roles;
+            for (let role of roles) {
+                titles.push(role.title);
+            }
             break;
         case 'role':
-            values = permissions;
+            for (let user of permissions) {
+                titles.push(user.email);
+            }
             break;
-        }
-        for (let value of values) {
-            titles.push(value.title);
         }
         return titles;
     }
 
-    getRightRowTitleIds(type, permissions, roles) {
+    getRightRowTitleIds(type, permissions, roles, users) {
         let ids = [];
-        let values;
         switch(type) {
         case 'project':
-            values = roles;
+            for (let role of roles) {
+                ids.push({id: role.id, title: role.title});
+            }
             break;
         case 'user':
-            values = roles;
+            for (let role of roles) {
+                ids.push({id: role.id, title: role.title});
+            }
             break;
         case 'role':
-            values = permissions;
+            for (let user of users) {
+                ids.push({id: user.id, title: user.email});
+            }
             break;
-        }
-        for (let value of values) {
-            ids.push({id: value.id, title: value.title});
         }
         return ids;
     }
@@ -167,40 +176,37 @@ class Permissions {
     getPermissions(permissions, projects, roles, type, id) {
         switch(type) {
         case 'project':
-            return this.getProjectPermissions(id);
+            return this.getProjectPermissions(permissions, roles, id);
         case 'user':
             return this.getUserPermissions(permissions, projects, roles, id);
         case 'role':
-            return this.getRolePermissions(id);
+            return this.getRolePermissions(permissions, projects, id);
         }
     }
 
-    getProjectPermissions(project) {
-        // if (!project) {
-        //     return false;
-        // }
+    getProjectPermissions(permissions, roles, projectId) {
+        let projectPermissions = {};
+        for (let user of permissions) {
+            projectPermissions[user.id] = {};
+            for (let role of roles) {
+                projectPermissions[user.id][role.id] = false;
+            }
+        }
 
-        // let permissions = {};
-        // for (let user of this._users) {
-        //     permissions[user] = {};
-        //     for (let role of this._roles) {
-        //         permissions[user][role] = false;
-        //     }
-        // }
+        for (let userPermission of permissions) {
+            for (let group of Object.keys(userPermission.permissions)) {
+                for (let role of Object.keys(userPermission.permissions[group])) {
+                    for (let project of userPermission.permissions[group][role]) {
+                        if (project != projectId) {
+                            continue;
+                        }
+                        projectPermissions[userPermission.id][role] = true;
+                    }
+                }
+            }
+        }
 
-        // for (let user of this.permissions) {
-        //     for (let projectRoles of user.permissions) {
-        //         if (projectRoles.project.id != project) {
-        //             continue;
-        //         }
-        //         for (let role of projectRoles.roles) {
-        //             permissions[user.id][role] = true;
-        //         }
-        //         break;
-        //     }
-        // }
-
-        // return permissions;
+        return projectPermissions;
     }
 
     getUserPermissions(permissions, projects, roles, userId) {
@@ -228,32 +234,29 @@ class Permissions {
         return userPermissions;
     }
 
-    getRolePermissions(role) {
-        // if (!role) {
-        //     return false;
-        // }
+    getRolePermissions(permissions, projects, roleId) {
+        let rolePermissions = {};
+        for (let project of projects) {
+            rolePermissions[project.id] = {};
+            for (let user of permissions) {
+                rolePermissions[project.id][user.id] = false;
+            }
+        }
 
-        // let permissions = {};
-        // for (let project of this._projects) {
-        //     permissions[project] = {};
-        //     for (let user of this._users) {
-        //         permissions[project][user] = false;
-        //     }
-        // }
+        for (let userPermission of permissions) {
+            for (let group of Object.keys(userPermission.permissions)) {
+                for (let role of Object.keys(userPermission.permissions[group])) {
+                    if (role != roleId) {
+                        continue;
+                    }
+                    for (let projectId of userPermission.permissions[group][role]) {
+                        rolePermissions[projectId][userPermission.id] = true;
+                    }
+                }
+            }
+        }
 
-        // for (let userPermission of this.permissions) {
-        //     for (let projectPermission of userPermission.permissions) {
-        //         for (let permissionRole of projectPermission.roles) {
-        //             if (permissionRole != role) {
-        //                 continue;
-        //             }
-        //             permissions[projectPermission.project.id][userPermission.id] = true;
-        //             break;
-        //         }
-        //     }
-        // }
-
-        // return permissions;
+        return rolePermissions;
     }
 
     checkLeftRow(permissions, projects, roles, type, typeValueId, id, value) {

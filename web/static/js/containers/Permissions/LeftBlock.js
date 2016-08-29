@@ -52,7 +52,7 @@ class LeftBlock extends React.Component {
             this.pivotRow = i;
         } else if (e.shiftKey) {
             let preparedPermissions = permissionsModel.getPermissions(permissions, projects, roles, type, value);
-            let ids = permissionsModel.getLeftRowTitleIds(type, preparedPermissions, projects);
+            let ids = permissionsModel.getLeftRowTitleIds(type, preparedPermissions, projects, permissions);
             for (let index in ids) {
                 if ((index >= this.pivotRow && index <= i) ||
                     (index <= this.pivotRow && index >= i)) {
@@ -74,7 +74,7 @@ class LeftBlock extends React.Component {
         if (this.isAllRowsSelected()) {
             dispatch(permissionsActions.selectLeftRows([]));
         } else {
-            let ids = permissionsModel.getLeftRowTitleIds(type, preparedPermissions, projects).map((value) => {
+            let ids = permissionsModel.getLeftRowTitleIds(type, preparedPermissions, projects, permissions).map((value) => {
                 return value.id;
             });
             dispatch(permissionsActions.selectLeftRows(ids));
@@ -88,7 +88,7 @@ class LeftBlock extends React.Component {
         }
         let title = permissionsModel.getConfigLeftTitle(type);
         let preparedPermissions = permissionsModel.getPermissions(permissions, projects, roles, type, value);
-        let titleIds = permissionsModel.getLeftRowTitleIds(type, preparedPermissions, projects);
+        let titleIds = permissionsModel.getLeftRowTitleIds(type, preparedPermissions, projects, permissions);
         let rows = titleIds.map((titleId, i) => {
             let id = titleId.id;
             let value = permissionsModel.getLeftBlockValue(preparedPermissions[id]);
