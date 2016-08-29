@@ -63,7 +63,7 @@ export function setSocket(dispatch, user, redirectPath) {
                         name: 'admins'
                     });
                 })
-                .receive("error", () => {
+                .receive('error', () => {
                     dispatch(authActions.logout());
                 })
             ;
@@ -83,7 +83,7 @@ export function setSocket(dispatch, user, redirectPath) {
                     dispatch(push(redirectPath));
                 }
             })
-            .receive("error", () => {
+            .receive('error', () => {
                 dispatch(authActions.logout());
             })
         ;

@@ -6,7 +6,7 @@ import Translate from 'react-translate-component';
 import Title from 'components/Title';
 import {RadioButton, RadioButtonGroup} from 'material-ui/RadioButton';
 import SelectField from 'material-ui/SelectField';
-// import permissionsModel from 'models/Permissions';
+import RaisedButton from 'material-ui/RaisedButton';
 import MenuItem from 'material-ui/MenuItem';
 import PermissionsLeftBlock from 'containers/Permissions/LeftBlock';
 import PermissionsRightBlock from 'containers/Permissions/RightBlock';
@@ -16,13 +16,6 @@ class PermissionsIndex extends React.Component {
         dispatch: PropTypes.func,
         data: PropTypes.object
     };
-
-    constructor(props) {
-        super(props);
-        this.state = {
-            permissions: null
-        };
-    }
 
     loadData(props, update=false) {
         const {dispatch, ws} = props;
@@ -62,8 +55,25 @@ class PermissionsIndex extends React.Component {
         dispatch(permissionActions.setValue(value));
     }
 
+    getValues() {
+        switch (this.props.data.type) {
+        case 'user':
+            return this.props.data.users;
+        case 'project':
+            return this.props.data.projects;
+        case 'role':
+            return this.props.data.roles;
+        }
+    }
+
+    updatePermissions(e) {
+        e.preventDefault();
+        const {dispatch} = this.props;
+        dispatch(permissionActions.save(this.props.data.users));
+    }
+
     render() {
-        if (!this.state.permissions) {
+        if (!this.props.data) {
             return (
                 <div>
                     <div className="row">
@@ -77,7 +87,7 @@ class PermissionsIndex extends React.Component {
             <div>
                 <div className="row">
                     {this.getTitle()}
-                    <form className="row" style={{width: '100%'}}>
+                    <form className="row" style={{width: '100%'}} onSubmit={this.updatePermissions.bind(this)}>
                         <div className="col-lg-4 col-md-6 col-xs-12">
                             <RadioButtonGroup name="type" defaultSelected={this.props.data.type} onChange={this.onChangeType.bind(this)}>
                                 <RadioButton
@@ -98,7 +108,7 @@ class PermissionsIndex extends React.Component {
                                 (
                                     <div className="col-lg-4 col-md-6 col-xs-12">
                                         <SelectField value={this.props.data.value} onChange={this.onChangeValue.bind(this)}>
-                                        {this.props.data.users.map((user, i) => {
+                                        {this.getValues().map((user, i) => {
                                             return (<MenuItem key={i} value={user.id} primaryText={user.email} />);
                                         })}
                                         </SelectField>
@@ -110,7 +120,7 @@ class PermissionsIndex extends React.Component {
                                 (
                                     <div className="col-lg-4 col-md-6 col-xs-12">
                                         <SelectField value={this.props.data.value} onChange={this.onChangeValue.bind(this)}>
-                                        {this.props.data.projects.map((project, i) => {
+                                        {this.getValues().map((project, i) => {
                                             return (<MenuItem key={i} value={project.id} primaryText={project.title} />);
                                         })}
                                         </SelectField>
@@ -122,7 +132,7 @@ class PermissionsIndex extends React.Component {
                                 (
                                     <div className="col-lg-4 col-md-6 col-xs-12">
                                         <SelectField value={this.props.data.value} onChange={this.onChangeValue.bind(this)}>
-                                        {this.props.data.roles.map((role, i) => {
+                                        {this.getValues().map((role, i) => {
                                             return (<MenuItem key={i} value={role.id} primaryText={role.title} />);
                                         })}
                                         </SelectField>
@@ -139,6 +149,17 @@ class PermissionsIndex extends React.Component {
                                     <PermissionsRightBlock />
                                 </div>
                             ])
+                        }
+                        {
+                            this.props.data.type && this.props.data.value && (
+                                <div className="col-xs-12 col-lg-12 col-md-12 center-xs">
+                                    <RaisedButton
+                                        type="submit"
+                                        label={<Translate content="form.save" />}
+                                        primary={true}
+                                    />
+                                </div>
+                            )
                         }
                     </form>
                 </div>

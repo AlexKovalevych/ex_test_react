@@ -22,38 +22,6 @@ class Permissions {
         return Permissions.config[type].rightTitle;
     }
 
-    // constructor(userPermissions, projects, roles) {
-    //     this._permissions = userPermissions;
-    //     this._roleTitles = {};
-    //     this._projectTitles = {};
-    //     this._userTitles = {};
-    //     this._selectedLeftBlock = [];
-
-    //     this._users = [];
-    //     for (let user of userPermissions) {
-    //         this._users.push(user.id);
-    //         this._userTitles[user.id] = user.title;
-    //     }
-    //     this._projects = [];
-    //     for (let project of projects) {
-    //         this._projects.push(project.id);
-    //         this._projectTitles[project.id] = project.title;
-    //     }
-    //     this._roles = [];
-    //     for (let role of roles) {
-    //         this._roles.push(role.id);
-    //         this._roleTitles[role.id] = role.title;
-    //     }
-    // }
-
-    get selectedLeftBlock() {
-        return this._selectedLeftBlock;
-    }
-
-    set selectedLeftBlock(values) {
-        this._selectedLeftBlock = values;
-    }
-
     getLeftBlockValue(permissions) {
         let values = [];
         for (let k of Object.keys(permissions)) {
@@ -86,7 +54,6 @@ class Permissions {
 
     getLeftRowTitles(type, permissions, projects) {
         let titles = [];
-        let values;
         switch(type) {
         case 'project':
             for (let user of permissions) {
@@ -129,29 +96,7 @@ class Permissions {
         return ids;
     }
 
-    getRightRowTitles(type, permissions, roles) {
-        let titles = [];
-        switch(type) {
-        case 'project':
-            for (let role of roles) {
-                titles.push(role.title);
-            }
-            break;
-        case 'user':
-            for (let role of roles) {
-                titles.push(role.title);
-            }
-            break;
-        case 'role':
-            for (let user of permissions) {
-                titles.push(user.email);
-            }
-            break;
-        }
-        return titles;
-    }
-
-    getRightRowTitleIds(type, permissions, roles, users) {
+    getRightRowTitleIds(type, users, roles) {
         let ids = [];
         switch(type) {
         case 'project':
@@ -262,16 +207,18 @@ class Permissions {
     checkLeftRow(permissions, projects, roles, type, typeValueId, id, value) {
         switch(type) {
         case 'project':
-            for (let userPermissions of this.permissions) {
+            for (let userPermissions of permissions) {
                 if (userPermissions.id == id) {
-                    for (let projectPermission of userPermissions.permissions) {
-                        if (projectPermission.project.id == typeValueId) {
-                            for (let role of this.roles) {
-                                let roleIndex = projectPermission.roles.indexOf(role);
-                                if (value && roleIndex == -1) {
-                                    projectPermission.roles.push(role);
-                                } else if (!value && roleIndex > -1) {
-                                    projectPermission.roles.splice(roleIndex, 1);
+                    for (let group of Object.keys(userPermissions.permissions)) {
+                        for (let role of Object.keys(userPermissions.permissions[group])) {
+                            for (let project of projects) {
+                                if (project.id == typeValueId) {
+                                    let index = userPermissions.permissions[group][role].indexOf(project.id);
+                                    if (value && index == -1) {
+                                        userPermissions.permissions[group][role].push(project.id);
+                                    } else if (!value && index > -1) {
+                                        userPermissions.permissions[group][role].splice(index, 1);
+                                    }
                                 }
                             }
                         }
@@ -284,11 +231,11 @@ class Permissions {
                 if (userPermissions.id == typeValueId) {
                     for (let group of Object.keys(userPermissions.permissions)) {
                         for (let role of Object.keys(userPermissions.permissions[group])) {
-                            for (let projectId of projects) {
-                                if (projectId == id) {
-                                    let index = userPermissions.permissions[group][role].indexOf(projectId);
+                            for (let project of projects) {
+                                if (project.id == id) {
+                                    let index = userPermissions.permissions[group][role].indexOf(id);
                                     if (value && index == -1) {
-                                        userPermissions.permissions[group][role].push(projectId);
+                                        userPermissions.permissions[group][role].push(id);
                                     } else if (!value && index > -1) {
                                         userPermissions.permissions[group][role].splice(index, 1);
                                     }
@@ -300,14 +247,16 @@ class Permissions {
             }
             break;
         case 'role':
-            for (let userPermissions of this.permissions) {
-                for (let projectPermission of userPermissions.permissions) {
-                    if (projectPermission.project.id == id) {
-                        let roleIndex = projectPermission.roles.indexOf(typeValueId);
-                        if (value && roleIndex == -1) {
-                            projectPermission.roles.push(typeValueId);
-                        } else if (!value && roleIndex > -1) {
-                            projectPermission.roles.splice(roleIndex, 1);
+            for (let userPermissions of permissions) {
+                for (let group of Object.keys(userPermissions.permissions)) {
+                    for (let role of Object.keys(userPermissions.permissions[group])) {
+                        if (role == typeValueId) {
+                            let index = userPermissions.permissions[group][role].indexOf(id);
+                            if (value && index == -1) {
+                                userPermissions.permissions[group][role].push(id);
+                            } else if (!value && index > -1) {
+                                userPermissions.permissions[group][role].splice(index, 1);
+                            }
                         }
                     }
                 }
@@ -366,79 +315,28 @@ class Permissions {
                 }
             }
             break;
-        // case 'role':
-        //     for (let userPermissions of this.permissions) {
-        //         if (userPermissions.id == id) {
-        //             for (let projectPermission of userPermissions.permissions) {
-        //                 if (selectedLeftRows.indexOf(projectPermission.project.id) > -1) {
-        //                     let roleIndex = projectPermission.roles.indexOf(typeValueId);
-        //                     if (value && roleIndex == -1) {
-        //                         projectPermission.roles.push(typeValueId);
-        //                     } else if (!value && roleIndex > -1) {
-        //                         projectPermission.roles.splice(roleIndex, 1);
-        //                     }
-        //                 }
-        //             }
-        //         }
-        //     }
-        //     break;
+        case 'role':
+            for (let userPermissions of permissions) {
+                if (userPermissions.id == id) {
+                    for (let group of Object.keys(userPermissions.permissions)) {
+                        for (let role of Object.keys(userPermissions.permissions[group])) {
+                            if (role == typeValueId) {
+                                for (let projectId of selectedLeftRows) {
+                                    let index = userPermissions.permissions[group][role].indexOf(projectId);
+                                    if (value && index == -1) {
+                                        userPermissions.permissions[group][role].push(projectId);
+                                    } else if (!value && index > -1) {
+                                        userPermissions.permissions[group][role].splice(index, 1);
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+            break;
         }
         return permissions;
-    }
-
-    get projectTitles() {
-        return this._projectTitles;
-    }
-
-    get projectOptions() {
-        return Object.keys(this._projectTitles).map((projectId) => {
-            return {
-                value: projectId,
-                label: this._projectTitles[projectId]
-            };
-        });
-    }
-
-    get userTitles() {
-        return this._userTitles;
-    }
-
-    get userOptions() {
-        return Object.keys(this._userTitles).map((userId) => {
-            return {
-                value: userId,
-                label: this._userTitles[userId]
-            };
-        });
-    }
-
-    get roleTitles() {
-        return this._roleTitles;
-    }
-
-    get roleOptions() {
-        return Object.keys(this._roleTitles).map((role) => {
-            return {
-                value: role,
-                label: role
-            };
-        });
-    }
-
-    get roles() {
-        return this._roles;
-    }
-
-    get users() {
-        return this._users;
-    }
-
-    get projects() {
-        return this._projects;
-    }
-
-    get permissions() {
-        return this._permissions;
     }
 }
 

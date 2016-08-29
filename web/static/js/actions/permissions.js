@@ -53,6 +53,26 @@ const permissionsActions = {
                 data: rows
             });
         };
+    },
+
+    save: (permissions) => {
+        return (dispatch, getState) => {
+            const {ws} = getState();
+            ws.channels['admins']
+                .push('permissions', permissions)
+                .receive('ok', (msg) => {
+                    dispatch({
+                        type: 'LOAD_PERMISSIONS',
+                        data: msg
+                    });
+                })
+                .receive('error', (msg) => {
+                    dispatch({
+                        type: 'SHOW_ERROR',
+                        message: msg.reason
+                    });
+                });
+        };
     }
 };
 
