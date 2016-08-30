@@ -56,11 +56,12 @@ defmodule Gt.AdminChannel do
     def handle_in("project", id, socket) do
         {:reply, {:ok, Projects.load_project(id)}, socket}
     end
-    def handle_in("permissions", users, socket) do
-        Enum.each(users, fn user ->
-            IO.inspect(user)
-        end)
-        # {:reply, {:ok, Permissions.load()}, socket}
+    def handle_in("permissions", %{users: users}, socket) do
+        IO.inspect(users)
+        # Enum.each(users, fn user ->
+        #     IO.inspect(user)
+        # end)
+        {:reply, {:ok, Permissions.load()}, socket}
     end
     def handle_in("permissions", _, socket) do
         {:reply, {:ok, Permissions.load()}, socket}
