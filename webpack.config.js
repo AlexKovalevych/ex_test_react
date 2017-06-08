@@ -42,41 +42,43 @@ module.exports = {
         publicPath: '/'
     },
     module: {
-        loaders: [{
-            test: /\.js$/,
-            exclude: /node_modules/,
-            loader: 'babel',
-            query: {
-                plugins: ['transform-decorators-legacy', 'transform-class-properties'],
-                presets: ['react', 'es2015', 'stage-2']
+        loaders: [
+            {
+                test: /\.js$/,
+                exclude: /node_modules/,
+                loader: 'babel',
+                query: {
+                    plugins: ['transform-decorators-legacy', 'transform-class-properties'],
+                    presets: ['react', 'es2015', 'stage-2']
+                }
+            },
+            {
+                test: /\.css$/,
+                loader: ExtractTextPlugin.extract('style', 'css?localIdentName=[hash:base64]!postcss')
+            },
+            {
+                test: /\.png$/,
+                loader: URLLoader('images', 'image/png', 10000)
+            }, {
+                test: /\.gif$/,
+                loader: URLLoader('images', 'image/gif', 10000)
+            }, {
+                test: /\.jpg$/,
+                loader: URLLoader('images', 'image/jpeg', 10000)
+            }, {
+                test: /\.(woff|woff2)?(\?v=[0-9]\.[0-9]\.[0-9])?$/,
+                loader: URLLoader('fonts', 'application/x-font-woff', 10000)
+            }, {
+                test: /\.ttf(\?v=[0-9]\.[0-9]\.[0-9])?$/,
+                loader: URLLoader('fonts', 'application/x-font-ttf', 10000)
+            }, {
+                test: /\.eot(\?v=[0-9]\.[0-9]\.[0-9])?$/,
+                loader: URLLoader('fonts', 'file', 10000)
+            }, {
+                test: /\.svg(\?v=[0-9]\.[0-9]\.[0-9])?$/,
+                loader: URLLoader('fonts', 'image/svg+xml', 10000)
             }
-        },
-        {
-            test: /\.css$/,
-            loader: ExtractTextPlugin.extract('style', 'css?localIdentName=[hash:base64]!postcss')
-        },
-        {
-            test: /\.png$/,
-            loader: URLLoader('images', 'image/png', 10000)
-        }, {
-            test: /\.gif$/,
-            loader: URLLoader('images', 'image/gif', 10000)
-        }, {
-            test: /\.jpg$/,
-            loader: URLLoader('images', 'image/jpeg', 10000)
-        }, {
-            test: /\.(woff|woff2)?(\?v=[0-9]\.[0-9]\.[0-9])?$/,
-            loader: URLLoader('fonts', 'application/x-font-woff', 10000)
-        }, {
-            test: /\.ttf(\?v=[0-9]\.[0-9]\.[0-9])?$/,
-            loader: URLLoader('fonts', 'application/x-font-ttf', 10000)
-        }, {
-            test: /\.eot(\?v=[0-9]\.[0-9]\.[0-9])?$/,
-            loader: URLLoader('fonts', 'file', 10000)
-        }, {
-            test: /\.svg(\?v=[0-9]\.[0-9]\.[0-9])?$/,
-            loader: URLLoader('fonts', 'image/svg+xml', 10000)
-        }]
+        ]
     },
     postcss: [
         Autoprefixer({
